@@ -1,15 +1,14 @@
 package demo.plantodo.controller;
 
 import demo.plantodo.domain.Member;
+import demo.plantodo.domain.MemberJoinForm;
 import demo.plantodo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,18 +17,16 @@ import java.util.List;
 public class MemberController {
     private final MemberRepository memberRepository;
 
-    @GetMapping("/member/join")
-    public String createJoinForm() {
+    @GetMapping(value = "/member/join")
+    public String createJoinForm(Model model) {
+        model.addAttribute("memberJoinForm", new MemberJoinForm());
         return "/member/join-form";
     }
 
-    @PostMapping("/member/join")
-    public String joinMember(@RequestParam("email") String email,
-                             @RequestParam("password") String password,
-                             @RequestParam("nickname") String nickname,
-                             @ModelAttribute Member member, BindingResult bindingResult) {
-        
-        List<Member> memberByEmail = memberRepository.getMemberByEmail(email);
+    @PostMapping(value = "/member/join")
+    public String joinMember(@ModelAttribute MemberJoinForm memberJoinForm,
+                             BindingResult bindingResult, Model model) {
+        List<Member> memberByEmail = memberRepository.getMemberByEmail(memberJoinForm.getEmail());
         /*검증 코드*/
         if (!memberByEmail.isEmpty()) {
             bindingResult.addError(new FieldError("member", "email", "사용할 수 없는 이메일입니다."));
@@ -37,8 +34,8 @@ public class MemberController {
         if (bindingResult.hasErrors()) {
             return "/member/join-form";
         }
-        Member newMember = new Member(email, password, nickname);
-        memberRepository.save(newMember);
+        Member member = new Member(memberJoinForm.getEmail(), memberJoinForm.getPassword(), memberJoinForm.getNickname());
+        memberRepository.save(member);
         return "/member/login-form";
     }
     
