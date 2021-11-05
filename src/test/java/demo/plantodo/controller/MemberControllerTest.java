@@ -1,0 +1,61 @@
+package demo.plantodo.controller;
+
+import demo.plantodo.domain.Member;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+
+@SpringBootTest
+@RunWith(SpringRunner.class)
+@Transactional
+class MemberControllerTest {
+    @Autowired MemberController memberController;
+
+    private MockMvc mock;
+
+    @BeforeEach
+    public void setup() {
+        mock = MockMvcBuilders.standaloneSetup(memberController).build();
+    }
+
+    @Test
+    public void 중복회원가입테스트() throws Exception {
+        //given
+
+        MockHttpServletRequestBuilder builder1 = post("/member/join")
+                .param("email", "hcjy97@naver.com")
+                .param("password", "12345678")
+                .param("nickname", "nick");
+
+        MockHttpServletRequestBuilder builder2 = post("/member/join")
+                .param("email", "hcjy97@naver.com")
+                .param("password", "50711234")
+                .param("nickname", "brown");
+
+        //when & when
+        mock.perform(builder1)
+                .andExpect(view().name("/member/login-form"))
+                .andDo(print());
+
+        mock.perform(builder2)
+                .andExpect(view().name("/member/join-form"))
+                .andExpect(model().attributeExists("errors"))
+                .andDo(print());
+    }
+}

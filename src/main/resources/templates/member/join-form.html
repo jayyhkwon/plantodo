@@ -6,11 +6,11 @@
 </head>
 <body>
 <p2>JOIN</p2>
-<form method="post" action="/member/join">
-    <div><input type="text" name="email" placeholder="이메일을 입력해주세요."/></div>
-    <div><input type="text" name="password" placeholder="비밀번호를 입력해주세요."/></div>
-    <div><input type="text" name="nickname" placeholder="사용할 별명을 입력해주세요."></div>
-    <button type="submit">commit</button>
+<form action="/member/join" method="post">
+    <div><input type="text" id="email" name="email" placeholder="이메일을 입력해주세요."/></div>
+    <div><input type="text" id="password" name="password" placeholder="비밀번호를 입력해주세요."/></div>
+    <div><input type="text" id="nickname" name="nickname" placeholder="사용할 별명을 입력해주세요."></div>
+    <input type="submit" value="전송"/>
 </form>
 </body>
 </html>

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,19 +16,19 @@ public class MemberRepository {
 
     private final EntityManager em;
 
-    public String save(Member member) {
+    public void save(Member member) {
         em.persist(member);
-        return member.getEmail();
     }
 
     public Member findOne(Long id) {
         return em.find(Member.class, id);
     }
 
-    public Member getMemberByEmail(String email) {
-        return em.createQuery("select m from Member m where m.email = :email", Member.class)
+    public List<Member> getMemberByEmail(String email) {
+        List<Member> member = em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
-                .getSingleResult();
+                .getResultList();
+        return member;
     }
 
 }
