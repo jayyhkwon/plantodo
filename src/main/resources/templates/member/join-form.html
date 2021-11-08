@@ -7,9 +7,19 @@
 <body>
 <p2>JOIN</p2>
 <form th:object="${memberJoinForm}" th:action="@{/member/join}" method="post">
-    <div><input type="text" id="email" name="email" th:value="*{email}" placeholder="이메일을 입력해주세요."/></div>
-    <div><input type="text" id="password" name="password" th:value="*{password}" placeholder="비밀번호를 입력해주세요."/></div>
-    <div><input type="text" id="nickname" name="nickname" th:value="*{nickname}" placeholder="사용할 별명을 입력해주세요."></div>
+    <div>
+        <label for="email">이메일</label>
+        <input type="text" id="email" name="email" th:value="*{email}" placeholder="이메일을 입력해주세요."/>
+        <div th:if="${#fields.hasErrors()}"><p th:each="err: ${#fields.errors()}" th:text="${err}"></p></div>
+    </div>
+    <div>
+        <label for="password">비밀번호</label>
+        <input type="text" id="password" name="password" th:value="*{password}" placeholder="비밀번호를 입력해주세요."/>
+    </div>
+    <div>
+        <label for="nickname">별명</label>
+        <input type="text" id="nickname" name="nickname" th:value="*{nickname}" placeholder="사용할 별명을 입력해주세요.">
+    </div>
     <input type="submit" value="전송"/>
 </form>
 </body>

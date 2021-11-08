@@ -25,11 +25,11 @@ public class MemberController {
 
     @PostMapping(value = "/member/join")
     public String joinMember(@ModelAttribute MemberJoinForm memberJoinForm,
-                             BindingResult bindingResult, Model model) {
+                             BindingResult bindingResult) {
         List<Member> memberByEmail = memberRepository.getMemberByEmail(memberJoinForm.getEmail());
         /*검증 코드*/
         if (!memberByEmail.isEmpty()) {
-            bindingResult.addError(new FieldError("member", "email", "사용할 수 없는 이메일입니다."));
+            bindingResult.addError(new FieldError("memberJoinForm", "email", "사용할 수 없는 이메일입니다."));
         }
         if (bindingResult.hasErrors()) {
             return "/member/join-form";
