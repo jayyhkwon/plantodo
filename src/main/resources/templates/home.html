@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <div th:replace="/fragments/header.html :: fragment-header"></div>
 </head>
 <body>
-<p2>테스트 페이지</p2>
+<div th:replace="/fragments/nav.html :: fragment-nav"></div>
+home
+<footer th:replace="/fragments/footer.html :: fragment-footer"></footer>
 </body>
 </html>

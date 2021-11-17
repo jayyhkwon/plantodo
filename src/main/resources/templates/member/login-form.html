@@ -6,10 +6,19 @@
 </head>
 <body>
 <p2>LOGIN</p2>
-<form method="post" action="/member/login">
-    <div><input type="text" name="email" placeholder="이메일을 입력해주세요."/></div>
-    <div><input type="text" name="password" placeholder="비밀번호를 입력해주세요."/></div>
+<form th:object="${memberLoginForm}" th:action="@{/member/login}" method="post">
+    <div>
+        <label for="email">이메일</label>
+        <input type="text" id="email" name="email" th:value="${memberLoginForm?.email}" placeholder="이메일을 입력해주세요."/>
+        <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+    </div>
+    <div>
+        <label for="password">비밀번호</label>
+        <input type="text" id="password" name="password" th:value="${memberLoginForm?.password}" placeholder="비밀번호를 입력해주세요."/>
+        <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+    </div>
     <button type="submit">commit</button>
 </form>
+<a href="../">이전으로</a>
 </body>
 </html>
