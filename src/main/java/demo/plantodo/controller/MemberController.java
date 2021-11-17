@@ -54,21 +54,22 @@ public class MemberController {
     public String loginMember(@ModelAttribute("memberLoginForm") MemberLoginForm memberLoginForm,
                               BindingResult bindingResult) {
         List<Member> findMember = memberRepository.getMemberByEmail(memberLoginForm.getEmail());
+
         if (findMember.isEmpty()) {
             bindingResult.addError(new FieldError("memberLoginForm", "email", "존재하지 않는 회원입니다."));
         }
 
         String candidate = memberLoginForm.getPassword();
         Member rightMember = findMember.get(0);
-        if (candidate != rightMember.getPassword()) {
+
+        if (!candidate.equals(rightMember.getPassword())) {
             bindingResult.addError(new FieldError("memberLoginForm", "password", "비밀번호가 틀렸습니다."));
         }
 
         if (bindingResult.hasErrors()) {
             return "member/login-form";
         }
-        System.out.println("login success!");
-        return "../home";
+        return "/home";
     }
 
 }
