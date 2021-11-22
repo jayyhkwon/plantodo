@@ -1,11 +1,14 @@
 package demo.plantodo.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
-import java.util.ArrayList;
 
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
+@Getter @Setter
 public class Plan {
     @Id @GeneratedValue
     @Column(name = "plan_id")
@@ -15,7 +18,7 @@ public class Plan {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private PlanStatus planStatus;
 
     @Embedded
@@ -23,23 +26,14 @@ public class Plan {
 
     private String title;
 
-    public Long getId() {
-        return id;
+    public Plan() {
     }
 
-    public Member getMember() {
-        return member;
+    public Plan(Member member, PlanStatus planStatus, Period period, String title) {
+        this.member = member;
+        this.planStatus = planStatus;
+        this.period = period;
+        this.title = title;
     }
 
-    public PlanStatus getPlanStatus() {
-        return planStatus;
-    }
-
-    public Period getPeriod() {
-        return period;
-    }
-
-    public String getTitle() {
-        return title;
-    }
 }

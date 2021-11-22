@@ -27,10 +27,15 @@ public class MemberRepository {
     }
 
     public List<Member> getMemberByEmail(String email) {
-        List<Member> member = em.createQuery("select m from Member m where m.email = :email", Member.class)
+        return em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
                 .getResultList();
-        return member;
+    }
+
+    public List<Member> getMemberById(String id) {
+        return em.createQuery("select m from Member m where m.id = :id", Member.class)
+                .setParameter("id", id)
+                .getResultList();
     }
 
 }

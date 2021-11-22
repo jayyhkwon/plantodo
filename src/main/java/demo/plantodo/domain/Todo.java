@@ -25,6 +25,17 @@ public class Todo {
 
     private int repOption;
 
+    public Todo() {
+    }
+
+    public Todo(Member member, Plan plan, TodoStatus todoStatus, String title, int repOption) {
+        this.member = member;
+        this.plan = plan;
+        this.todoStatus = todoStatus;
+        this.title = title;
+        this.repOption = repOption;
+    }
+
     public Long getId() {
         return id;
     }

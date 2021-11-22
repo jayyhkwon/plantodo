@@ -12,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -52,7 +54,8 @@ public class MemberController {
 
     @PostMapping("/login")
     public String loginMember(@ModelAttribute("memberLoginForm") MemberLoginForm memberLoginForm,
-                              BindingResult bindingResult) {
+                              BindingResult bindingResult,
+                              HttpServletRequest request) {
         List<Member> findMember = memberRepository.getMemberByEmail(memberLoginForm.getEmail());
 
         if (findMember.isEmpty()) {
@@ -69,6 +72,8 @@ public class MemberController {
         if (bindingResult.hasErrors()) {
             return "member/login-form";
         }
+        HttpSession session = request.getSession();
+        session.setAttribute("memberId", rightMember.getId());
         return "/home";
     }
 
