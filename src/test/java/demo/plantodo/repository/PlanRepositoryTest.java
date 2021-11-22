@@ -25,7 +25,7 @@ class PlanRepositoryTest {
     @Autowired PlanRepository planRepository;
 
     @Test
-    public void 플랜저장테스트() throws Exception {
+    public void planSaveTest() throws Exception {
         //given
         //1. Member 저장
         Member member = new Member("abc@naver.com", "12345678", "abc");
@@ -48,5 +48,23 @@ class PlanRepositoryTest {
         Period period = new Period(time1, time2);
         return period;
     }
+    
+    
+    @Test
+    public void findAllPlanTest() throws Exception {
+        //given
+        // 1. Member 저장 (1명)
+        Member member = new Member("abc@naver.com", "12345678", "abc");
+        memberRepository.save(member);
+        // 2. plan 저장 (2개)
+        Period period = makePeriod();
+        Plan plan1 = new Plan(member, PlanStatus.NOW, period, "병원방문");
+        Plan plan2 = new Plan(member, PlanStatus.NOW, period, "장보기");
 
+        //when
+        List<Plan> allPlan = planRepository.findAllPlan(member.getId());
+
+        //then
+        Assertions.assertThat(allPlan.size() == 2);
+    }
 }

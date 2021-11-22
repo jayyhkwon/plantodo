@@ -21,10 +21,17 @@ public class PlanRepository {
         em.persist(plan);
     }
 
-    // plan title로 plan 가져오기(테스트용)
+    // plan title로 plan 가져오기 (테스트용)
     public List<Plan> findPlanByTitle(String title) {
         return em.createQuery("select p from Plan p where p.title= :title", Plan.class)
                 .setParameter("title", title)
+                .getResultList();
+    }
+
+    // memberId를 받아서 해당 member의 모든 plan을 가져오기
+    public List<Plan> findAllPlan(Long memberId) {
+        return em.createQuery("select p from Plan p where p.member.id = :memberId")
+                .setParameter("memberId", memberId)
                 .getResultList();
     }
 
