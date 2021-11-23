@@ -4,19 +4,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Embeddable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Embeddable
-@Getter @Setter
+@Getter
 public class Period {
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
-    public Period() {
+    protected Period() {
     }
 
-    public Period(LocalDateTime startDate, LocalDateTime endDate) {
+    public Period(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }

@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import java.time.LocalDate;
+
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
@@ -21,19 +23,22 @@ public class Plan {
     @Enumerated(EnumType.STRING)
     private PlanStatus planStatus;
 
-    @Embedded
-    private Period period;
+    @Column(columnDefinition = "DATE")
+    private LocalDate startDate;
+
+    @Column(columnDefinition = "DATE")
+    private LocalDate endDate;
 
     private String title;
 
     public Plan() {
     }
 
-    public Plan(Member member, PlanStatus planStatus, Period period, String title) {
+    public Plan(Member member, PlanStatus planStatus, LocalDate startDate, LocalDate endDate, String title) {
         this.member = member;
         this.planStatus = planStatus;
-        this.period = period;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.title = title;
     }
-
 }

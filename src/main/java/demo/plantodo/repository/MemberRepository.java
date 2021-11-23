@@ -32,7 +32,7 @@ public class MemberRepository {
                 .getResultList();
     }
 
-    public List<Member> getMemberById(String id) {
+    public List<Member> getMemberById(Long id) {
         return em.createQuery("select m from Member m where m.id = :id", Member.class)
                 .setParameter("id", id)
                 .getResultList();

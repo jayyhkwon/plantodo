@@ -2,13 +2,17 @@ package demo.plantodo.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.LocalDate;
 
 @Getter @Setter
 public class PlanRegisterForm {
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
+
     private String title;
 }

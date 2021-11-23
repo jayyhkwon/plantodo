@@ -15,7 +15,7 @@ import java.util.List;
 public class PlanRepository {
 
     @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     public void save(Plan plan) {
         em.persist(plan);
