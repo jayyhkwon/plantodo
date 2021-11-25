@@ -30,7 +30,7 @@ public class TodoController {
 
     @GetMapping("/register")
     public String createRegisterForm(HttpServletRequest request, Model model) {
-        Long memberId = getMemberId(request);
+        Long memberId = memberRepository.getMemberId(request);
 
         List<Plan> plans = planRepository.findAllPlan(memberId);
 
@@ -47,7 +47,7 @@ public class TodoController {
         int repOption = todoRegisterForm.getRepOption();
         Set<String> repValue = todoRegisterForm.getRepValue();
         if ((repOption == 1 && repValue == null) || (repOption == 2 && repValue == null)) {
-            Long memberId = getMemberId(request);
+            Long memberId = memberRepository.getMemberId(request);
             List<Plan> plans = planRepository.findAllPlan(memberId);
             model.addAttribute("plans", plans);
             bindingResult.addError(new FieldError("todoRegisterForm", "repValue", "옵션을 추가해야 합니다."));
@@ -66,9 +66,4 @@ public class TodoController {
         return "/home";
     }
 
-    private Long getMemberId(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Long memberId = (Long) session.getAttribute("memberId");
-        return memberId;
-    }
 }

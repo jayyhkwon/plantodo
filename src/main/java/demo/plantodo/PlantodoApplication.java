@@ -1,5 +1,7 @@
 package demo.plantodo;
 
+import demo.plantodo.domain.Member;
+import demo.plantodo.repository.MemberRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

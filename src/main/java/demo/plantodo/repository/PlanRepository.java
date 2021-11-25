@@ -38,5 +38,4 @@ public class PlanRepository {
     public Plan findOne(Long id) {
         return em.find(Plan.class, id);
     }
-
 }

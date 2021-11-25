@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:each="plan : ${plans}">
+    <span th:if="${plan.endDate!=null}">
+        <small th:text="${plan.startDate}"></small>~<small th:text="${plan.endDate}"></small>
+    </span>
+    <span th:if="${plan.endDate==null}">
+        <small>상시</small>
+    </span>
+    <a th:href="@{/plan/details(id=${plan.id})}" th:text="${plan.title}"></a>
+    <span th:text="${plan.planStatus}"></span>
+</div>
+</body>
+</html>

@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,4 +40,9 @@ public class MemberRepository {
                 .getResultList();
     }
 
+    public Long getMemberId(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Long memberId = (Long) session.getAttribute("memberId");
+        return memberId;
+    }
 }
