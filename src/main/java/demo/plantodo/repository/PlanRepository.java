@@ -35,4 +35,8 @@ public class PlanRepository {
                 .getResultList();
     }
 
+    public Plan findOne(Long id) {
+        return em.find(Plan.class, id);
+    }
+
 }

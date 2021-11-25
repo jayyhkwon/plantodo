@@ -32,21 +32,21 @@ class PlanRepositoryTest {
         memberRepository.save(member);
         // 2. Plan 생성
         Period period = makePeriod();
-        Plan plan = new Plan(member, PlanStatus.NOW, period, "maked");
+        // Plan plan = new Plan(member, PlanStatus.NOW, period, "maked");
 
         //when
-        planRepository.save(plan);
+        // planRepository.save(plan);
 
         //then
-        Plan getPlan = planRepository.findPlanByTitle(plan.getTitle()).get(0);
-        Assertions.assertThat(getPlan.getTitle().equals(plan.getTitle()));
+        // Plan getPlan = planRepository.findPlanByTitle(plan.getTitle()).get(0);
+        // Assertions.assertThat(getPlan.getTitle().equals(plan.getTitle()));
     }
 
     private Period makePeriod() {
-        LocalDateTime time1 = LocalDateTime.now();
-        LocalDateTime time2 = time1.plusDays(1);
-        Period period = new Period(time1, time2);
-        return period;
+//        LocalDateTime time1 = LocalDateTime.now();
+//        LocalDateTime time2 = time1.plusDays(1);
+//        Period period = new Period(time1, time2);
+//        return period;
     }
     
     
@@ -58,8 +58,8 @@ class PlanRepositoryTest {
         memberRepository.save(member);
         // 2. plan 저장 (2개)
         Period period = makePeriod();
-        Plan plan1 = new Plan(member, PlanStatus.NOW, period, "병원방문");
-        Plan plan2 = new Plan(member, PlanStatus.NOW, period, "장보기");
+        // Plan plan1 = new Plan(member, PlanStatus.NOW, period, "병원방문");
+        // Plan plan2 = new Plan(member, PlanStatus.NOW, period, "장보기");
 
         //when
         List<Plan> allPlan = planRepository.findAllPlan(member.getId());

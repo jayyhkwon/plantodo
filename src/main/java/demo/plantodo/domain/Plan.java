@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
-@Getter @Setter
+@Getter
 public class Plan {
     @Id @GeneratedValue
     @Column(name = "plan_id")

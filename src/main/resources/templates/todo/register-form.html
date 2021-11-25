@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form th:action="@{/todo/register}" th:object="${todoRegisterForm}" method="post">
+    <select id="planId" name="planId">
+        <option th:each="plan : ${plans}" th:utext="${plan.title}" th:value="${plan.id}" th:selected="${plan.id == todoRegisterForm.planId}"></option>
+    </select>
+
+    <input type="text" name="title" id="title" th:value="*{title}">
+    <select name="repOption">
+        <option value="0" th:selected="*{repOption == 0}">매일반복</option>
+        <option value="1" th:selected="*{repOption == 1}">요일마다</option>
+        <option value="2" th:selected="*{repOption == 2}">기간설정</option>
+    </select>
+    <div th:if="*{repOption==1}">
+        <input type="checkbox" name="repValue" value="월">월
+        <input type="checkbox" name="repValue" value="화">화
+        <input type="checkbox" name="repValue" value="수">수
+        <input type="checkbox" name="repValue" value="목">목
+        <input type="checkbox" name="repValue" value="금">금
+        <input type="checkbox" name="repValue" value="토">토
+        <input type="checkbox" name="repValue" value="일">일
+    </div>
+    <div th:if="*{repOption==2}">
+        <input type="text" name="repValue">일마다
+    </div>
+    <input type="submit" value="전송">
+</form>
+</body>
+</html>

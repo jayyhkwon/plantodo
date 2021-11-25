@@ -1,10 +1,18 @@
 package demo.plantodo.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
+@Getter
 public class Todo {
     @Id @GeneratedValue
     @Column(name = "todo_id")
@@ -25,38 +33,18 @@ public class Todo {
 
     private int repOption;
 
+    @ElementCollection(fetch = LAZY)
+    private Set<String> repValue = new HashSet<String>();
+
     public Todo() {
     }
 
-    public Todo(Member member, Plan plan, TodoStatus todoStatus, String title, int repOption) {
+    public Todo(Member member, Plan plan, TodoStatus todoStatus, String title, int repOption, Set<String> repValue) {
         this.member = member;
         this.plan = plan;
         this.todoStatus = todoStatus;
         this.title = title;
         this.repOption = repOption;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public Plan getPlan() {
-        return plan;
-    }
-
-    public TodoStatus getTodoStatus() {
-        return todoStatus;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public int getRepOption() {
-        return repOption;
+        this.repValue = repValue;
     }
 }
