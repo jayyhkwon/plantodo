@@ -5,6 +5,30 @@
 </head>
 <body>
 <div th:replace="/fragments/nav.html :: fragment-nav"></div>
+
+<form th:action="@{/home}" th:object="${calendarSearchForm}" method="post">
+    <input type="text" id="targetYear" name="targetYear" th:value="*{targetYear}">년
+    <input type="text" id="targetMonth" name="targetMonth" th:value="*{targetMonth}">월
+    <input type="submit" value="검색">
+</form>
+<caption th:text="${calendarSearchForm.targetMonth}"></caption>
+<table>
+    <tr>
+        <th>월</th>
+        <th>화</th>
+        <th>수</th>
+        <th>목</th>
+        <th>금</th>
+        <th>토</th>
+        <th>일</th>
+    </tr>
+    <tr th:each="calrow : ${calendar}">
+        <th th:each="eachDate : ${calrow}">
+            <span th:if="${eachDate == null}"> </span>
+            <a href="" th:if="${eachDate != null}" th:text="${eachDate.getDayOfMonth()}" th:value="${eachDate.getDayOfMonth()}"></a>
+        </th>
+    </tr>
+</table>
 <a href="/plan/type">PLAN REGISTER</a>
 <a href="/plan">MY PLANS</a>
 <a href="/todo/register">TODO REGISTER</a>

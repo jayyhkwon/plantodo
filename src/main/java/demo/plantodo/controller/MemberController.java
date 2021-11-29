@@ -1,8 +1,9 @@
 package demo.plantodo.controller;
 
 import demo.plantodo.domain.Member;
-import demo.plantodo.domain.MemberJoinForm;
-import demo.plantodo.domain.MemberLoginForm;
+import demo.plantodo.form.CalendarSearchForm;
+import demo.plantodo.form.MemberJoinForm;
+import demo.plantodo.form.MemberLoginForm;
 import demo.plantodo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -55,7 +57,8 @@ public class MemberController {
     @PostMapping("/login")
     public String loginMember(@ModelAttribute("memberLoginForm") MemberLoginForm memberLoginForm,
                               BindingResult bindingResult,
-                              HttpServletRequest request) {
+                              HttpServletRequest request,
+                              Model model) {
         List<Member> findMember = memberRepository.getMemberByEmail(memberLoginForm.getEmail());
 
         if (findMember.isEmpty()) {
@@ -74,7 +77,20 @@ public class MemberController {
         }
         HttpSession session = request.getSession();
         session.setAttribute("memberId", rightMember.getId());
+        beforeHome(model);
         return "/home";
+    }
+
+    private void beforeHome(Model model) {
+        LocalDate now = LocalDate.now();
+        int yearValue = now.getYear();
+        int monthValue = now.getMonthValue();
+        int length = now.lengthOfMonth();
+        CalendarSearchForm cSearchForm = new CalendarSearchForm(yearValue, monthValue);
+        LocalDate[][] calendar = cSearchForm.makeCalendar(yearValue, monthValue, length);
+
+        model.addAttribute("calendarSearchForm", cSearchForm);
+        model.addAttribute("calendar", calendar);
     }
 
 }

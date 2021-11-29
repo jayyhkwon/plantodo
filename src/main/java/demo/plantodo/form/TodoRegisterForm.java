@@ -1,4 +1,4 @@
-package demo.plantodo.domain;
+package demo.plantodo.form;
 
 import lombok.Getter;
 import lombok.Setter;
