@@ -3,12 +3,12 @@ package demo.plantodo.form;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter @Setter
 public class TodoRegisterForm {
     private String title;
     private int repOption;
     private Long planId;
-    private Set<String> repValue;
+    private List<String> repValue;
 }

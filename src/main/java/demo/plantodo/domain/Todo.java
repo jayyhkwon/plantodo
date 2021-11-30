@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,13 +35,13 @@ public class Todo {
     private int repOption;
 
     @ElementCollection(fetch = LAZY)
-    private Set<String> repValue = new HashSet<String>();
+    private List<String> repValue = new ArrayList<>();
 
 
     public Todo() {
     }
 
-    public Todo(Member member, Plan plan, TodoStatus todoStatus, String title, int repOption, Set<String> repValue) {
+    public Todo(Member member, Plan plan, TodoStatus todoStatus, String title, int repOption, List<String> repValue) {
         this.member = member;
         this.plan = plan;
         this.todoStatus = todoStatus;

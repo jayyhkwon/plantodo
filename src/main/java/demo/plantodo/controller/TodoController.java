@@ -45,7 +45,7 @@ public class TodoController {
                                HttpServletRequest request,
                                Model model){
         int repOption = todoRegisterForm.getRepOption();
-        Set<String> repValue = todoRegisterForm.getRepValue();
+        List<String> repValue = todoRegisterForm.getRepValue();
         if ((repOption == 1 && repValue == null) || (repOption == 2 && repValue == null)) {
             Long memberId = memberRepository.getMemberId(request);
             List<Plan> plans = planRepository.findAllPlan(memberId);
