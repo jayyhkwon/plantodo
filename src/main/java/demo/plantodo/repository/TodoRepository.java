@@ -37,6 +37,10 @@ public class TodoRepository {
                 .setParameter("date", date)
                 .setParameter("planId", planId)
                 .getResultList();
+        /*이 단계에서 resultList가 비었을 경우 예외처리 필요*/
+        if (resultList.isEmpty()) {
+            return resultList;
+        }
         List<Todo> filteredTodo = new ArrayList<>();
         for (Todo todo : resultList) {
             int repOption = todo.getRepOption();
@@ -50,7 +54,7 @@ public class TodoRepository {
                     }
                     break;
                 case 2:
-                    int repValue2 = Integer.getInteger(todo.getRepValue().get(0));
+                    int repValue2 = Integer.parseInt(todo.getRepValue().get(0));
                     LocalDate startDate = todo.getPlan().getStartDate();
                     int diffDays = Period.between(startDate, date).getDays();
                     if ((diffDays % repValue2) == 0) {
