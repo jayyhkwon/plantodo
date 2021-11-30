@@ -44,7 +44,7 @@ public class PlanController {
         LocalDate startDate = LocalDate.now();
         Plan plan = new Plan(findMember, PlanStatus.NOW, startDate, null, planRegularRegisterForm.getTitle());
         planRepository.save(plan);
-        return "/home";
+        return "redirect:/home";
     }
     
     @GetMapping("/register/term")
@@ -60,7 +60,7 @@ public class PlanController {
         Member findMember = memberRepository.getMemberById(memberId).get(0);
         Plan plan = new Plan(findMember, PlanStatus.NOW, planTermRegisterForm.getStartDate(), planTermRegisterForm.getEndDate(), planTermRegisterForm.getTitle());
         planRepository.save(plan);
-        return "/home";
+        return "redirect:/home";
     }
 
     @GetMapping

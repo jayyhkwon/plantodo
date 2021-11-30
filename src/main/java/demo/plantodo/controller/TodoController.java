@@ -63,7 +63,7 @@ public class TodoController {
         Plan plan = planRepository.findOne(planId);
         Todo todo = new Todo(member, plan, TodoStatus.UNCHECKED, todoRegisterForm.getTitle(), repOption, repValue);
         todoRepository.save(todo);
-        return "/home";
+        return "main-home";
     }
 
 }

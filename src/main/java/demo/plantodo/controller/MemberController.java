@@ -1,7 +1,6 @@
 package demo.plantodo.controller;
 
 import demo.plantodo.domain.Member;
-import demo.plantodo.form.CalendarSearchForm;
 import demo.plantodo.form.MemberJoinForm;
 import demo.plantodo.form.MemberLoginForm;
 import demo.plantodo.repository.MemberRepository;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -23,7 +21,7 @@ import java.util.List;
 @RequestMapping("/member")
 public class MemberController {
     private final MemberRepository memberRepository;
-
+    private final HomeController homeController;
     @GetMapping(value = "/join")
     public String createJoinForm(Model model) {
         model.addAttribute("memberJoinForm", new MemberJoinForm());
@@ -77,20 +75,10 @@ public class MemberController {
         }
         HttpSession session = request.getSession();
         session.setAttribute("memberId", rightMember.getId());
-        beforeHome(model);
-        return "/home";
+        homeController.beforeHome(model);
+        return "main-home";
     }
 
-    private void beforeHome(Model model) {
-        LocalDate now = LocalDate.now();
-        int yearValue = now.getYear();
-        int monthValue = now.getMonthValue();
-        int length = now.lengthOfMonth();
-        CalendarSearchForm cSearchForm = new CalendarSearchForm(yearValue, monthValue);
-        LocalDate[][] calendar = cSearchForm.makeCalendar(yearValue, monthValue, length);
 
-        model.addAttribute("calendarSearchForm", cSearchForm);
-        model.addAttribute("calendar", calendar);
-    }
 
 }

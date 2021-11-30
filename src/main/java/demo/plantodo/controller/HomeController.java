@@ -8,11 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.TemporalField;
-import java.time.temporal.WeekFields;
-import java.util.Locale;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,7 +21,8 @@ public class HomeController {
           if (memberId == null) {
                return "index";
           }
-          return "home";
+          beforeHome(model);
+          return "main-home";
      }
 
      @PostMapping("/home")
@@ -39,6 +36,18 @@ public class HomeController {
           LocalDate[][] calendar = calendarSearchForm.makeCalendar(targetYear, targetMonth, length);
           model.addAttribute("calendarSearchForm", calendarSearchForm);
           model.addAttribute("calendar", calendar);
-          return "home";
+          return "main-home";
+     }
+
+     public void beforeHome(Model model) {
+          LocalDate now = LocalDate.now();
+          int yearValue = now.getYear();
+          int monthValue = now.getMonthValue();
+          int length = now.lengthOfMonth();
+          CalendarSearchForm cSearchForm = new CalendarSearchForm(yearValue, monthValue);
+          LocalDate[][] calendar = cSearchForm.makeCalendar(yearValue, monthValue, length);
+
+          model.addAttribute("calendarSearchForm", cSearchForm);
+          model.addAttribute("calendar", calendar);
      }
 }
