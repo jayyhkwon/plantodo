@@ -1,21 +1,24 @@
 package demo.plantodo.controller;
 
 import demo.plantodo.domain.*;
+import demo.plantodo.form.DateSearchForm;
 import demo.plantodo.form.PlanRegularRegisterForm;
 import demo.plantodo.form.PlanTermRegisterForm;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
+import demo.plantodo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 @Controller
@@ -24,6 +27,7 @@ import java.util.List;
 public class PlanController {
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
+    private final TodoRepository todoRepository;
 
     @GetMapping("/type")
     public String createSelectForm() {
@@ -69,5 +73,27 @@ public class PlanController {
         List<Plan> plans = planRepository.findAllPlan(memberId);
         model.addAttribute("plans", plans);
         return "plan/plan-list";
+    }
+
+    @GetMapping("/{planId}")
+    public String plan(@PathVariable Long planId, Model model, HttpServletRequest request) {
+        Plan selectedPlan = planRepository.findOne(planId);
+        LocalDate startDate = selectedPlan.getStartDate();
+        LocalDate endDate = Optional.ofNullable(selectedPlan.getEndDate()).orElse(LocalDate.now());
+        int days = Period.between(startDate, endDate).getDays();
+
+        LinkedHashMap allTodosByDate = new LinkedHashMap();
+        for (int i = 0; i < days+1; i++) {
+            LocalDate date = startDate.plusDays(i);
+            List<Todo> todoInDate = todoRepository.getTodoByPlanIdAndDate(planId, date);
+            if (!todoInDate.isEmpty()) {
+                allTodosByDate.put(date, todoInDate);
+            }
+        }
+        model.addAttribute("plan", selectedPlan);
+        model.addAttribute("allTodosByDate", allTodosByDate);
+        model.addAttribute("dateSearchForm", new DateSearchForm());
+        return "plan/plan-detail";
+
     }
 }

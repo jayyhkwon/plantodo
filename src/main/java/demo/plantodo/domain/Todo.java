@@ -13,7 +13,7 @@ import java.util.Set;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
-@Getter
+@Getter @Setter
 public class Todo {
     @Id @GeneratedValue
     @Column(name = "todo_id")

@@ -27,6 +27,7 @@ public class TodoController {
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
     private final TodoRepository todoRepository;
+    private final HomeController homeController;
 
     @GetMapping("/register")
     public String createRegisterForm(HttpServletRequest request, Model model) {
@@ -63,6 +64,8 @@ public class TodoController {
         Plan plan = planRepository.findOne(planId);
         Todo todo = new Todo(member, plan, TodoStatus.UNCHECKED, todoRegisterForm.getTitle(), repOption, repValue);
         todoRepository.save(todo);
+        /*메인 화면 세팅*/
+        homeController.beforeHome(model);
         return "main-home";
     }
 

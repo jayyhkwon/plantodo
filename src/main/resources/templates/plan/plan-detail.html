@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--제목-->
+<div>
+    <div>
+        <span th:if="${plan.getEndDate()==null}">상시</span>
+        <span th:if="${plan.getEndDate()!=null}">
+            <span th:text="${plan.getStartDate()}"></span>~
+            <span th:text="${plan.getEndDate()}"></span>
+        </span>
+        <span th:text="${  plan.getPlanStatus()}"></span>
+    </div>
+    <div th:text="${plan.getTitle()}"></div>
+    <input type="button" value="DELETE"> <input type="button" value="FINISH">
+</div>
+
+<!--날짜로 검색-->
+<form th:object="${dateSearchForm}">
+    <input type="date" id="startDate" name="startDate">
+    <input type="date" id="endDate" name="endDate">
+    <input type="submit">
+</form>
+
+<!--일자별 to-do 출력-->
+<div>
+    <table th:each="entry : ${allTodosByDate}">
+        <th th:text="${entry.key}"></th>
+        <tr th:each="todo : ${entry.value}">
+            <input type="checkbox" th:text="${todo.getTitle()}" th:value="${todo.getId()}">
+        </tr>
+    </table>
+</div>
+</body>
+</html>

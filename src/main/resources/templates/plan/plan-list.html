@@ -11,7 +11,7 @@
     <span th:if="${plan.endDate==null}">
         <small>상시</small>
     </span>
-    <a th:href="@{/plan/details(id=${plan.id})}" th:text="${plan.title}"></a>
+    <a th:href="@{/plan/{planId}(planId=${plan.id})}" th:text="${plan.title}"></a>
     <span th:text="${plan.planStatus}"></span>
 </div>
 </body>
