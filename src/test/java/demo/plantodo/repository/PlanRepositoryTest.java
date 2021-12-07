@@ -10,10 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -73,8 +70,8 @@ class PlanRepositoryTest {
         Member member = new Member("abc@naver.com", "12345678", "abc");
         memberRepository.save(member);
 
-        LocalDate time1 = LocalDate.now();
-        LocalDate time2 = time1.plusDays(1);
+        String time1 = LocalDate.now().toString();
+        String time2 = LocalDate.now().plusDays(1).toString();
         Plan plan = new Plan(member, PlanStatus.NOW, time1, time2, "공부");
         planRepository.save(plan);
 
@@ -91,5 +88,23 @@ class PlanRepositoryTest {
         //then
         Assertions.assertThat(todos.size() == 2);
 
+    }
+    
+    @Test
+    public void planSave2() throws Exception {
+        //given
+        Member member = new Member("abc@naver.com", "12345678", "abc");
+        memberRepository.save(member);
+
+        String time1 = LocalDate.now().toString();
+        String time2 = "상시";
+        Plan plan = new Plan(member, PlanStatus.NOW, time1, time2, "공부");
+        planRepository.save(plan);
+
+        //when
+        Plan result = planRepository.findOne(plan.getId());
+
+        //then
+        Assertions.assertThat(result.getEndDate().equals("상시"));
     }
 }

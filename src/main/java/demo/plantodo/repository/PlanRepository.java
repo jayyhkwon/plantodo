@@ -1,7 +1,6 @@
 package demo.plantodo.repository;
 
 import demo.plantodo.domain.Plan;
-import demo.plantodo.domain.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,5 +1,6 @@
 package demo.plantodo.domain;
 
+import demo.plantodo.converter.StringToLocalDateConverter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,18 +26,16 @@ public class Plan {
     @Enumerated(EnumType.STRING)
     private PlanStatus planStatus;
 
-    @Column(columnDefinition = "DATE")
-    private LocalDate startDate;
+    private String startDate;
 
-    @Column(columnDefinition = "DATE")
-    private LocalDate endDate;
+    private String endDate;
 
     private String title;
 
     public Plan() {
     }
 
-    public Plan(Member member, PlanStatus planStatus, LocalDate startDate, LocalDate endDate, String title) {
+    public Plan(Member member, PlanStatus planStatus, String startDate, String endDate, String title) {
         this.member = member;
         this.planStatus = planStatus;
         this.startDate = startDate;

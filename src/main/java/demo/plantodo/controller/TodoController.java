@@ -1,10 +1,10 @@
 package demo.plantodo.controller;
 
+import demo.plantodo.Service.TodoService;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoRegisterForm;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
-import demo.plantodo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,8 +25,9 @@ import java.util.Set;
 public class TodoController {
     private final PlanRepository planRepository;
     private final MemberRepository memberRepository;
-    private final TodoRepository todoRepository;
     private final HomeController homeController;
+
+    private final TodoService todoService;
 
     @GetMapping("/register")
     public String createRegisterForm(HttpServletRequest request, Model model) {
@@ -45,6 +45,7 @@ public class TodoController {
                                BindingResult bindingResult,
                                HttpServletRequest request,
                                Model model){
+
         int repOption = todoRegisterForm.getRepOption();
         List<String> repValue = todoRegisterForm.getRepValue();
         if ((repOption == 1 && repValue == null) || (repOption == 2 && repValue == null)) {
@@ -56,6 +57,7 @@ public class TodoController {
         if (bindingResult.hasErrors()) {
             return "todo/register-form";
         }
+        /*로그인 검증 (이후 서블릿 필터로 대체)*/
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("memberId");
         Member member = memberRepository.getMemberById(memberId).get(0);
@@ -63,7 +65,7 @@ public class TodoController {
         Long planId = todoRegisterForm.getPlanId();
         Plan plan = planRepository.findOne(planId);
         Todo todo = new Todo(member, plan, TodoStatus.UNCHECKED, todoRegisterForm.getTitle(), repOption, repValue);
-        todoRepository.save(todo);
+        todoService.todoSave(todo);
         /*메인 화면 세팅*/
         homeController.beforeHome(model);
         return "main-home";
