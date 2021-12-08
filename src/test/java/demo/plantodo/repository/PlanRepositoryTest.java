@@ -58,53 +58,70 @@ class PlanRepositoryTest {
         // Plan plan2 = new Plan(member, PlanStatus.NOW, period, "장보기");
 
         //when
-        List<Plan> allPlan = planRepository.findAllPlan(member.getId());
+        // List<PlanRegular> allPlan = planRepository.findAllPlan(member.getId());
 
         //then
-        Assertions.assertThat(allPlan.size() == 2);
+        //  Assertions.assertThat(allPlan.size() == 2);
     }
 
-    @Test
-    public void planTodoTest() throws Exception {
-        //given
-        Member member = new Member("abc@naver.com", "12345678", "abc");
-        memberRepository.save(member);
-
-        String time1 = LocalDate.now().toString();
-        String time2 = LocalDate.now().plusDays(1).toString();
-        Plan plan = new Plan(member, PlanStatus.NOW, time1, time2, "공부");
-        planRepository.save(plan);
-
-        Todo todo1 = new Todo(member, plan, TodoStatus.UNCHECKED, "JPA 복습", 0, null);
-        Todo todo2 = new Todo(member, plan, TodoStatus.UNCHECKED, "MVC 복습", 0, null);
-        todoRepository.save(todo1);
-        todoRepository.save(todo2);
-
-        //when
-        List<Todo> todos = todoRepository.getTodoByPlanId(plan.getId());
-        for (Todo todo : todos) {
-            System.out.println(todo.getTitle());
-        }
-        //then
-        Assertions.assertThat(todos.size() == 2);
-
-    }
+//    @Test
+//    public void planTodoTest() throws Exception {
+//        //given
+//        Member member = new Member("abc@naver.com", "12345678", "abc");
+//        memberRepository.save(member);
+//
+//        String time1 = LocalDate.now().toString();
+//        String time2 = LocalDate.now().plusDays(1).toString();
+//        PlanRegular plan = new PlanRegular(member, PlanStatus.NOW, time1, time2, "공부");
+//        planRepository.save(plan);
+//
+//        To1do todo1 = new To1do(member, plan, TodoStatus.UNCHECKED, "JPA 복습", 0, null);
+//        To1do todo2 = new To1do(member, plan, TodoStatus.UNCHECKED, "MVC 복습", 0, null);
+//        todoRepository.save(todo1);
+//        todoRepository.save(todo2);
+//
+//        //when
+//        List<To1do> todos = todoRepository.getTodoByPlanId(plan.getId());
+//        for (To1do to1do : todos) {
+//            System.out.println(to1do.getTitle());
+//        }
+//        //then
+//        Assertions.assertThat(todos.size() == 2);
+//
+//    }
     
     @Test
-    public void planSave2() throws Exception {
+    public void planRegularSave() throws Exception {
         //given
         Member member = new Member("abc@naver.com", "12345678", "abc");
         memberRepository.save(member);
 
-        String time1 = LocalDate.now().toString();
-        String time2 = "상시";
-        Plan plan = new Plan(member, PlanStatus.NOW, time1, time2, "공부");
-        planRepository.save(plan);
+        PlanRegular planRegular = new PlanRegular(member, PlanStatus.NOW, LocalDate.now(), "plan 수정");
 
         //when
-        Plan result = planRepository.findOne(plan.getId());
+        planRepository.saveRegular(planRegular);
+        List<PlanRegular> allPlanRegular = planRepository.findAllPlanRegular(member.getId());
 
         //then
-        Assertions.assertThat(result.getEndDate().equals("상시"));
+        Assertions.assertThat(allPlanRegular.size() == 1);
+
+    }
+
+    @Test
+    public void planTermSave() throws Exception {
+        //given
+        Member member = new Member("abc@naver.com", "12345678", "abc");
+        memberRepository.save(member);
+
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusDays(1);
+        PlanTerm planTerm = new PlanTerm(member, PlanStatus.NOW, startDate, endDate, "플랜 수정");
+        planRepository.saveTerm(planTerm);
+
+        //when
+        List<PlanTerm> allPlanTerm = planRepository.findAllPlanTerm(member.getId());
+
+        //then
+        Assertions.assertThat(allPlanTerm.size() == 1);
     }
 }

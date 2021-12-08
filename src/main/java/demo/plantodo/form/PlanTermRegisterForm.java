@@ -9,10 +9,11 @@ import java.time.LocalDate;
 
 @Getter @Setter
 public class PlanTermRegisterForm {
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
 
-    private String startDate;
-
-    private String endDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
     private String title;
 }

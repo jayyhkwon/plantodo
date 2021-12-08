@@ -23,7 +23,7 @@ public class Todo {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "plan_id")
-    private Plan plan;
+    private PlanRegular plan;
 
     @Enumerated(value = EnumType.STRING)
     private TodoStatus todoStatus;
@@ -39,7 +39,7 @@ public class Todo {
     public Todo() {
     }
 
-    public Todo(Member member, Plan plan, TodoStatus todoStatus, String title, int repOption, List<String> repValue) {
+    public Todo(Member member, PlanRegular plan, TodoStatus todoStatus, String title, int repOption, List<String> repValue) {
         this.member = member;
         this.plan = plan;
         this.todoStatus = todoStatus;

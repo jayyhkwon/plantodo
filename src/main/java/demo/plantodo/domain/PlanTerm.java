@@ -1,20 +1,16 @@
 package demo.plantodo.domain;
 
-import demo.plantodo.converter.StringToLocalDateConverter;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-public class Plan {
+public class PlanTerm {
     @Id @GeneratedValue
     @Column(name = "plan_id")
     private Long id;
@@ -26,16 +22,16 @@ public class Plan {
     @Enumerated(EnumType.STRING)
     private PlanStatus planStatus;
 
-    private String startDate;
+    private LocalDate startDate;
 
-    private String endDate;
+    private LocalDate endDate;
 
     private String title;
 
-    public Plan() {
+    public PlanTerm() {
     }
 
-    public Plan(Member member, PlanStatus planStatus, String startDate, String endDate, String title) {
+    public PlanTerm(Member member, PlanStatus planStatus, LocalDate startDate, LocalDate endDate, String title) {
         this.member = member;
         this.planStatus = planStatus;
         this.startDate = startDate;

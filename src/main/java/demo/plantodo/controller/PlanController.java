@@ -47,10 +47,9 @@ public class PlanController {
                                       HttpServletRequest request) {
         Long memberId = memberRepository.getMemberId(request);
         Member findMember = memberRepository.getMemberById(memberId).get(0);
-        String startDate = LocalDate.now().toString();
-        String endDate = "상수";
-        Plan plan = new Plan(findMember, PlanStatus.NOW, startDate, endDate, planRegularRegisterForm.getTitle());
-        planRepository.save(plan);
+        LocalDate startDate = LocalDate.now();
+        PlanRegular planRegular = new PlanRegular(findMember, PlanStatus.NOW, startDate, planRegularRegisterForm.getTitle());
+        planRepository.saveRegular(planRegular);
         return "redirect:/home";
     }
     
@@ -65,78 +64,86 @@ public class PlanController {
                              HttpServletRequest request) {
         Long memberId = memberRepository.getMemberId(request);
         Member findMember = memberRepository.getMemberById(memberId).get(0);
-        Plan plan = new Plan(findMember, PlanStatus.NOW, planTermRegisterForm.getStartDate(), planTermRegisterForm.getEndDate(), planTermRegisterForm.getTitle());
-        planRepository.save(plan);
+        PlanTerm planTerm = new PlanTerm(findMember, PlanStatus.NOW, planTermRegisterForm.getStartDate(), planTermRegisterForm.getEndDate(), planTermRegisterForm.getTitle());
+        planRepository.saveTerm(planTerm);
         return "redirect:/home";
     }
 
-    @GetMapping
-    public String plans(Model model, HttpServletRequest request) {
+    @GetMapping("/regular")
+    public String RegularPlans(Model model, HttpServletRequest request) {
         Long memberId = memberRepository.getMemberId(request);
-        List<Plan> plans = planRepository.findAllPlan(memberId);
+        List<PlanRegular> plans = planRepository.findAllPlanRegular(memberId);
         model.addAttribute("plans", plans);
-        return "plan/plan-list";
+        return "plan/plan-list-regular";
     }
 
-    @GetMapping("/{planId}")
-    public String plan(@PathVariable Long planId, Model model) {
-        Plan selectedPlan = planRepository.findOne(planId);
-        LocalDate startDate = stringToLocalDateConverter.convert(selectedPlan.getStartDate());
-        LocalDate endDate = stringToLocalDateConverter.convert(selectedPlan.getEndDate());
-
-        System.out.println("endDate = " + endDate);
-        int days = Period.between(startDate, endDate).getDays();
-        System.out.println("days = " + days);
-
-        LinkedHashMap all = allTodosByDate(selectedPlan, startDate, days);
-        model.addAttribute("plan", selectedPlan);
-        model.addAttribute("allTodosByDate", all);
-        model.addAttribute("dateSearchForm", new DateSearchForm());
-        return "plan/plan-detail";
-
+    @GetMapping("/term")
+    public String TermPlans(Model model, HttpServletRequest request) {
+        Long memberId = memberRepository.getMemberId(request);
+        List<PlanTerm> plans = planRepository.findAllPlanTerm(memberId);
+        model.addAttribute("plans", plans);
+        return "plan/plan-list-term";
     }
 
-    @PostMapping("/{planId}")
-    public String filteredPlan(@PathVariable Long planId,
-                               @ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
-                               BindingResult bindingResult,
-                               Model model) {
-        Plan selectedPlan = planRepository.findOne(planId);
-        LocalDate searchStart = dateSearchForm.getStartDate();
-        LocalDate searchEnd = dateSearchForm.getEndDate();
-        LocalDate planStart = stringToLocalDateConverter.convert(selectedPlan.getStartDate());
-        LocalDate planEnd = stringToLocalDateConverter.convert(selectedPlan.getEndDate());
+//    @GetMapping("/{planId}")
+//    public String plan(@PathVariable Long planId, Model model) {
+//        PlanRegular selectedPlan = planRepository.findOne(planId);
+//        LocalDate startDate = stringToLocalDateConverter.convert(selectedPlan.getStartDate());
+//        LocalDate endDate = stringToLocalDateConverter.convert(selectedPlan.getEndDate());
+//
+//        System.out.println("endDate = " + endDate);
+//        int days = Period.between(startDate, endDate).getDays();
+//        System.out.println("days = " + days);
+//
+//        LinkedHashMap all = allTodosByDate(selectedPlan, startDate, days);
+//        model.addAttribute("plan", selectedPlan);
+//        model.addAttribute("allTodosByDate", all);
+//        model.addAttribute("dateSearchForm", new DateSearchForm());
+//        return "plan/plan-detail";
+//
+//    }
 
-        if (searchStart.isBefore(planStart)) {
-            String errMsg = "시작 날짜는 " + planStart + " 이후여야 합니다.";
-            bindingResult.addError(new FieldError("dateSearchForm", "startDate", errMsg));
-        }
-        if (searchEnd.isAfter(planEnd)) {
-            String errMsg = "종료 날짜는 " + planEnd + " 이전이어야 합니다.";
-            bindingResult.addError(new FieldError("dateSearchForm", "endDate", errMsg));
-        }
-        if (bindingResult.hasErrors()) {
-            return "plan/plan-detail";
-        }
-        int days = Period.between(searchStart, searchEnd).getDays();
-        LinkedHashMap all = allTodosByDate(selectedPlan, searchStart, days);
-        model.addAttribute("plan", selectedPlan);
-        model.addAttribute("allTodosByDate", all);
-        model.addAttribute("dateSearchForm", dateSearchForm);
-        return "plan/plan-detail";
-    }
-
-
-    private LinkedHashMap allTodosByDate(Plan plan, LocalDate startDate, int days) {
-        LinkedHashMap allTodosByDate = new LinkedHashMap();
-        for (int i = 0; i < days + 1; i++) {
-            LocalDate date = startDate.plusDays(i);
-            List<Todo> todoInDate = todoService.getTodoByDateFilter(plan, date);
-            if (!todoInDate.isEmpty()) {
-                System.out.println("todoInDate = " + todoInDate);
-                allTodosByDate.put(date, todoInDate);
-            }
-        }
-        return allTodosByDate;
-    }
+//    @PostMapping("/{planId}")
+//    public String filteredPlan(@PathVariable Long planId,
+//                               @ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
+//                               BindingResult bindingResult,
+//                               Model model) {
+//        PlanRegular selectedPlan = planRepository.findOne(planId);
+//        LocalDate searchStart = dateSearchForm.getStartDate();
+//        LocalDate searchEnd = dateSearchForm.getEndDate();
+//        LocalDate planStart = stringToLocalDateConverter.convert(selectedPlan.getStartDate());
+//        LocalDate planEnd = stringToLocalDateConverter.convert(selectedPlan.getEndDate());
+//
+//        if (searchStart.isBefore(planStart)) {
+//            String errMsg = "시작 날짜는 " + planStart + " 이후여야 합니다.";
+//            bindingResult.addError(new FieldError("dateSearchForm", "startDate", errMsg));
+//        }
+//        if (searchEnd.isAfter(planEnd)) {
+//            String errMsg = "종료 날짜는 " + planEnd + " 이전이어야 합니다.";
+//            bindingResult.addError(new FieldError("dateSearchForm", "endDate", errMsg));
+//        }
+//        if (bindingResult.hasErrors()) {
+//            return "plan/plan-detail";
+//        }
+//        int days = Period.between(searchStart, searchEnd).getDays();
+//        LinkedHashMap all = allTodosByDate(selectedPlan, searchStart, days);
+//        model.addAttribute("plan", selectedPlan);
+//        model.addAttribute("allTodosByDate", all);
+//        model.addAttribute("dateSearchForm", dateSearchForm);
+//        return "plan/plan-detail";
+//    }
+//
+//
+//    private LinkedHashMap allTodosByDate(PlanRegular plan, LocalDate startDate, int days) {
+//        LinkedHashMap allTodosByDate = new LinkedHashMap();
+//        for (int i = 0; i < days + 1; i++) {
+//            LocalDate date = startDate.plusDays(i);
+//            List<Todo> todoInDate = todoService.getTodoByDateFilter(plan, date);
+//            if (!todoInDate.isEmpty()) {
+//                System.out.println("todoInDate = " + todoInDate);
+//                allTodosByDate.put(date, todoInDate);
+//            }
+//        }
+//        return allTodosByDate;
+//    }
 }
