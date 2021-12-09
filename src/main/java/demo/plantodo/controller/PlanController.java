@@ -7,6 +7,7 @@ import demo.plantodo.form.PlanTermRegisterForm;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -93,7 +94,8 @@ public class PlanController {
 
         int days = Period.between(startDate, endDate).getDays();
 
-        LinkedHashMap all = allTodosByDate(selectedPlan, "regular");
+        LinkedHashMap<LocalDate, List<Todo>> all = allTodosByDate(selectedPlan);
+        System.out.println("all = " + all);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
         model.addAttribute("dateSearchForm", new DateSearchForm());
@@ -103,7 +105,7 @@ public class PlanController {
     @GetMapping("term/{planId}")
     public String planTerm(@PathVariable Long planId, Model model) {
         Plan selectedPlan = planRepository.findOne(planId);
-        LinkedHashMap all = allTodosByDate(selectedPlan, "term");
+        LinkedHashMap<LocalDate, List<Todo>> all = allTodosByDate(selectedPlan);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
         model.addAttribute("dateSearchForm", new DateSearchForm());
@@ -138,23 +140,21 @@ public class PlanController {
 //        return "plan/plan-detail";
 //    }
 
-    private LinkedHashMap allTodosByDate(Plan plan, String type) {
+    private LinkedHashMap<LocalDate, List<Todo>> allTodosByDate(Plan plan) {
         LocalDate startDate = plan.getStartDate();
         LocalDate endDate = LocalDate.now();
-        if (plan.getClass().isInstance(PlanTerm.class)) {
+        if (plan.getDtype().equals("Term")) {
             PlanTerm planTerm = (PlanTerm) plan;
             endDate = planTerm.getEndDate();
         }
 
         int days = Period.between(startDate, endDate).getDays();
 
-        LinkedHashMap allTodosByDate = new LinkedHashMap();
+        LinkedHashMap<LocalDate, List<Todo>> allTodosByDate = new LinkedHashMap();
 
         for (int i = 0; i < days + 1; i++) {
             LocalDate date = startDate.plusDays(i);
-            List<Todo> todoInDate = new ArrayList<>();
-
-            todoInDate = todoService.getTodoByDate(plan, date);
+            List<Todo> todoInDate = todoService.getTodoByDate(plan, date);
 
             if (!todoInDate.isEmpty()) {
                 allTodosByDate.put(date, todoInDate);

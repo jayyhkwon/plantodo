@@ -24,7 +24,6 @@ public class TodoService {
     }
 
     public List<Todo> getTodoByDate(Plan plan, LocalDate date) {
-
         List<Todo> resultList = todoRepository.getTodoByPlanIdAndDate(plan, date);
         return getTodoByDate_Filter(resultList, date);
     }

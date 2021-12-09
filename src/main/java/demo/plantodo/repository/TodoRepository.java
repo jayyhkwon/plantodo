@@ -1,6 +1,7 @@
 package demo.plantodo.repository;
 
 import demo.plantodo.domain.Plan;
+import demo.plantodo.domain.PlanRegular;
 import demo.plantodo.domain.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,14 +26,14 @@ public class TodoRepository {
 
 
     public List<Todo> getTodoByPlanIdAndDate(Plan plan, LocalDate date) {
-        if (plan.getDtype() == "Regular") {
-            return em.createQuery("select o from Todo o join o.plan p where p.id =:planId and treat(p as PlanRegular).startDate <= :date")
+        if (plan.getDtype().equals("Regular")) {
+            return em.createQuery("select o from Todo o inner join o.plan p where p.id =:planId and treat(p as PlanRegular).startDate <= :date")
                     .setParameter("date", date)
                     .setParameter("planId", plan.getId())
                     .getResultList();
         }
         else {
-            return em.createQuery("select o from Todo o join o.plan p where p.id =:planId and treat(p as PlanTerm).startDate <= :date and treat(p as PlanTerm).endDate >= :date")
+            return em.createQuery("select o from Todo o inner join o.plan p where p.id =:planId and treat(p as PlanTerm).startDate <= :date and treat(p as PlanTerm).endDate >= :date")
                     .setParameter("date", date)
                     .setParameter("planId", plan.getId())
                     .getResultList();
