@@ -1,6 +1,9 @@
 package demo.plantodo.domain;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -10,32 +13,15 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-public class PlanTerm {
-    @Id @GeneratedValue
-    @Column(name = "plan_id")
-    private Long id;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @Enumerated(EnumType.STRING)
-    private PlanStatus planStatus;
-
-    private LocalDate startDate;
+@DiscriminatorValue("Term")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class PlanTerm extends Plan{
 
     private LocalDate endDate;
 
-    private String title;
-
-    public PlanTerm() {
-    }
-
-    public PlanTerm(Member member, PlanStatus planStatus, LocalDate startDate, LocalDate endDate, String title) {
-        this.member = member;
-        this.planStatus = planStatus;
-        this.startDate = startDate;
+    @Builder
+    public PlanTerm(Member member, PlanStatus planStatus, LocalDate startDate, String title, LocalDate endDate) {
+        super(member, planStatus, startDate, title);
         this.endDate = endDate;
-        this.title = title;
     }
 }

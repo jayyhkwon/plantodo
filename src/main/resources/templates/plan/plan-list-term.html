@@ -6,9 +6,9 @@
 <body>
 <div th:each="plan : ${plans}">
     <span>
-        <small>상시</small>
+        <small th:text="${plan.startDate}"></small>~<small th:text="${plan.endDate}"></small>
     </span>
-    <a th:href="@{/plan/regular/{planId}(planId=${plan.id})}" th:text="${plan.title}"></a>
+    <a th:href="@{/plan/term/{planId}(planId=${plan.id})}" th:text="${plan.title}"></a>
     <span th:text="${plan.planStatus}"></span>
 </div>
 </body>

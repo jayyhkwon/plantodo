@@ -1,5 +1,6 @@
 package demo.plantodo.repository;
 
+import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.PlanRegular;
 import demo.plantodo.domain.PlanTerm;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Repository
@@ -18,6 +21,7 @@ public class PlanRepository {
     @PersistenceContext
     private final EntityManager em;
 
+    /*저장*/
     public void saveRegular(PlanRegular planRegular) {
         em.persist(planRegular);
     }
@@ -25,28 +29,29 @@ public class PlanRepository {
         em.persist(planTerm);
     }
 
-    // plan title로 plan 가져오기 (테스트용)
-    public List<PlanRegular> findPlanByTitle(String title) {
-        return em.createQuery("select p from PlanRegular p where p.title= :title", PlanRegular.class)
-                .setParameter("title", title)
-                .getResultList();
+    /*plan 한 개 조회*/
+    public Plan findOne(Long id) {
+        return em.find(Plan.class, id);
     }
 
-    // memberId를 받아서 해당 member의 모든 plan을 가져오기
-    public List<PlanRegular> findAllPlanRegular(Long memberId) {
-        return em.createQuery("select p from PlanRegular p where p.member.id = :memberId")
+    // memberId를 받아서 해당 member의 모든 plan을 가져오기 (to-do 등록 시 사용)
+    public List<Plan> findAllPlan(Long memberId) {
+        return em.createQuery("select p from Plan p where p.member.id = :memberId")
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
 
     public List<PlanTerm> findAllPlanTerm(Long memberId) {
-        return em.createQuery("select p from PlanTerm p where p.member.id = :memberId")
+        return em.createQuery("select p from Plan p where type(p) = PlanTerm and p.member.id = :memberId")
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
 
-    public PlanRegular findOne(Long id) {
-        return em.find(PlanRegular.class, id);
+    public List<PlanRegular> findAllPlanRegular(Long memberId) {
+        return em.createQuery("select p from Plan p where type(p) = PlanRegular and p.member.id = :memberId")
+                .setParameter("memberId", memberId)
+                .getResultList();
     }
+
 
 }

@@ -1,6 +1,6 @@
 package demo.plantodo.repository;
 
-import demo.plantodo.domain.PlanRegular;
+import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -23,18 +23,19 @@ public class TodoRepository {
         em.persist(todo);
     }
 
-    public List<Todo> getTodoByPlanId(Long planId) {
-        return em.createQuery("select d from Todo d where d.plan.id =:planId")
-                .setParameter("planId", planId)
-                .getResultList();
-    }
 
-    public List<Todo> getTodoByPlanIdAndDate(PlanRegular plan, LocalDate date) {
-        Long planId = plan.getId();
-        return em.createQuery("select o from Todo o where o.plan.id =:planId and o.plan.startDate <= :date and o.plan.endDate >= :date")
-                .setParameter("date", date)
-                .setParameter("planId", planId)
-                .getResultList();
+    public List<Todo> getTodoByPlanIdAndDate(Plan plan, LocalDate date) {
+        if (plan.getDtype() == "Regular") {
+            return em.createQuery("select o from Todo o join o.plan p where p.id =:planId and treat(p as PlanRegular).startDate <= :date")
+                    .setParameter("date", date)
+                    .setParameter("planId", plan.getId())
+                    .getResultList();
+        }
+        else {
+            return em.createQuery("select o from Todo o join o.plan p where p.id =:planId and treat(p as PlanTerm).startDate <= :date and treat(p as PlanTerm).endDate >= :date")
+                    .setParameter("date", date)
+                    .setParameter("planId", plan.getId())
+                    .getResultList();
+        }
     }
-
 }

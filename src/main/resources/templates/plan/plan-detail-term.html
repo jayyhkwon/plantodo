@@ -8,8 +8,7 @@
 <!--제목-->
 <div>
     <div>
-        <span th:if="${plan.getEndDate().equals(LastLocalDate)}">상시</span>
-        <span th:unless="${plan.getEndDate().equals(LastLocalDate)}">
+        <span>
             <span th:text="${plan.getStartDate()}"></span>~
             <span th:text="${plan.getEndDate()}"></span>
         </span>

@@ -1,8 +1,7 @@
 package demo.plantodo.domain;
 
 import demo.plantodo.converter.StringToLocalDateConverter;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -14,29 +13,12 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-public class PlanRegular {
-    @Id @GeneratedValue
-    @Column(name = "plan_id")
-    private Long id;
+@DiscriminatorValue("Regular")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class PlanRegular extends Plan {
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @Enumerated(EnumType.STRING)
-    private PlanStatus planStatus;
-
-    private LocalDate startDate;
-
-    private String title;
-
-    public PlanRegular() {
-    }
-
+    @Builder
     public PlanRegular(Member member, PlanStatus planStatus, LocalDate startDate, String title) {
-        this.member = member;
-        this.planStatus = planStatus;
-        this.startDate = startDate;
-        this.title = title;
+        super(member, planStatus, startDate, title);
     }
 }
