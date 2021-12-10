@@ -19,7 +19,7 @@
 </div>
 
 <!--날짜로 검색-->
-<form th:action="@{/plan/{planId}(planId=${plan.id})}" th:object="${dateSearchForm}" method="post">
+<form th:action="@{/plan/term/{planId}(planId=${plan.id})}" th:object="${dateSearchForm}" method="post">
     <input type="date" id="startDate" name="startDate">
     <input type="date" id="endDate" name="endDate">
     <input type="submit">

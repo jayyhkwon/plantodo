@@ -7,16 +7,16 @@ import demo.plantodo.form.PlanTermRegisterForm;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.Local;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -94,7 +94,7 @@ public class PlanController {
 
         int days = Period.between(startDate, endDate).getDays();
 
-        LinkedHashMap<LocalDate, List<Todo>> all = allTodosByDate(selectedPlan);
+        LinkedHashMap<LocalDate, List<Todo>> all = allTodosByDate(selectedPlan, null, null);
         System.out.println("all = " + all);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
@@ -105,49 +105,59 @@ public class PlanController {
     @GetMapping("term/{planId}")
     public String planTerm(@PathVariable Long planId, Model model) {
         Plan selectedPlan = planRepository.findOne(planId);
-        LinkedHashMap<LocalDate, List<Todo>> all = allTodosByDate(selectedPlan);
+        LinkedHashMap<LocalDate, List<Todo>> all = allTodosByDate(selectedPlan, null, null);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
         model.addAttribute("dateSearchForm", new DateSearchForm());
         return "plan/plan-detail-term";
     }
 
-//    @PostMapping("/regular/{planId}")
-//    public String filteredPlan(@PathVariable Long planId,
-//                               @ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
-//                               BindingResult bindingResult,
-//                               Model model) {
-//        PlanRegular selectedPlan = planRepository.findOne(planId);
-//        LocalDate searchStart = dateSearchForm.getStartDate();
-//        LocalDate searchEnd = dateSearchForm.getEndDate();
-//
-//        if (searchStart.isBefore(planStart)) {
-//            String errMsg = "시작 날짜는 " + planStart + " 이후여야 합니다.";
-//            bindingResult.addError(new FieldError("dateSearchForm", "startDate", errMsg));
-//        }
-//        if (searchEnd.isAfter(planEnd)) {
-//            String errMsg = "종료 날짜는 " + planEnd + " 이전이어야 합니다.";
-//            bindingResult.addError(new FieldError("dateSearchForm", "endDate", errMsg));
-//        }
-//        if (bindingResult.hasErrors()) {
-//            return "plan/plan-detail";
-//        }
-//        int days = Period.between(searchStart, searchEnd).getDays();
-//        LinkedHashMap all = allTodosByDate(selectedPlan, searchStart, days);
-//        model.addAttribute("plan", selectedPlan);
-//        model.addAttribute("allTodosByDate", all);
-//        model.addAttribute("dateSearchForm", dateSearchForm);
-//        return "plan/plan-detail";
-//    }
+    /*일자별 필터*/
+    @PostMapping(value = {"/regular/{planId}", "/term/{planId}"})
+    public String filteredPlan(@PathVariable Long planId,
+                               @ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
+                               BindingResult bindingResult,
+                               Model model) {
+        String viewURI = "plan/plan-detail-regular";
 
-    private LinkedHashMap<LocalDate, List<Todo>> allTodosByDate(Plan plan) {
-        LocalDate startDate = plan.getStartDate();
-        LocalDate endDate = LocalDate.now();
-        if (plan.getDtype().equals("Term")) {
-            PlanTerm planTerm = (PlanTerm) plan;
-            endDate = planTerm.getEndDate();
+        Plan selectedPlan = planRepository.findOne(planId);
+        LocalDate searchStart = dateSearchForm.getStartDate();
+        LocalDate searchEnd = dateSearchForm.getEndDate();
+        LocalDate planStart = selectedPlan.getStartDate();
+        LocalDate planEnd = LocalDate.now();
+        if (selectedPlan.getDtype().equals("Term")) {
+            viewURI = "plan/plan-detail-term";
+            PlanTerm planTerm = (PlanTerm) selectedPlan;
+            planEnd = planTerm.getEndDate();
         }
 
+        if (searchStart.isBefore(planStart)) {
+            String errMsg = "시작 날짜는 " + planStart + " 이후여야 합니다.";
+            bindingResult.addError(new FieldError("dateSearchForm", "startDate", errMsg));
+        }
+        if (searchEnd.isAfter(planEnd)) {
+            String errMsg = "종료 날짜는 " + planEnd + " 이전이어야 합니다.";
+            bindingResult.addError(new FieldError("dateSearchForm", "endDate", errMsg));
+        }
+        if (bindingResult.hasErrors()) {
+            return viewURI;
+        }
+        LinkedHashMap all = allTodosByDate(selectedPlan, searchStart, searchEnd);
+        model.addAttribute("plan", selectedPlan);
+        model.addAttribute("allTodosByDate", all);
+        model.addAttribute("dateSearchForm", dateSearchForm);
+        return viewURI;
+    }
+
+    private LinkedHashMap<LocalDate, List<Todo>> allTodosByDate(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
+        if (startDate==null && endDate==null) {
+            startDate = plan.getStartDate();
+            endDate = LocalDate.now();
+            if (plan.getDtype().equals("Term")) {
+                PlanTerm planTerm = (PlanTerm) plan;
+                endDate = planTerm.getEndDate();
+            }
+        }
         int days = Period.between(startDate, endDate).getDays();
 
         LinkedHashMap<LocalDate, List<Todo>> allTodosByDate = new LinkedHashMap();
