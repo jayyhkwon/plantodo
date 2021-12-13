@@ -2,6 +2,8 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="/fragments/header.html :: fragment-header"></div>
+    <script async src="/js/jquery-3.6.0.min.js"></script>
+    <script async src="/js/fragment.js"></script>
 </head>
 <body>
 <div th:replace="/fragments/nav.html :: fragment-nav"></div>
@@ -25,28 +27,20 @@
     <tr th:each="calrow : ${calendar}">
         <th th:each="eachDate : ${calrow}">
             <span th:if="${eachDate == null}"> </span>
-            <a th:href="@{/home/calendar/{searchDate}(searchDate=${eachDate})}" th:if="${eachDate != null}" id = "searchDate" th:text="${eachDate.getDayOfMonth()}" th:value="${eachDate.getDayOfMonth()}"></a>
+            <button th:if="${eachDate != null}" id = "searchDate" th:attr="onclick=|loadDateBlockData('${eachDate}')|" th:text="${eachDate.getDayOfMonth()}" th:value="${eachDate.getDayOfMonth()}"></button>
         </th>
     </tr>
 </table>
-<div id="dateBlock"></div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        getDateBlock();
-
-        $('#searchDate').change(getDateBlock);
-
-        function getDateBlock() {
-            let url = "/home/calendar/";
-            if ($('#searchDate').val() != '') {
-                url = url + $('#searchDate').val();
-            }
-            $('#dateBlock').load(url);
-        }
-    })
-</script>
+<div id="dateBlock">
+    <th:block th:if="${dateBlockData != null}">
+        <div th:each="entry : ${dateBlockData}">
+            <a th:href="@{/plan/{planId}(planId=${entry.key.id})}" th:text="${entry.key.title}"></a>
+            <div th:each="todo : ${entry.value}">
+                <input type="checkbox" th:value="${todo.id}" th:text="${todo.title}">
+            </div>
+        </div>
+    </th:block>
+</div>
 
 <a href="/plan/type">PLAN REGISTER</a>
 <a href="/plan/plans">MY PLANS</a>

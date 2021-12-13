@@ -54,13 +54,14 @@ public class HomeController {
      public String getDateBlock(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate, HttpServletRequest request, Model model) {
           Long memberId = memberRepository.getMemberId(request);
           List<Plan> plans = planRepository.findAllPlan(memberId);
-          LinkedHashMap<Plan, List<Todo>> dateBlock = new LinkedHashMap<>();
+          LinkedHashMap<Plan, List<Todo>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
                List<Todo> planTodo = todoService.getTodoByDate(plan, searchDate);
-               dateBlock.put(plan, planTodo);
+               dateBlockData.put(plan, planTodo);
           }
-          model.addAttribute("dateBlock", dateBlock);
-          return "fragments/date-block :: dateDisplay";
+          model.addAttribute("dateBlockData", dateBlockData);
+          beforeHome(model);
+          return "main-home :: #dateBlock";
      }
 
 
