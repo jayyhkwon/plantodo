@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/plan")
 public class PlanController {
-    private final PlanRepository planRepository;
+    private final PlanRepository planService;
     private final MemberRepository memberRepository;
     private final demo.plantodo.service.TodoService todoService;
 
@@ -48,7 +48,7 @@ public class PlanController {
         Member findMember = memberRepository.getMemberById(memberId).get(0);
         LocalDate startDate = LocalDate.now();
         PlanRegular planRegular = new PlanRegular(findMember, PlanStatus.NOW, startDate, planRegularRegisterForm.getTitle());
-        planRepository.saveRegular(planRegular);
+        planService.saveRegular(planRegular);
         return "redirect:/home";
     }
     /*등록 - term*/
@@ -64,52 +64,33 @@ public class PlanController {
         Long memberId = memberRepository.getMemberId(request);
         Member findMember = memberRepository.getMemberById(memberId).get(0);
         PlanTerm planTerm = new PlanTerm(findMember, PlanStatus.NOW, planTermRegisterForm.getStartDate(), planTermRegisterForm.getTitle(), planTermRegisterForm.getEndDate());
-        planRepository.saveTerm(planTerm);
+        planService.saveTerm(planTerm);
         return "redirect:/home";
     }
 
     /*목록 조회*/
-    @GetMapping("/regular")
-    public String PlansRegular(Model model, HttpServletRequest request) {
+    @GetMapping("/plans")
+    public String plans(Model model, HttpServletRequest request) {
         Long memberId = memberRepository.getMemberId(request);
-        List<PlanRegular> plans = planRepository.findAllPlanRegular(memberId);
+        List<Plan> plans = planService.findAllPlan(memberId);
         model.addAttribute("plans", plans);
-        return "plan/plan-list-regular";
-    }
-
-    @GetMapping("/term")
-    public String PlansTerm(Model model, HttpServletRequest request) {
-        Long memberId = memberRepository.getMemberId(request);
-        List<PlanTerm> plans = planRepository.findAllPlanTerm(memberId);
-        model.addAttribute("plans", plans);
-        return "plan/plan-list-term";
+        return "plan/plan-list";
     }
 
     /*상세조회*/
-    @GetMapping("regular/{planId}")
-    public String planRegular(@PathVariable Long planId, Model model) {
-        Plan selectedPlan = planRepository.findOne(planId);
+    @GetMapping("/{planId}")
+    public String plan(@PathVariable Long planId, Model model) {
+        Plan selectedPlan = planService.findOne(planId);
         LocalDate startDate = selectedPlan.getStartDate();
         LocalDate endDate = LocalDate.now();
 
         int days = Period.between(startDate, endDate).getDays();
 
-        LinkedHashMap<LocalDate, List<Todo>> all = allTodosByDate(selectedPlan, null, null);
-        System.out.println("all = " + all);
+        LinkedHashMap<LocalDate, List<Todo>> all = allTodosInTerm(selectedPlan, null, null);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
         model.addAttribute("dateSearchForm", new DateSearchForm());
-        return "plan/plan-detail-regular";
-    }
-
-    @GetMapping("term/{planId}")
-    public String planTerm(@PathVariable Long planId, Model model) {
-        Plan selectedPlan = planRepository.findOne(planId);
-        LinkedHashMap<LocalDate, List<Todo>> all = allTodosByDate(selectedPlan, null, null);
-        model.addAttribute("plan", selectedPlan);
-        model.addAttribute("allTodosByDate", all);
-        model.addAttribute("dateSearchForm", new DateSearchForm());
-        return "plan/plan-detail-term";
+        return "plan/plan-detail";
     }
 
     /*일자별 필터*/
@@ -120,7 +101,7 @@ public class PlanController {
                                Model model) {
         String viewURI = "plan/plan-detail-regular";
 
-        Plan selectedPlan = planRepository.findOne(planId);
+        Plan selectedPlan = planService.findOne(planId);
         LocalDate searchStart = dateSearchForm.getStartDate();
         LocalDate searchEnd = dateSearchForm.getEndDate();
         LocalDate planStart = selectedPlan.getStartDate();
@@ -142,14 +123,14 @@ public class PlanController {
         if (bindingResult.hasErrors()) {
             return viewURI;
         }
-        LinkedHashMap all = allTodosByDate(selectedPlan, searchStart, searchEnd);
+        LinkedHashMap all = allTodosInTerm(selectedPlan, searchStart, searchEnd);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
         model.addAttribute("dateSearchForm", dateSearchForm);
         return viewURI;
     }
 
-    private LinkedHashMap<LocalDate, List<Todo>> allTodosByDate(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
+    public LinkedHashMap<LocalDate, List<Todo>> allTodosInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
         if (startDate==null && endDate==null) {
             startDate = plan.getStartDate();
             endDate = LocalDate.now();

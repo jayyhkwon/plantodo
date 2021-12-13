@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TodoService {
     private final TodoRepository todoRepository;
-    StringToLocalDateConverter stringToLocalDateConverter = new StringToLocalDateConverter();
 
     public void todoSave(Todo todo) {
         todoRepository.save(todo);

@@ -8,18 +8,16 @@
 <!--제목-->
 <div>
     <div>
-        <span>
-            <span th:text="${plan.getStartDate()}"></span>~
-            <span th:text="${plan.getEndDate()}"></span>
-        </span>
-        <span th:text="${plan.getPlanStatus()}"></span>
+        <span th:if="${plan.dtype.equals('Term')}"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
+        <span th:if="${plan.dtype.equals('Regular')}">상시</span>
+        <span th:text="${plan.planStatus}"></span>
     </div>
-    <div th:text="${plan.getTitle()}"></div>
+    <div th:text="${plan.title}"></div>
     <input type="button" value="DELETE"> <input type="button" value="FINISH">
 </div>
 
 <!--날짜로 검색-->
-<form th:action="@{/plan/term/{planId}(planId=${plan.id})}" th:object="${dateSearchForm}" method="post">
+<form th:action="@{/plan/regular/{planId}(planId=${plan.id})}" th:object="${dateSearchForm}" method="post">
     <input type="date" id="startDate" name="startDate">
     <input type="date" id="endDate" name="endDate">
     <input type="submit">
@@ -30,7 +28,7 @@
     <table th:each="entry : ${allTodosByDate}">
         <th th:text="${entry.key}"></th>
         <tr th:each="todo : ${entry.value}">
-            <input type="checkbox" th:text="${todo.getTitle()}" th:value="${todo.getId()}">
+            <input type="checkbox" th:text="${todo.title}" th:value="${todo.id}">
         </tr>
     </table>
 </div>

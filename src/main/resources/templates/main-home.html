@@ -25,13 +25,31 @@
     <tr th:each="calrow : ${calendar}">
         <th th:each="eachDate : ${calrow}">
             <span th:if="${eachDate == null}"> </span>
-            <a href="" th:if="${eachDate != null}" th:text="${eachDate.getDayOfMonth()}" th:value="${eachDate.getDayOfMonth()}"></a>
+            <a th:href="@{/home/calendar/{searchDate}(searchDate=${eachDate})}" th:if="${eachDate != null}" id = "searchDate" th:text="${eachDate.getDayOfMonth()}" th:value="${eachDate.getDayOfMonth()}"></a>
         </th>
     </tr>
 </table>
+<div id="dateBlock"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        getDateBlock();
+
+        $('#searchDate').change(getDateBlock);
+
+        function getDateBlock() {
+            let url = "/home/calendar/";
+            if ($('#searchDate').val() != '') {
+                url = url + $('#searchDate').val();
+            }
+            $('#dateBlock').load(url);
+        }
+    })
+</script>
+
 <a href="/plan/type">PLAN REGISTER</a>
-<a href="/plan/regular">MY PLANS - REGULAR</a>
-<a href="/plan/term">MY PLANS - TERM</a>
+<a href="/plan/plans">MY PLANS</a>
 <a href="/todo/register">TODO REGISTER</a>
 <footer th:replace="/fragments/footer.html :: fragment-footer"></footer>
 </body>
