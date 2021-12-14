@@ -3,12 +3,14 @@ package demo.plantodo.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 import static javax.persistence.FetchType.LAZY;
 
+@Slf4j
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
@@ -41,11 +43,22 @@ public class Plan {
     }
 
     /*비즈니스 로직*/
-    public void changeStatus() {
-        if (this.planStatus.equals(PlanStatus.NOW)) {
-            this.planStatus = PlanStatus.COMPLETED;
+    public void changeToPast() {
+        if (this.planStatus.equals(PlanStatus.NOW) || this.planStatus.equals(PlanStatus.COMPLETED)) {
+            this.planStatus = PlanStatus.PAST;
         } else {
-            this.planStatus = PlanStatus.NOW;
+            throw new IllegalStateException();
         }
     }
+
+    public void switchCompleteToNow() {
+        if (this.planStatus.equals(PlanStatus.COMPLETED)) {
+            this.planStatus = PlanStatus.NOW;
+        } else if (this.planStatus.equals(PlanStatus.NOW)) {
+            this.planStatus = PlanStatus.COMPLETED;
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
 }

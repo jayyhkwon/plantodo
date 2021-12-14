@@ -1,5 +1,5 @@
 package demo.plantodo.domain;
 
 public enum PlanStatus {
-    NOW, COMPLETED
+    NOW, COMPLETED, PAST
 }

@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @Repository
@@ -46,19 +44,19 @@ public class PlanRepository {
         List<Plan> planList = em.createQuery("select p from Plan p where p.member.id = :memberId")
                 .setParameter("memberId", memberId)
                 .getResultList();
-        int finishedCnt = makeOutdatedPlansCompleted(planList);
+        int finishedCnt = makeOutdatedPlansPast(planList);
         if (finishedCnt == 0) {
             return planList;
         }
         return findAllPlan(memberId);
     }
 
-    public int makeOutdatedPlansCompleted(List<Plan> planList) {
+    public int makeOutdatedPlansPast(List<Plan> planList) {
         int finishedCnt = 0;
         for (Plan plan : planList) {
             if (checkPlanTermCompleted(plan) && plan.getPlanStatus() == PlanStatus.NOW) {
                 Plan needsFinish = findOne(plan.getId());
-                needsFinish.changeStatus();
+                needsFinish.changeToPast();
                 finishedCnt += 1;
             }
         }
@@ -91,6 +89,6 @@ public class PlanRepository {
 
     public void updateStatus(Long planId) {
         Plan plan = findOne(planId);
-        plan.changeStatus();
+        plan.switchCompleteToNow();
     }
 }
