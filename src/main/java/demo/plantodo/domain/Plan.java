@@ -39,4 +39,13 @@ public class Plan {
         this.startDate = startDate;
         this.title = title;
     }
+
+    /*비즈니스 로직*/
+    public void changeStatus() {
+        if (this.planStatus.equals(PlanStatus.NOW)) {
+            this.planStatus = PlanStatus.COMPLETED;
+        } else {
+            this.planStatus = PlanStatus.NOW;
+        }
+    }
 }

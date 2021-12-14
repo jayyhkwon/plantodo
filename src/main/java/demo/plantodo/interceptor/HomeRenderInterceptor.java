@@ -16,7 +16,6 @@ public class HomeRenderInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String requestURI = request.getRequestURI();
-        log.info("[HomeRenderInterceptor preHandle] [requestURI] " + requestURI);
         beforeHome(request);
         return true;
     }
@@ -24,7 +23,6 @@ public class HomeRenderInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         String requestURI = request.getRequestURI();
-        log.info("[HomeRenderInterceptor postHandle] [requestURI] " + requestURI);
         beforeHome(request);
     }
 

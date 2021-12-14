@@ -51,6 +51,7 @@ public class PlanController {
         planService.saveRegular(planRegular);
         return "redirect:/home";
     }
+
     /*등록 - term*/
     @GetMapping("/register/term")
     public String createTermForm(Model model) {
@@ -130,6 +131,22 @@ public class PlanController {
         return viewURI;
     }
 
+    /*플랜 삭제*/
+    @GetMapping("/delete/{planId}")
+    public String planDelete(@PathVariable Long planId) {
+        Plan plan = planService.findOne(planId);
+        planService.remove(plan);
+        return "redirect:/plan/plans";
+    }
+
+    /*플랜 변경(변경 감지 사용)*/
+    @GetMapping("/finish/{planId}")
+    public String planFinish(@PathVariable Long planId) {
+        planService.updateStatus(planId);
+        return "redirect:/plan/" + planId.toString();
+    }
+
+    /*기타 비즈니스 로직*/
     public LinkedHashMap<LocalDate, List<Todo>> allTodosInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
         if (startDate==null && endDate==null) {
             startDate = plan.getStartDate();

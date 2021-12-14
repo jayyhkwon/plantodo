@@ -9,13 +9,12 @@
 <div>
     <div>
         <span th:if="${plan.dtype.equals('Term')}"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
-        <span th:if="${plan.dtype.equals('Regular')}">상시</span>
+        <span th:if="${plan.dtype.equals('Regular')}">상시(시작일 : <span th:text="${plan.startDate}"></span> )</span>
         <span th:text="${plan.planStatus}"></span>
     </div>
     <div th:text="${plan.title}"></div>
-    <input type="button" value="DELETE"> <input type="button" value="FINISH">
 </div>
-
+<div><a th:href="@{/plan/delete/{planId}(planId=${plan.id})}" th:text="'DELETE'"/> <a th:href="@{/plan/finish/{planId}(planId=${plan.id})}" th:text="FINISH"/></div>
 <!--날짜로 검색-->
 <form th:action="@{/plan/regular/{planId}(planId=${plan.id})}" th:object="${dateSearchForm}" method="post">
     <input type="date" id="startDate" name="startDate">
