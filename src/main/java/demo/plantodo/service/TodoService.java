@@ -1,6 +1,5 @@
 package demo.plantodo.service;
 
-import demo.plantodo.converter.StringToLocalDateConverter;
 import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.Todo;
 import demo.plantodo.repository.TodoRepository;

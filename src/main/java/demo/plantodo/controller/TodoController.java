@@ -59,7 +59,7 @@ public class TodoController {
         if (bindingResult.hasErrors()) {
             return "todo/register-form";
         }
-        /*로그인 검증 (이후 서블릿 필터로 대체)*/
+
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("memberId");
         Member member = memberRepository.getMemberById(memberId).get(0);
@@ -68,9 +68,8 @@ public class TodoController {
 
         Todo todo = new Todo(member, plan, TodoStatus.UNCHECKED, todoRegisterForm.getTitle(), repOption, repValue);
         todoService.todoSave(todo);
-        /*메인 화면 세팅*/
-        homeController.beforeHome(model);
-        return "main-home";
+
+        return "redirect:/home";
     }
 
 }

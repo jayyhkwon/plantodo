@@ -43,7 +43,7 @@ public class MemberController {
         Member member = new Member(memberJoinForm.getEmail(), memberJoinForm.getPassword(), memberJoinForm.getNickname());
         memberRepository.save(member);
         model.addAttribute("memberLoginForm", new MemberLoginForm());
-        return "member/login-form";
+        return "redirect:/login";
     }
 
     @GetMapping("/login")
@@ -75,8 +75,9 @@ public class MemberController {
         }
         HttpSession session = request.getSession();
         session.setAttribute("memberId", rightMember.getId());
-        homeController.beforeHome(model);
-        return "main-home";
+        /*로그인 세션 유지 시간 (임의 변경 가능)*/
+        session.setMaxInactiveInterval(120);
+        return "redirect:/home";
     }
 
 

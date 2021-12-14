@@ -28,11 +28,6 @@ public class HomeController {
 
      @GetMapping
      public String createHome(Model model, HttpServletRequest request) {
-          Long memberId = memberRepository.getMemberId(request);
-          if (memberId == null) {
-               return "index";
-          }
-          beforeHome(model);
           return "main-home";
      }
 
@@ -60,20 +55,7 @@ public class HomeController {
                dateBlockData.put(plan, planTodo);
           }
           model.addAttribute("dateBlockData", dateBlockData);
-          beforeHome(model);
           return "main-home :: #dateBlock";
      }
 
-
-     public void beforeHome(Model model) {
-          LocalDate now = LocalDate.now();
-          int yearValue = now.getYear();
-          int monthValue = now.getMonthValue();
-          int length = now.lengthOfMonth();
-          CalendarSearchForm cSearchForm = new CalendarSearchForm(yearValue, monthValue);
-          LocalDate[][] calendar = cSearchForm.makeCalendar(yearValue, monthValue, length);
-
-          model.addAttribute("calendarSearchForm", cSearchForm);
-          model.addAttribute("calendar", calendar);
-     }
 }
