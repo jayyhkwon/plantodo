@@ -1,9 +1,6 @@
 package demo.plantodo.domain;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,7 +9,7 @@ import java.time.LocalDate;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity
-@Getter
+@Getter @Setter
 @DiscriminatorValue("Term")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlanTerm extends Plan{

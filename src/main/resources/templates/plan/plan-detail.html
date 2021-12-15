@@ -14,7 +14,11 @@
     </div>
     <div th:text="${plan.title}"></div>
 </div>
-<div><a th:href="@{/plan/delete/{planId}(planId=${plan.id})}" th:text="'DELETE'"/> <a th:href="@{/plan/finish/{planId}(planId=${plan.id})}" th:text="FINISH"/></div>
+<div>
+    <a th:href="@{/plan/delete/{planId}(planId=${plan.id})}" th:text="'DELETE'"/>
+    <a th:href="@{/plan/finish/{planId}(planId=${plan.id})}" th:text="'FINISH'"/>
+    <a th:href="@{/plan/update/type/{planId}(planId=${plan.id})}" th:text="'UPDATE'"/>
+</div>
 <!--날짜로 검색-->
 <form th:action="@{/plan/regular/{planId}(planId=${plan.id})}" th:object="${dateSearchForm}" method="post">
     <input type="date" id="startDate" name="startDate">

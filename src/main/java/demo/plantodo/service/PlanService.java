@@ -1,6 +1,8 @@
 package demo.plantodo.service;
 
 import demo.plantodo.domain.*;
+import demo.plantodo.form.PlanRegularUpdateForm;
+import demo.plantodo.form.PlanTermUpdateForm;
 import demo.plantodo.repository.PlanRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,7 @@ public class PlanService {
     private final TodoService todoService;
     private final PlanRepository planRepository;
 
-    /*PlanRepository 연계 메서드*/
+    /*등록*/
     public void saveRegular(PlanRegular planRegular) {
         planRepository.saveRegular(planRegular);
     }
@@ -27,6 +29,7 @@ public class PlanService {
         planRepository.saveTerm(planTerm);
     }
 
+    /*조회*/
     public Plan findOne(Long id) {
         return planRepository.findOne(id);
     }
@@ -43,14 +46,22 @@ public class PlanService {
         return planRepository.findAllPlanRegular(memberId);
     }
 
+    /*수정*/
     public void updateStatus(Long planId) {
         planRepository.updateStatus(planId);
     }
 
+    public void updateRegular(PlanRegularUpdateForm planRegularUpdateForm, Long planId) {
+        planRepository.updateRegular(planRegularUpdateForm, planId);
+    }
+
+    public void updateTerm(PlanTermUpdateForm planTermUpdateForm, Long planId) {
+        planRepository.updateTerm(planTermUpdateForm, planId);
+    }
+
+    /*삭제*/
     public void planDelete(Plan plan) {
         planRepository.remove(plan);
     }
-
-    /*business logic*/
 
 }

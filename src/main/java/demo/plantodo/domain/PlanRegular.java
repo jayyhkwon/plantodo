@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter
+@Getter @Setter
 @DiscriminatorValue("Regular")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlanRegular extends Plan {

@@ -1,9 +1,7 @@
 package demo.plantodo.controller;
 
 import demo.plantodo.domain.*;
-import demo.plantodo.form.DateSearchForm;
-import demo.plantodo.form.PlanRegularRegisterForm;
-import demo.plantodo.form.PlanTermRegisterForm;
+import demo.plantodo.form.*;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
 import lombok.RequiredArgsConstructor;
@@ -139,12 +137,66 @@ public class PlanController {
         return "redirect:/plan/plans";
     }
 
-    /*플랜 변경(변경 감지 사용)*/
+    /*플랜 변경 - 스테이터스 변경 (변경 감지 사용)*/
     @GetMapping("/finish/{planId}")
     public String planFinish(@PathVariable Long planId) {
         planService.updateStatus(planId);
         return "redirect:/plan/" + planId.toString();
     }
+
+    /*플랜 변경 - 내용 변경*/
+    // 타입 결정
+    @GetMapping("/update/type/{planId}")
+    public String planTypeDefine(@PathVariable Long planId, Model model) {
+        Plan plan = planService.findOne(planId);
+        if (plan instanceof PlanTerm) {
+            return "redirect:/plan/update/term/" + planId.toString();
+        } else {
+            return "redirect:/plan/update/regular/" + planId.toString();
+        }
+    }
+
+    // form 생성
+    @GetMapping("/update/regular/{planId}")
+    public String planRegularUpdateForm(@PathVariable Long planId, Model model) {
+        Plan plan = planService.findOne(planId);
+        PlanRegularUpdateForm planRegularUpdateForm = new PlanRegularUpdateForm();
+        planRegularUpdateForm.setTitle(plan.getTitle());
+        model.addAttribute("planId", planId);
+        model.addAttribute("planRegularUpdateForm", planRegularUpdateForm);
+        return "plan/update-regular";
+    }
+
+    @GetMapping("/update/term/{planId}")
+    public String planTermUpdateForm(@PathVariable Long planId, Model model) {
+        PlanTerm plan = (PlanTerm) planService.findOne(planId);
+        PlanTermUpdateForm planTermUpdateForm = new PlanTermUpdateForm();
+        planTermUpdateForm.setTitle(plan.getTitle());
+        planTermUpdateForm.setStartDate(plan.getStartDate());
+        planTermUpdateForm.setEndDate(plan.getEndDate());
+        model.addAttribute("planId", planId);
+        model.addAttribute("planTermUpdateForm", planTermUpdateForm);
+        return "plan/update-term";
+    }
+
+    // 내용 변경 (변경 감지)
+    @PostMapping("/update/regular/{planId}")
+    public String planRegularUpdate(@ModelAttribute PlanRegularUpdateForm planRegularUpdateForm,
+                                    @PathVariable Long planId,
+                                    Model model) {
+        planService.updateRegular(planRegularUpdateForm, planId);
+        return "redirect:/plan/" + planId.toString();
+    }
+
+
+    @PostMapping("/update/term/{planId}")
+    public String planTermUpdate(@ModelAttribute PlanTermUpdateForm planTermUpdateForm,
+                                 @PathVariable Long planId,
+                                 Model model) {
+        planService.updateTerm(planTermUpdateForm, planId);
+        return "redirect:/plan/" + planId.toString();
+    }
+
 
     /*기타 비즈니스 로직*/
     public LinkedHashMap<LocalDate, List<Todo>> allTodosInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {

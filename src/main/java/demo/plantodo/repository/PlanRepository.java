@@ -4,6 +4,8 @@ import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.PlanRegular;
 import demo.plantodo.domain.PlanStatus;
 import demo.plantodo.domain.PlanTerm;
+import demo.plantodo.form.PlanRegularUpdateForm;
+import demo.plantodo.form.PlanTermUpdateForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,7 @@ public class PlanRepository {
         em.remove(plan);
     }
 
-    /*plan 한 개 조회*/
+    /*조회*/
     public Plan findOne(Long id) {
         return em.find(Plan.class, id);
     }
@@ -51,18 +53,6 @@ public class PlanRepository {
         return findAllPlan(memberId);
     }
 
-    public int makeOutdatedPlansPast(List<Plan> planList) {
-        int finishedCnt = 0;
-        for (Plan plan : planList) {
-            if (checkPlanTermCompleted(plan) && plan.getPlanStatus() == PlanStatus.NOW) {
-                Plan needsFinish = findOne(plan.getId());
-                needsFinish.changeToPast();
-                finishedCnt += 1;
-            }
-        }
-        return finishedCnt;
-    }
-
     public List<PlanTerm> findAllPlanTerm(Long memberId) {
         return em.createQuery("select p from Plan p where type(p) = PlanTerm and p.member.id = :memberId")
                 .setParameter("memberId", memberId)
@@ -73,6 +63,18 @@ public class PlanRepository {
         return em.createQuery("select p from Plan p where type(p) = PlanRegular and p.member.id = :memberId")
                 .setParameter("memberId", memberId)
                 .getResultList();
+    }
+
+    public int makeOutdatedPlansPast(List<Plan> planList) {
+        int finishedCnt = 0;
+        for (Plan plan : planList) {
+            if (checkPlanTermCompleted(plan) && plan.getPlanStatus() == PlanStatus.NOW) {
+                Plan needsFinish = findOne(plan.getId());
+                needsFinish.changeToPast();
+                finishedCnt += 1;
+            }
+        }
+        return finishedCnt;
     }
 
     public boolean checkPlanTermCompleted(Plan plan) {
@@ -87,8 +89,22 @@ public class PlanRepository {
         return false;
     }
 
+    /*수정*/
     public void updateStatus(Long planId) {
         Plan plan = findOne(planId);
         plan.switchCompleteToNow();
     }
+
+    public void updateRegular(PlanRegularUpdateForm planRegularUpdateForm, Long planId) {
+        Plan planRegular = findOne(planId);
+        planRegular.setTitle(planRegularUpdateForm.getTitle());
+    }
+
+    public void updateTerm(PlanTermUpdateForm planTermUpdateForm, Long planId) {
+        PlanTerm planTerm = (PlanTerm) findOne(planId);
+        planTerm.setTitle(planTermUpdateForm.getTitle());
+        planTerm.setStartDate(planTermUpdateForm.getStartDate());
+        planTerm.setEndDate(planTermUpdateForm.getEndDate());
+    }
+
 }
