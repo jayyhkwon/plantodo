@@ -5,12 +5,14 @@ import demo.plantodo.form.*;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -33,13 +35,13 @@ public class PlanController {
         return "plan/plan-type";
     }
 
-    @GetMapping("/register/regular")
+    @GetMapping("/regular")
     public String createRegularForm(Model model) {
         model.addAttribute("planRegularRegisterForm", new PlanRegularRegisterForm());
         return "plan/register-regular";
     }
 
-    @PostMapping("/register/regular")
+    @PostMapping("/regular")
     public String planRegisterRegular(@ModelAttribute("planRegularRegisterForm") PlanRegularRegisterForm planRegularRegisterForm,
                                       HttpServletRequest request) {
         Long memberId = memberRepository.getMemberId(request);
@@ -51,13 +53,13 @@ public class PlanController {
     }
 
     /*등록 - term*/
-    @GetMapping("/register/term")
+    @GetMapping("/term")
     public String createTermForm(Model model) {
         model.addAttribute("planTermRegisterForm", new PlanTermRegisterForm());
         return "plan/register-term";
     }
 
-    @PostMapping("/register/term")
+    @PostMapping("/term")
     public String planRegisterTerm(@ModelAttribute("planTermRegisterForm") PlanTermRegisterForm planTermRegisterForm,
                              HttpServletRequest request) {
         Long memberId = memberRepository.getMemberId(request);
@@ -83,8 +85,6 @@ public class PlanController {
         LocalDate startDate = selectedPlan.getStartDate();
         LocalDate endDate = LocalDate.now();
 
-        int days = Period.between(startDate, endDate).getDays();
-
         LinkedHashMap<LocalDate, List<Todo>> all = allTodosInTerm(selectedPlan, null, null);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
@@ -92,13 +92,14 @@ public class PlanController {
         return "plan/plan-detail";
     }
 
+    /*수정 필요*/
     /*일자별 필터*/
-    @PostMapping(value = {"/regular/{planId}", "/term/{planId}"})
+    @PostMapping("/{planId}/filtering")
     public String filteredPlan(@PathVariable Long planId,
                                @ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
                                BindingResult bindingResult,
                                Model model) {
-        String viewURI = "plan/plan-detail-regular";
+        String viewURI = "plan/plan-detail";
 
         Plan selectedPlan = planService.findOne(planId);
         LocalDate searchStart = dateSearchForm.getStartDate();
@@ -106,7 +107,6 @@ public class PlanController {
         LocalDate planStart = selectedPlan.getStartDate();
         LocalDate planEnd = LocalDate.now();
         if (selectedPlan.getDtype().equals("Term")) {
-            viewURI = "plan/plan-detail-term";
             PlanTerm planTerm = (PlanTerm) selectedPlan;
             planEnd = planTerm.getEndDate();
         }
@@ -130,7 +130,7 @@ public class PlanController {
     }
 
     /*플랜 삭제*/
-    @GetMapping("/delete/{planId}")
+    @DeleteMapping("/{planId}")
     public String planDelete(@PathVariable Long planId) {
         Plan plan = planService.findOne(planId);
         planService.remove(plan);
@@ -138,26 +138,29 @@ public class PlanController {
     }
 
     /*플랜 변경 - 스테이터스 변경 (변경 감지 사용)*/
-    @GetMapping("/finish/{planId}")
-    public String planFinish(@PathVariable Long planId) {
+    @PutMapping("/{planId}/switching")
+    public RedirectView planFinish(@PathVariable Long planId, RedirectView redirectView) {
+        String uri = "/plan/" + planId.toString();
         planService.updateStatus(planId);
-        return "redirect:/plan/" + planId.toString();
+        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
+        redirectView.setUrl(uri);
+        return redirectView;
     }
 
     /*플랜 변경 - 내용 변경*/
     // 타입 결정
-    @GetMapping("/update/type/{planId}")
+    @GetMapping("/type/{planId}")
     public String planTypeDefine(@PathVariable Long planId, Model model) {
         Plan plan = planService.findOne(planId);
         if (plan instanceof PlanTerm) {
-            return "redirect:/plan/update/term/" + planId.toString();
+            return "redirect:/plan/term/" + planId.toString();
         } else {
-            return "redirect:/plan/update/regular/" + planId.toString();
+            return "redirect:/plan/regular/" + planId.toString();
         }
     }
 
     // form 생성
-    @GetMapping("/update/regular/{planId}")
+    @GetMapping("/regular/{planId}")
     public String planRegularUpdateForm(@PathVariable Long planId, Model model) {
         Plan plan = planService.findOne(planId);
         PlanRegularUpdateForm planRegularUpdateForm = new PlanRegularUpdateForm();
@@ -167,7 +170,7 @@ public class PlanController {
         return "plan/update-regular";
     }
 
-    @GetMapping("/update/term/{planId}")
+    @GetMapping("/term/{planId}")
     public String planTermUpdateForm(@PathVariable Long planId, Model model) {
         PlanTerm plan = (PlanTerm) planService.findOne(planId);
         PlanTermUpdateForm planTermUpdateForm = new PlanTermUpdateForm();
@@ -180,19 +183,17 @@ public class PlanController {
     }
 
     // 내용 변경 (변경 감지)
-    @PostMapping("/update/regular/{planId}")
+    @PostMapping("/regular/{planId}")
     public String planRegularUpdate(@ModelAttribute PlanRegularUpdateForm planRegularUpdateForm,
-                                    @PathVariable Long planId,
-                                    Model model) {
+                                    @PathVariable Long planId) {
         planService.updateRegular(planRegularUpdateForm, planId);
         return "redirect:/plan/" + planId.toString();
     }
 
 
-    @PostMapping("/update/term/{planId}")
+    @PostMapping("/term/{planId}")
     public String planTermUpdate(@ModelAttribute PlanTermUpdateForm planTermUpdateForm,
-                                 @PathVariable Long planId,
-                                 Model model) {
+                                 @PathVariable Long planId) {
         planService.updateTerm(planTermUpdateForm, planId);
         return "redirect:/plan/" + planId.toString();
     }

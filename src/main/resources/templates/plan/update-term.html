@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-<form th:object="${planTermUpdateForm}" th:action="@{/plan/update/term/{planId}(planId=${planId})}" method="post">
+<form th:object="${planTermUpdateForm}" th:action="@{/plan/term/{planId}(planId=${planId})}" method="post">
     <input type="date" id="startDate" name="startDate" th:value="*{startDate}">
     <input type="date" id="endDate" name="endDate" th:value="*{endDate}">
     <input type="text" id="title" name="title" th:value="*{title}">

@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-<form th:object="${planRegularUpdateForm}" th:action="@{/plan/update/regular/{planId}(planId=${planId})}" method="post">
+<form th:object="${planRegularUpdateForm}" th:action="@{/plan/regular/{planId}(planId=${planId})}" method="post">
     <input type="text" id="title" name="title" th:value="*{title}">
     <input type="submit" value="UPDATE"/>
 </form>

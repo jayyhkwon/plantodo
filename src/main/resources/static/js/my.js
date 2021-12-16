@@ -8,3 +8,4 @@ function loadDateBlockData(searchDate) {
         $("#dateBlock").replaceWith(fragment);
     });
 }
+
