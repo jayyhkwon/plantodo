@@ -1,7 +1,9 @@
 package demo.plantodo.repository;
 
 import demo.plantodo.domain.Plan;
+import demo.plantodo.domain.PlanRegular;
 import demo.plantodo.domain.Todo;
+import demo.plantodo.domain.TodoDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +25,12 @@ public class TodoRepository {
         em.persist(todo);
     }
 
+    public Todo findOne(Long todoId) {
+        return em.find(Todo.class, todoId);
+    }
 
     public List<Todo> getTodoByPlanIdAndDate(Plan plan, LocalDate date) {
-        if (plan.getDtype().equals("Regular")) {
+        if (plan instanceof PlanRegular) {
             return em.createQuery("select o from Todo o inner join o.plan p where p.id =:planId and treat(p as PlanRegular).startDate <= :date")
                     .setParameter("date", date)
                     .setParameter("planId", plan.getId())
@@ -37,5 +42,21 @@ public class TodoRepository {
                     .setParameter("planId", plan.getId())
                     .getResultList();
         }
+    }
+
+/*    public void switchStatus(Long todoId) {
+        To-do to-do = findOne(todoId);
+        to-do.swtichStatus();
+    }*/
+
+    public void saveTodoDate(TodoDate todoDate) {
+        em.persist(todoDate);
+    }
+
+    public List<TodoDate> getTodoDateByTodoAndDate(Todo todo, LocalDate searchDate) {
+        return em.createQuery("select td from TodoDate td where td.todo.id = :todoId and td.dateKey = :searchDate")
+                .setParameter("todoId", todo.getId())
+                .setParameter("searchDate", searchDate)
+                .getResultList();
     }
 }

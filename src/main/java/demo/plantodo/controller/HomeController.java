@@ -2,6 +2,7 @@ package demo.plantodo.controller;
 
 import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.Todo;
+import demo.plantodo.domain.TodoDate;
 import demo.plantodo.form.CalendarSearchForm;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
@@ -49,10 +50,10 @@ public class HomeController {
      public String getDateBlock(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate, HttpServletRequest request, Model model) {
           Long memberId = memberRepository.getMemberId(request);
           List<Plan> plans = planRepository.findAllPlan(memberId);
-          LinkedHashMap<Plan, List<Todo>> dateBlockData = new LinkedHashMap<>();
+          LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
-               List<Todo> planTodo = todoService.getTodoByDate(plan, searchDate);
-               dateBlockData.put(plan, planTodo);
+               List<TodoDate> planTodoDate = todoService.getTodoDateByDateAndPlan(plan, searchDate);
+               dateBlockData.put(plan, planTodoDate);
           }
           model.addAttribute("dateBlockData", dateBlockData);
           return "main-home :: #dateBlock";

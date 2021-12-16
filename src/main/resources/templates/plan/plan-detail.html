@@ -17,15 +17,17 @@
     <div th:text="${plan.title}"></div>
 </div>
 <div>
-    <form th:action="@{/plan/{planId}(planId=${plan.id})/switching}" method="post">
-        <input type="hidden" name="_method" value="PUT"/>
-        <input type="submit" th:value="SWITCH"/>
-    </form>
     <form th:action="@{/plan/{planId}(planId=${plan.id})}" method="post">
         <input type="hidden" name="_method" value="DELETE"/>
         <input type="submit" th:value="DELETE"/>
     </form>
-    <a th:href="@{/plan/type/{planId}(planId=${plan.id})}" th:text="'UPDATE'"/>
+    <div th:if="${!plan.planStatus.toString().equals('PAST')}">
+        <form th:action="@{/plan/{planId}(planId=${plan.id})/switching}" method="post">
+            <input type="hidden" name="_method" value="PUT"/>
+            <input type="submit" th:value="SWITCH"/>
+        </form>
+        <a th:href="@{/plan/type/{planId}(planId=${plan.id})}" th:text="'UPDATE'"/>
+    </div>
 </div>
 <!--날짜로 검색-->
 <form th:action="@{/plan/{planId}(planId=${plan.id})/filtering}" th:object="${dateSearchForm}" method="post">
@@ -38,8 +40,8 @@
 <div>
     <table th:each="entry : ${allTodosByDate}">
         <th th:text="${entry.key}"></th>
-        <tr th:each="todo : ${entry.value}">
-            <input type="checkbox" th:text="${todo.title}" th:value="${todo.id}">
+        <tr th:each="todoDate : ${entry.value}">
+            <input type="checkbox" th:text="${todoDate.todo.title}" th:value="${todoDate.id}" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${todoDate.todo.plan.planStatus.toString().equals('PAST')}">
         </tr>
     </table>
 </div>

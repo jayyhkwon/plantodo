@@ -9,3 +9,4 @@ function loadDateBlockData(searchDate) {
     });
 }
 
+/*to-do 상태 바꾸기*/

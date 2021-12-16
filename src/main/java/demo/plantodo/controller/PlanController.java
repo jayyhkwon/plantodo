@@ -85,7 +85,7 @@ public class PlanController {
         LocalDate startDate = selectedPlan.getStartDate();
         LocalDate endDate = LocalDate.now();
 
-        LinkedHashMap<LocalDate, List<Todo>> all = allTodosInTerm(selectedPlan, null, null);
+        LinkedHashMap<LocalDate, List<TodoDate>> all = allTodosInTerm(selectedPlan, null, null);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
         model.addAttribute("dateSearchForm", new DateSearchForm());
@@ -200,7 +200,7 @@ public class PlanController {
 
 
     /*기타 비즈니스 로직*/
-    public LinkedHashMap<LocalDate, List<Todo>> allTodosInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
+    public LinkedHashMap<LocalDate, List<TodoDate>> allTodosInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
         if (startDate==null && endDate==null) {
             startDate = plan.getStartDate();
             endDate = LocalDate.now();
@@ -211,14 +211,14 @@ public class PlanController {
         }
         int days = Period.between(startDate, endDate).getDays();
 
-        LinkedHashMap<LocalDate, List<Todo>> allTodosByDate = new LinkedHashMap();
+        LinkedHashMap<LocalDate, List<TodoDate>> allTodosByDate = new LinkedHashMap();
 
         for (int i = 0; i < days + 1; i++) {
             LocalDate date = startDate.plusDays(i);
-            List<Todo> todoInDate = todoService.getTodoByDate(plan, date);
+            List<TodoDate> todoDateList = todoService.getTodoDateByDateAndPlan(plan, date);
 
-            if (!todoInDate.isEmpty()) {
-                allTodosByDate.put(date, todoInDate);
+            if (!todoDateList.isEmpty()) {
+                allTodosByDate.put(date, todoDateList);
             }
         }
         return allTodosByDate;

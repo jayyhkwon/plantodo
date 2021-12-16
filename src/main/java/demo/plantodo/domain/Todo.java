@@ -24,9 +24,6 @@ public class Todo {
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
-    @Enumerated(value = EnumType.STRING)
-    private TodoStatus todoStatus;
-
     private String title;
 
     private int repOption;
@@ -38,12 +35,12 @@ public class Todo {
     public Todo() {
     }
 
-    public Todo(Member member, Plan plan, TodoStatus todoStatus, String title, int repOption, List<String> repValue) {
+    public Todo(Member member, Plan plan, String title, int repOption, List<String> repValue) {
         this.member = member;
         this.plan = plan;
-        this.todoStatus = todoStatus;
         this.title = title;
         this.repOption = repOption;
         this.repValue = repValue;
     }
+
 }

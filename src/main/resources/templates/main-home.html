@@ -35,8 +35,8 @@
     <th:block th:if="${dateBlockData != null}">
         <div th:each="entry : ${dateBlockData}">
             <a th:href="@{/plan/{planId}(planId=${entry.key.id})}" th:text="${entry.key.title}"></a>
-            <div th:each="todo : ${entry.value}">
-                <input type="checkbox" th:value="${todo.id}" th:text="${todo.title}">
+            <div th:each="todoDate : ${entry.value}">
+                <input type="checkbox" th:value="${todoDate.id}" th:text="${todoDate.todo.title}">
             </div>
         </div>
     </th:block>

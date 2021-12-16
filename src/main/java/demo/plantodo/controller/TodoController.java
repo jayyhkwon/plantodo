@@ -10,16 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.LinkedHashMap;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -60,16 +56,25 @@ public class TodoController {
             return "todo/register-form";
         }
 
-        HttpSession session = request.getSession();
-        Long memberId = (Long) session.getAttribute("memberId");
+        Long memberId = memberRepository.getMemberId(request);
         Member member = memberRepository.getMemberById(memberId).get(0);
 
         Plan plan = planRepository.findOne(todoRegisterForm.getPlanId());
 
-        Todo todo = new Todo(member, plan, TodoStatus.UNCHECKED, todoRegisterForm.getTitle(), repOption, repValue);
+        Todo todo = new Todo(member, plan, todoRegisterForm.getTitle(), repOption, repValue);
         todoService.todoSave(todo);
 
+        /*TodoDate 만들기*/
+        /*startDate, endDate 정의*/
+        LocalDate startDate = plan.getStartDate();
+        LocalDate endDate = LocalDate.now();
+        if (plan instanceof PlanTerm) {
+            PlanTerm planTerm = (PlanTerm) plan;
+            endDate = planTerm.getEndDate();
+        }
+
+        /*todoDate 만들기*/
+        todoService.todoDateInitiate(startDate, endDate, todo);
         return "redirect:/home";
     }
-
 }
