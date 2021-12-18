@@ -198,6 +198,14 @@ public class PlanController {
         return "redirect:/plan/" + planId.toString();
     }
 
+    @PostMapping("/todoDate/switching")
+    public String switchStatus(@RequestParam Long planId,
+                               @RequestParam Long todoDateId) {
+        todoService.switchStatus(todoDateId);
+
+        String redirectURI = "redirect:/plan/" + planId;
+        return redirectURI;
+    }
 
     /*기타 비즈니스 로직*/
     public LinkedHashMap<LocalDate, List<TodoDate>> allTodosInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {

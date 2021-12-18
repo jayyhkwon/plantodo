@@ -10,3 +10,24 @@ function loadDateBlockData(searchDate) {
 }
 
 /*to-do 상태 바꾸기*/
+function planSwitchTodoDateStatus(planId, todoDateId) {
+    let uri = "/plan/todoDate/switching?planId=" + planId + "&todoDateId=" +todoDateId;
+    let tagId = "#" + todoDateId;
+    $.ajax({
+        url: uri,
+        type: "POST"
+    }).done(function (fragment) {
+        $('#body').replaceWith(fragment);
+    });
+}
+
+function homeSwtichTodoDateStatus(selectedDate, todoDateId) {
+    let uri = "/home/calendar/todoDate/switching?selectedDate=" + selectedDate + "&todoDateId=" + todoDateId;
+    $.ajax({
+        url: uri,
+        type: "POST"
+    }).done(function(fragment) {
+        $('#dateBlock').replaceWith(fragment);
+    })
+
+}

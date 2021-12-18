@@ -53,10 +53,19 @@ public class TodoRepository {
         em.persist(todoDate);
     }
 
+    public TodoDate findOneTodoDate(Long todoDateId) {
+        return em.find(TodoDate.class, todoDateId);
+    }
+
     public List<TodoDate> getTodoDateByTodoAndDate(Todo todo, LocalDate searchDate) {
         return em.createQuery("select td from TodoDate td where td.todo.id = :todoId and td.dateKey = :searchDate")
                 .setParameter("todoId", todo.getId())
                 .setParameter("searchDate", searchDate)
                 .getResultList();
+    }
+
+    public void switchStatus(Long todoDateId) {
+        TodoDate oneTodoDate = findOneTodoDate(todoDateId);
+        oneTodoDate.swtichStatus();
     }
 }

@@ -46,17 +46,25 @@ public class HomeController {
           return "main-home";
      }
 
-     @GetMapping("/calendar/{searchDate}")
-     public String getDateBlock(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate, HttpServletRequest request, Model model) {
+     @GetMapping("/calendar/{eachDate}")
+     public String getDateBlock(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate eachDate, HttpServletRequest request, Model model) {
           Long memberId = memberRepository.getMemberId(request);
           List<Plan> plans = planRepository.findAllPlan(memberId);
           LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
-               List<TodoDate> planTodoDate = todoService.getTodoDateByDateAndPlan(plan, searchDate);
+               List<TodoDate> planTodoDate = todoService.getTodoDateByDateAndPlan(plan, eachDate);
                dateBlockData.put(plan, planTodoDate);
           }
+          model.addAttribute("selectedDate", eachDate);
           model.addAttribute("dateBlockData", dateBlockData);
           return "main-home :: #dateBlock";
      }
 
+     @PostMapping("/calendar/todoDate/switching")
+     public String switchStatus(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
+                                @RequestParam Long todoDateId) {
+          todoService.switchStatus(todoDateId);
+          String redirectURI = "redirect:/home/calendar/" + selectedDate;
+          return redirectURI;
+     }
 }

@@ -42,7 +42,7 @@ public class TodoController {
     public String todoRegister(@ModelAttribute TodoRegisterForm todoRegisterForm,
                                BindingResult bindingResult,
                                HttpServletRequest request,
-                               Model model){
+                               Model model) {
 
         int repOption = todoRegisterForm.getRepOption();
         List<String> repValue = todoRegisterForm.getRepValue();

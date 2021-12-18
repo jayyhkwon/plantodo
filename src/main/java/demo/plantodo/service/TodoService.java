@@ -165,4 +165,8 @@ public class TodoService {
         }
         return todoDateList;
     }
+
+    public void switchStatus(Long todoDateId) {
+        todoRepository.switchStatus(todoDateId);
+    }
 }
