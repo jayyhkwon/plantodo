@@ -56,6 +56,7 @@ public class HomeController {
                dateBlockData.put(plan, planTodoDate);
           }
           model.addAttribute("selectedDate", eachDate);
+          model.addAttribute("today", LocalDate.now());
           model.addAttribute("dateBlockData", dateBlockData);
           return "main-home :: #dateBlock";
      }

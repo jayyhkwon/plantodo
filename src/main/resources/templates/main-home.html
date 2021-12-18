@@ -32,12 +32,12 @@
     </tr>
 </table>
 <div id="dateBlock">
-    <div th:if="${selectedDate != null}" th:text="${selectedDate}"></div>
+    <th:block th:if="${selectedDate != null}" th:text="${selectedDate}"></th:block>
     <th:block th:if="${dateBlockData != null}">
         <div th:each="entry : ${dateBlockData}">
             <a th:href="@{/plan/{planId}(planId=${entry.key.id})C}" th:text="${entry.key.title}"></a>
             <div th:each="todoDate : ${entry.value}">
-                <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:text="${todoDate.todo.title}" th:value="${todoDate.id}" th:attr="onclick=|homeSwtichTodoDateStatus('${selectedDate}', '${todoDate.id}')|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${todoDate.todo.plan.planStatus.toString().equals('PAST')}">
+                <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:text="${todoDate.todo.title}" th:value="${todoDate.id}" th:attr="onclick=|homeSwtichTodoDateStatus('${selectedDate}', '${todoDate.id}')|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
             </div>
         </div>
     </th:block>

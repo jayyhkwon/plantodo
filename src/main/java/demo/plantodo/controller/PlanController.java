@@ -87,12 +87,12 @@ public class PlanController {
 
         LinkedHashMap<LocalDate, List<TodoDate>> all = allTodosInTerm(selectedPlan, null, null);
         model.addAttribute("plan", selectedPlan);
+        model.addAttribute("today", LocalDate.now());
         model.addAttribute("allTodosByDate", all);
         model.addAttribute("dateSearchForm", new DateSearchForm());
         return "plan/plan-detail";
     }
 
-    /*수정 필요*/
     /*일자별 필터*/
     @PostMapping("/{planId}/filtering")
     public String filteredPlan(@PathVariable Long planId,

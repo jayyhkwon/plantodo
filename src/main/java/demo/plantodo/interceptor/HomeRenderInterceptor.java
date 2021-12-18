@@ -33,6 +33,7 @@ public class HomeRenderInterceptor implements HandlerInterceptor {
         int length = now.lengthOfMonth();
         CalendarSearchForm cSearchForm = new CalendarSearchForm(yearValue, monthValue);
         LocalDate[][] calendar = cSearchForm.makeCalendar(yearValue, monthValue, length);
+        request.setAttribute("today", now);
         request.setAttribute("calendarSearchForm", cSearchForm);
         request.setAttribute("calendar", calendar);
     }

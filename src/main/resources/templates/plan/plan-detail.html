@@ -41,7 +41,7 @@
     <table th:each="entry : ${allTodosByDate}">
         <th th:text="${entry.key}"></th>
         <tr th:each="todoDate : ${entry.value}">
-            <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:text="${todoDate.todo.title}" th:value="${todoDate.id}" th:attr="onclick=|planSwitchTodoDateStatus(${plan.id}, ${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${todoDate.todo.plan.planStatus.toString().equals('PAST')}">
+            <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:text="${todoDate.todo.title}" th:value="${todoDate.id}" th:attr="onclick=|planSwitchTodoDateStatus(${plan.id}, ${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
         </tr>
     </table>
 </div>
