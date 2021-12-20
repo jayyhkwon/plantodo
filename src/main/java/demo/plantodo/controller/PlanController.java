@@ -85,12 +85,67 @@ public class PlanController {
         LocalDate startDate = selectedPlan.getStartDate();
         LocalDate endDate = LocalDate.now();
 
-        LinkedHashMap<LocalDate, List<TodoDate>> all = allTodosInTerm(selectedPlan, null, null);
+        LinkedHashMap<LocalDate, List<TodoDate>> allTodoDatesByDate = allTodosInTerm(selectedPlan, null, null);
+        List<Todo> todosByPlanId = todoService.getTodoByPlanId(planId);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("today", LocalDate.now());
-        model.addAttribute("allTodosByDate", all);
+        model.addAttribute("allToDatesByDate", allTodoDatesByDate);
+        model.addAttribute("todosByPlanId", todosByPlanId);
         model.addAttribute("dateSearchForm", new DateSearchForm());
         return "plan/plan-detail";
+    }
+
+    /*to-do 삭제/수정 버튼 fragment 가져오기*/
+    @GetMapping("/todo/block")
+    public String getTodoButtonBlock(@RequestParam Long planId,
+                                     @RequestParam Long todoId,
+                                     Model model) {
+        TodoButtonDTO todoButtonDTO = new TodoButtonDTO(planId, todoId);
+        model.addAttribute("todoButtonDTO", todoButtonDTO);
+        return "fragments/todo-button-block :: todoButtonBlock";
+    }
+
+    /*to-do 삭제*/
+    @DeleteMapping("/todo")
+    public RedirectView deleteTodo(@ModelAttribute TodoButtonDTO todoButtonDTO, RedirectView redirectView) {
+        Long todoId = todoButtonDTO.getTodoId();
+        Long planId = todoButtonDTO.getPlanId();
+
+        todoService.deleteTodo(todoId);
+        String redirectURI = "/plan/" + planId;
+        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
+        redirectView.setUrl(redirectURI);
+        return redirectView;
+    }
+
+    /*to-do 수정*/
+    // 수정 폼 만들기
+    @GetMapping("/todo")
+    public String createUpdateTodoForm(@RequestParam Long planId,
+                                       @RequestParam Long todoId,
+                                       Model model) {
+
+        Todo selectedTodo = todoService.findOneTodo(todoId);
+        TodoUpdateForm todoUpdateForm = new TodoUpdateForm(planId, todoId, selectedTodo.getTitle(), selectedTodo.getRepOption(), selectedTodo.getRepValue());
+        model.addAttribute("todoUpdateForm", todoUpdateForm);
+        return "fragments/todo-update-form-block :: todoUpdateBlock";
+    }
+
+    // 수정
+    @PutMapping("/todo")
+    public RedirectView updateTodo(@RequestParam Long planId,
+                                   @RequestParam Long todoId,
+                                   @RequestParam String title,
+                                   @RequestParam int repOption,
+                                   @RequestParam List<String> repValue,
+                                   RedirectView redirectView) {
+        TodoUpdateForm todoUpdateForm = new TodoUpdateForm(planId, todoId, title, repOption, repValue);
+        Plan plan = planService.findOne(planId);
+        todoService.updateTodo(todoUpdateForm, todoId, plan);
+        String redirectURI = "/plan/" + planId;
+        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
+        redirectView.setUrl(redirectURI);
+        return redirectView;
     }
 
     /*일자별 필터*/

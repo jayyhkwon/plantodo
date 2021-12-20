@@ -35,10 +35,28 @@
     <input type="date" id="endDate" name="endDate">
     <input type="submit">
 </form>
-
+<!--to-do 목록 출력-->
+<div>
+    <div th:each="todo : ${todosByPlanId}">
+        <a th:attr="onclick=|getButtonBlock('${plan.id}','${todo.id}')|" th:text="${todo.title}"></a>
+        <!--매일반복-->
+            <span th:if="${todo.repOption==0}" th:text="'매일반복'"></span>
+        <!--요일반복-->
+            <span th:if="${todo.repOption==1}" th:text="'요일반복'"></span>
+            <span th:if="${todo.repOption==1}" th:each="repVal : ${todo.repValue}">
+                    <span th:text="${repVal}"></span>
+            </span>
+            <span th:if="${todo.repOption==1}">요일마다</span>
+        <!--기간반복-->
+            <span th:if="${todo.repOption==2}" th:text="'기간반복'"></span>
+            <span th:if="${todo.repOption==2}" th:text="${todo.repValue.get(0)+'일마다'}"></span>
+        <!--삭제 / 수정 버튼-->
+        <div id="ButtonBlock"></div>
+    </div>
+</div>
 <!--일자별 to-do 출력-->
 <div>
-    <table th:each="entry : ${allTodosByDate}">
+    <table th:each="entry : ${allToDatesByDate}">
         <th th:text="${entry.key}"></th>
         <tr th:each="todoDate : ${entry.value}">
             <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:text="${todoDate.todo.title}" th:value="${todoDate.id}" th:attr="onclick=|planSwitchTodoDateStatus(${plan.id}, ${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">

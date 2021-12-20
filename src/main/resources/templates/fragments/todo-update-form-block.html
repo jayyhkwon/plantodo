@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<form th:fragment="todoUpdateBlock" th:object="${todoUpdateForm}" th:action="@{/plan/todo}" method="post">
+    <input type="hidden" name="_method" value="PUT"/>
+    <input type="hidden" id="planId" name="planId" th:value="*{planId}">
+    <input type="hidden" id="todoId" name="todoId" th:value="*{todoId}">
+    <input type="text" name="title" id="title" th:value="*{title}">
+    <select name="repOption">
+        <option value="0" th:selected="*{repOption == 0}">매일반복</option>
+        <option value="1" th:selected="*{repOption == 1}">요일마다</option>
+        <option value="2" th:selected="*{repOption == 2}">기간설정</option>
+    </select>
+    <div th:if="*{repOption==1}">
+        <input type="checkbox" name="repValue" th:checked="${todoUpdateForm.repValue.contains('월')}" value="월">월
+        <input type="checkbox" name="repValue" th:checked="${todoUpdateForm.repValue.contains('화')}" value="화">화
+        <input type="checkbox" name="repValue" th:checked="${todoUpdateForm.repValue.contains('수')}" value="수">수
+        <input type="checkbox" name="repValue" th:checked="${todoUpdateForm.repValue.contains('목')}" value="목">목
+        <input type="checkbox" name="repValue" th:checked="${todoUpdateForm.repValue.contains('금')}" value="금">금
+        <input type="checkbox" name="repValue" th:checked="${todoUpdateForm.repValue.contains('토')}" value="토">토
+        <input type="checkbox" name="repValue" th:checked="${todoUpdateForm.repValue.contains('일')}" value="일">일
+    </div>
+    <div th:if="*{repOption==2}">
+        <input type="text" name="repValue" th:value="${todoUpdateForm.repValue.get(0)}">일마다
+    </div>
+    <input type="submit" value="수정">
+</form>
+</html>

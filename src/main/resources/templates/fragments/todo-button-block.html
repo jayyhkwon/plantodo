@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div id="todoButtonBlock" th:fragment="todoButtonBlock">
+    <form th:object="${todoButtonDTO}" th:action="@{/plan/todo}" method="post">
+        <input type="hidden" name="_method" value="DELETE"/>
+        <input type="submit" th:value="DEL"/>
+    </form>
+    <a th:attr="onclick=|getTodoUpdateForm('${todoButtonDTO.planId}', '${todoButtonDTO.todoId}')|" th:text="EDT"></a>
+</div>
+</html>

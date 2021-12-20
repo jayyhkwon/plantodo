@@ -29,5 +29,24 @@ function homeSwtichTodoDateStatus(selectedDate, todoDateId) {
     }).done(function(fragment) {
         $('#dateBlock').replaceWith(fragment);
     })
+}
 
+function getButtonBlock(planId, todoId) {
+    let uri = "/plan/todo/block?planId=" + planId + "&todoId=" + todoId;
+    $.ajax({
+        url: uri,
+        type: "GET"
+    }).done(function(fragment) {
+        $('#ButtonBlock').replaceWith(fragment);
+    })
+}
+
+function getTodoUpdateForm(planId, todoId) {
+    let uri = "/plan/todo?planId=" + planId + "&todoId=" + todoId;
+    $.ajax({
+        url: uri,
+        type: "GET"
+    }).done(function(fragment) {
+        $('#todoButtonBlock').replaceWith(fragment);
+    })
 }

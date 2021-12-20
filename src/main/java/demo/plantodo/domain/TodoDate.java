@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -21,6 +23,9 @@ public class TodoDate {
     private TodoStatus todoStatus;
 
     private LocalDate dateKey;
+
+//    @ElementCollection(fetch = FetchType.LAZY)
+//    private List<String> comments = new ArrayList<String>();
 
     public TodoDate() {
     }

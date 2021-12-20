@@ -4,6 +4,7 @@ import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.PlanRegular;
 import demo.plantodo.domain.Todo;
 import demo.plantodo.domain.TodoDate;
+import demo.plantodo.form.TodoUpdateForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,10 +45,6 @@ public class TodoRepository {
         }
     }
 
-/*    public void switchStatus(Long todoId) {
-        To-do to-do = findOne(todoId);
-        to-do.swtichStatus();
-    }*/
 
     public void saveTodoDate(TodoDate todoDate) {
         em.persist(todoDate);
@@ -67,5 +64,46 @@ public class TodoRepository {
     public void switchStatus(Long todoDateId) {
         TodoDate oneTodoDate = findOneTodoDate(todoDateId);
         oneTodoDate.swtichStatus();
+    }
+
+    public List<Todo> getTodoByPlanId(Long planId) {
+        return em.createQuery("select t from Todo t where t.plan.id = :planId")
+                .setParameter("planId", planId)
+                .getResultList();
+    }
+
+    public List<TodoDate> getTodoDateByTodoId(Long todoId) {
+        return em.createQuery("select td from TodoDate td where td.todo.id = :todoId")
+                .setParameter("todoId", todoId)
+                .getResultList();
+    }
+
+    public List<TodoDate> getTodoDateByTodoIdAfterToday(Long todoId, LocalDate today) {
+        return em.createQuery("select td from TodoDate td where td.todo.id = :todoId and td.dateKey >= :today")
+                .setParameter("todoId", todoId)
+                .setParameter("today", today)
+                .getResultList();
+    }
+
+    public void deleteTodo(Long todoId) {
+        Todo todo = findOne(todoId);
+        em.remove(todo);
+    }
+
+    public void deleteTodoDate(Long todoDateId) {
+        TodoDate todoDate = findOneTodoDate(todoDateId);
+        em.remove(todoDate);
+    }
+
+    public void updateTodo(TodoUpdateForm todoUpdateForm, Long todoId) {
+        Todo todo = findOne(todoId);
+        todo.setTitle(todoUpdateForm.getTitle());
+        todo.setRepOption(todoUpdateForm.getRepOption());
+        todo.setRepValue(todoUpdateForm.getRepValue());
+    }
+
+    public void updateTodoDate(Todo todo, Long todoDateId) {
+        TodoDate todoDate = findOneTodoDate(todoDateId);
+        todoDate.setTodo(todo);
     }
 }

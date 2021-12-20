@@ -1,6 +1,7 @@
 package demo.plantodo.service;
 
 import demo.plantodo.domain.*;
+import demo.plantodo.form.TodoUpdateForm;
 import demo.plantodo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,18 @@ public class TodoService {
 
     public void todoSave(Todo todo) {
         todoRepository.save(todo);
+    }
+
+    public Todo findOneTodo(Long todoId) {
+        return todoRepository.findOne(todoId);
+    }
+
+    public TodoDate findOneTodoDate(Long todoDateId) {
+        return todoRepository.findOneTodoDate(todoDateId);
+    }
+
+    public List<Todo> getTodoByPlanId(Long planId) {
+        return todoRepository.getTodoByPlanId(planId);
     }
 
     public List<Todo> getTodoByDate(Plan plan, LocalDate date) {
@@ -109,10 +122,6 @@ public class TodoService {
         return result;
     }
 
-//    public void swtichStatus (Long todoId){
-//        todoRepository.switchStatus(todoId);
-//    }
-
     public void todoDateInitiate(LocalDate startDate, LocalDate endDate, Todo todo) {
         int days = Period.between(startDate, endDate).getDays();
         for (int i = 0; i < days+1; i++) {
@@ -168,5 +177,60 @@ public class TodoService {
 
     public void switchStatus(Long todoDateId) {
         todoRepository.switchStatus(todoDateId);
+    }
+
+    public void deleteTodo(Long todoId) {
+        /*todoDate 모두 불러오기*/
+        LocalDate today = LocalDate.now();
+        List<TodoDate> todoDateByTodoId = todoRepository.getTodoDateByTodoId(todoId);
+        /*오늘 날짜 이후의 todoDate에 delete함수를 호출해서 삭제하기*/
+        int deleteCnt = 0;
+        for (TodoDate todoDate : todoDateByTodoId) {
+            if (todoDate.getDateKey().equals(today) || todoDate.getDateKey().isAfter(today)) {
+                todoRepository.deleteTodoDate(todoDate.getId());
+                deleteCnt += 1;
+            }
+        }
+        if (deleteCnt == todoDateByTodoId.size()) {
+            todoRepository.deleteTodo(todoId);
+        }
+    }
+
+    public void updateTodo(TodoUpdateForm todoUpdateForm, Long todoId, Plan plan) {
+        /*to-do 찾아오기*/
+        Todo todo = todoRepository.findOne(todoId);
+        LocalDate today = LocalDate.now();
+        /*todoUpdateForm와 to-do의 repOption과 repValue에 변화가 있었는지 확인*/
+        if (todo.getRepOption() != todoUpdateForm.getRepOption() || !todo.getRepValue().equals(todoUpdateForm.getRepValue())) {
+            /*오늘 이후의 todoDate 삭제*/
+            List<TodoDate> todoDateAfterToday = todoRepository.getTodoDateByTodoIdAfterToday(todoId, today);
+            for (TodoDate todoDate : todoDateAfterToday) {
+                todoRepository.deleteTodoDate(todoDate.getId());
+            }
+            /*to-do 저장*/
+            todoRepository.updateTodo(todoUpdateForm, todoId);
+            /*todoDate 다시 만들기*/
+            LocalDate startDate = LocalDate.now();
+            LocalDate endDate = LocalDate.now();
+            if (plan.getDtype().equals("Term")) {
+                PlanTerm planTerm = (PlanTerm) plan;
+                endDate = planTerm.getEndDate();
+            }
+            System.out.println("startDate = " + startDate);
+            System.out.println("endDate = " + endDate);
+
+            Todo newTodo = todoRepository.findOne(todoId);
+            todoDateInitiate(startDate, endDate, newTodo);
+        } else {
+            /*repOption도 repValue도 바뀌지 않은 경우(타이틀만 변경)*/
+            /*to-do 업데이트*/
+            todoRepository.updateTodo(todoUpdateForm, todoId);
+            Todo newTodo = todoRepository.findOne(todoId);
+            /*todoDate 업데이트 (타이틀 변경)*/
+            List<TodoDate> todoDates = todoRepository.getTodoDateByTodoId(todoId);
+            for (TodoDate todoDate : todoDates) {
+                todoRepository.updateTodoDate(newTodo, todoDate.getId());
+            }
+        }
     }
 }

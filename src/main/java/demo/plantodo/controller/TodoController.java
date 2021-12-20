@@ -77,4 +77,5 @@ public class TodoController {
         todoService.todoDateInitiate(startDate, endDate, todo);
         return "redirect:/home";
     }
+
 }
