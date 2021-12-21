@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginCheckInterceptor())
@@ -16,8 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/", "/member/join", "/member/login");
 
         registry.addInterceptor(new HomeRenderInterceptor())
-                .order(2)
+                .order(3)
                 .addPathPatterns("/home", "/home/*", "/member/login", "/todo/register", "/plan/register/*");
-
     }
 }

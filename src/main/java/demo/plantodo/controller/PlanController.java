@@ -17,6 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -107,9 +108,9 @@ public class PlanController {
 
     /*to-do 삭제*/
     @DeleteMapping("/todo")
-    public RedirectView deleteTodo(@ModelAttribute TodoButtonDTO todoButtonDTO, RedirectView redirectView) {
-        Long todoId = todoButtonDTO.getTodoId();
-        Long planId = todoButtonDTO.getPlanId();
+    public RedirectView deleteTodo(@RequestParam Long planId,
+                                   @RequestParam Long todoId,
+                                   RedirectView redirectView) {
 
         todoService.deleteTodo(todoId);
         String redirectURI = "/plan/" + planId;
@@ -142,6 +143,17 @@ public class PlanController {
         TodoUpdateForm todoUpdateForm = new TodoUpdateForm(planId, todoId, title, repOption, repValue);
         Plan plan = planService.findOne(planId);
         todoService.updateTodo(todoUpdateForm, todoId, plan);
+        String redirectURI = "/plan/" + planId;
+        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
+        redirectView.setUrl(redirectURI);
+        return redirectView;
+    }
+
+    /*todoDate 삭제*/
+    @DeleteMapping("/todoDate")
+    public RedirectView deleteTodoDate(@RequestParam Long planId, @RequestParam Long todoDateId, RedirectView redirectView) {
+        todoService.deleteTodoDate(todoDateId);
+
         String redirectURI = "/plan/" + planId;
         redirectView.setStatusCode(HttpStatus.SEE_OTHER);
         redirectView.setUrl(redirectURI);
@@ -275,10 +287,17 @@ public class PlanController {
         int days = Period.between(startDate, endDate).getDays();
 
         LinkedHashMap<LocalDate, List<TodoDate>> allTodosByDate = new LinkedHashMap();
+        /*startDate에는 getTodoDateAndPlan을 적용하지 않고 그냥 todoDate를 조회만 하기*/
+        /*startDate 다음 날부터는 getTodoDateAndPlan을 적용하기*/
 
         for (int i = 0; i < days + 1; i++) {
             LocalDate date = startDate.plusDays(i);
-            List<TodoDate> todoDateList = todoService.getTodoDateByDateAndPlan(plan, date);
+            List<TodoDate> todoDateList = new ArrayList<>();
+            if (date.isEqual(LocalDate.now())) {
+                todoDateList = todoService.getTodoDateByDateAndPlan(plan, date, false);
+            } else {
+                todoDateList = todoService.getTodoDateByDateAndPlan(plan, date, true);
+            }
 
             if (!todoDateList.isEmpty()) {
                 allTodosByDate.put(date, todoDateList);

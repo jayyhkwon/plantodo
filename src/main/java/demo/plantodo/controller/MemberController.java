@@ -76,7 +76,7 @@ public class MemberController {
         HttpSession session = request.getSession();
         session.setAttribute("memberId", rightMember.getId());
         /*로그인 세션 유지 시간 (임의 변경 가능)*/
-        session.setMaxInactiveInterval(120);
+        session.setMaxInactiveInterval(300);
         return "redirect:/home";
     }
 

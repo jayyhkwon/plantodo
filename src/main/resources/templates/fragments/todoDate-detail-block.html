@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xnlms="http://www.w3.org/1999/html">
+<div th:fragment="todoDateDetailBlock">
+    <div th:each="comment : ${todoDate.comments}">
+        <div th:text="${comment.value}" th:value="${comment.key}"></div>
+        <a th:attr="onclick=|deleteComment('${comment.key}', '${todoDate.id}')|">D</a>
+        <a th:attr="onclick=|updateComment('${comment.key}', '${todoDate.id}')|">E</a>
+    </div>
+    <form method="post">
+        <input type="text" id="comment" name="comment">
+        <input type="submit" value="등록">
+    </form>
+</div>
+</html>

@@ -2,6 +2,8 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <div id="todoButtonBlock" th:fragment="todoButtonBlock">
     <form th:object="${todoButtonDTO}" th:action="@{/plan/todo}" method="post">
+        <input type="hidden" name="planId" th:value="*{planId}"/>
+        <input type="hidden" name="todoId" th:value="*{todoId}"/>
         <input type="hidden" name="_method" value="DELETE"/>
         <input type="submit" th:value="DEL"/>
     </form>

@@ -50,3 +50,13 @@ function getTodoUpdateForm(planId, todoId) {
         $('#todoButtonBlock').replaceWith(fragment);
     })
 }
+
+function getTodoDateDetailBlock(tododateId) {
+    let uri = "/plan/todoDate?todoDateId=" + tododateId;
+    $.ajax({
+        url: uri,
+        type: "GET"
+    }).done(function(fragment) {
+        $('#detailBlock').replaceWith(fragment);
+    })
+}

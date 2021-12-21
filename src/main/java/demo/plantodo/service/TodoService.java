@@ -134,7 +134,7 @@ public class TodoService {
         }
     }
 
-    public List<TodoDate> getTodoDateByDateAndPlan(Plan plan, LocalDate searchDate) {
+    public List<TodoDate> getTodoDateByDateAndPlan(Plan plan, LocalDate searchDate, boolean needUpdate) {
         /*searchDate 검증*/
         if (plan instanceof PlanTerm) {
             PlanTerm planTerm = (PlanTerm) plan;
@@ -165,10 +165,12 @@ public class TodoService {
                         todoDateList.add(todoDate);
                     }
                 } else {
-                    /*PlanRegular이면서 해당 날짜에 todoDate를 만들 수 있는데 없는 경우 새로 만들어서 저장*/
-                    TodoDate todoDate = new TodoDate(todo, TodoStatus.UNCHECKED, searchDate);
-                    todoRepository.saveTodoDate(todoDate);
-                    todoDateList.add(todoDate);
+                    if (needUpdate) {
+                        /*PlanRegular이면서 해당 날짜에 todoDate를 만들 수 있는데 없는 경우 새로 만들어서 저장*/
+                        TodoDate todoDate = new TodoDate(todo, TodoStatus.UNCHECKED, searchDate);
+                        todoRepository.saveTodoDate(todoDate);
+                        todoDateList.add(todoDate);
+                    }
                 }
             }
         }
@@ -232,5 +234,9 @@ public class TodoService {
                 todoRepository.updateTodoDate(newTodo, todoDate.getId());
             }
         }
+    }
+
+    public void deleteTodoDate(Long todoDateId) {
+        todoRepository.deleteTodoDate(todoDateId);
     }
 }
