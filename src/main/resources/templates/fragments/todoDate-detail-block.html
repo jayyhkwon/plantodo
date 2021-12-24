@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xnlms="http://www.w3.org/1999/html">
-
-<div id="todoDateDetailList" th:fragment="todoDateDetailList" th:each="comment : ${comments}">
-    <div th:id="${comment.id+'title'}" th:text="${comment.comment}" th:value="${comment.id}"></div>
-    <div th:id="${comment.id+'editBtn'}"></div>
-    <div th:id="${comment.id+'buttons'}">
-        <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|deleteComment('${selectedDate}', '${comment.id}', '${todoDate.id}')|">D</a>
-        <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|getCommentUpdateForm('${selectedDate}', '${todoDate.id}', '${comment.id}', '${comment.comment}')|">E</a>
+<head>
+    <meta charset="UTF-8">
+    <script async src="/js/jquery-3.6.0.min.js"></script>
+    <script async src="/js/my.js"></script>
+</head>
+<body>
+    <div id="todoDateDetailList" th:fragment="todoDateDetailList" th:each="comment : ${comments}">
+        <span th:id="${comment.id+'title'}" th:text="${comment.comment}" th:value="${comment.id}"></span>
+        <span th:id="${comment.id+'editBtn'}"></span>
+        <span th:id="${comment.id+'buttons'}">
+            <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|deleteComment('${selectedDate}', '${comment.id}', '${todoDate.id}')|">D</a>
+            <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|getCommentUpdateForm('${selectedDate}', '${todoDate.id}', '${comment.id}', '${comment.comment}')|">E</a>
+        </span>
     </div>
-</div>
-<script async src="/js/jquery-3.6.0.min.js"></script>
-<script async src="/js/my.js"></script>
+</body>
 </html>

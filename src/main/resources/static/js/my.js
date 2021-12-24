@@ -57,21 +57,21 @@ function getTodoDateDetailBlock(selectedDate, tododateId) {
         url: uri,
         type: "GET"
     }).done(function(fragment) {
-        $('#detailBlock').empty().append(fragment);
-        $('#comment-form-box').css("display", "inline");
+        $('#detailBlock'+tododateId).empty().append(fragment);
+        $('#comment-register-box'+tododateId).css("display", "inline");
     })
 }
 
 
-$('body')
-    .on('click', '#write', function(event) {
+$('body').on('click', '#write', function(event) {
     event.preventDefault();
+    let todoDateId = $("#todoDateId").val();
     $.ajax({
         url: "/plan/todoDate/comment",
         type: "POST",
         data: $('#comment-form').serialize()
     }).done(function(fragment) {
-        $('#detailBlock').empty().append(fragment);
+        $('#detailBlock'+todoDateId).empty().append(fragment);
         $('#comment').val("");
     })
 })
@@ -82,7 +82,7 @@ function deleteComment(selectedDate, commentId, todoDateId) {
         url: uri,
         type: "DELETE"
     }).done(function(fragment) {
-        $('#detailBlock').html(fragment);
+        $('#detailBlock'+todoDateId).html(fragment);
     })
 }
 
@@ -114,12 +114,12 @@ $('body').on('click', '#edit', function(event) {
         url: "/plan/todoDate/comment?commentId="+commentId+"&updatedComment="+updatedComment,
         type: "PUT",
         success: function() {
-            let div = document.createElement("div");
-            div.id = commentId + "title";
-            div.innerText = updatedComment;
-            div.value = commentId;
+            let span = document.createElement("span");
+            span.id = commentId + "title";
+            span.innerText = updatedComment;
+            span.value = commentId;
 
-            $("#"+commentId+"title").empty().html(div);
+            $("#"+commentId+"title").empty().html(span);
             $("#"+commentId+"editBtn").empty();
             $("#"+commentId+"buttons").css("display", "inline");
         },
