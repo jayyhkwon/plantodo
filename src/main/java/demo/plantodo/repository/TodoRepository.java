@@ -1,9 +1,6 @@
 package demo.plantodo.repository;
 
-import demo.plantodo.domain.Plan;
-import demo.plantodo.domain.PlanRegular;
-import demo.plantodo.domain.Todo;
-import demo.plantodo.domain.TodoDate;
+import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoUpdateForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,6 +10,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Repository
 @Transactional
@@ -90,11 +89,6 @@ public class TodoRepository {
         em.remove(todo);
     }
 
-    public void deleteTodoDate(Long todoDateId) {
-        TodoDate todoDate = findOneTodoDate(todoDateId);
-        em.remove(todoDate);
-    }
-
     public void updateTodo(TodoUpdateForm todoUpdateForm, Long todoId) {
         Todo todo = findOne(todoId);
         todo.setTitle(todoUpdateForm.getTitle());
@@ -102,8 +96,32 @@ public class TodoRepository {
         todo.setRepValue(todoUpdateForm.getRepValue());
     }
 
+    public void deleteTodoDate(Long todoDateId) {
+        TodoDate todoDate = findOneTodoDate(todoDateId);
+        em.remove(todoDate);
+    }
+
     public void updateTodoDate(Todo todo, Long todoDateId) {
         TodoDate todoDate = findOneTodoDate(todoDateId);
         todoDate.setTodo(todo);
+    }
+
+    /*comment*/
+    public void saveComment(TodoDateComment todoDateComment) {
+        em.persist(todoDateComment);
+    }
+
+    public TodoDateComment findComment(Long commentId) {
+        return em.find(TodoDateComment.class, commentId);
+    }
+
+    public List<TodoDateComment> getCommentsByTodoDateId(Long todoDateId) {
+        return em.createQuery("select c from TodoDateComment c where c.todoDate.id=:todoDateId")
+                .setParameter("todoDateId", todoDateId).getResultList();
+    }
+
+    public void deleteComment(Long commentId) {
+        TodoDateComment comment = findComment(commentId);
+        em.remove(comment);
     }
 }

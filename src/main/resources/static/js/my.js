@@ -51,12 +51,37 @@ function getTodoUpdateForm(planId, todoId) {
     })
 }
 
-function getTodoDateDetailBlock(tododateId) {
-    let uri = "/plan/todoDate?todoDateId=" + tododateId;
+function getTodoDateDetailBlock(selectedDate, tododateId) {
+    let uri = "/plan/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
     $.ajax({
         url: uri,
         type: "GET"
     }).done(function(fragment) {
-        $('#detailBlock').replaceWith(fragment);
+        $('#detailBlock').empty().append(fragment);
+        $('#comment-form-box').css("display", "inline");
+    })
+}
+
+
+$('body')
+    .on('click', '#write', function(event) {
+    event.preventDefault();
+    $.ajax({
+        url: "/plan/todoDate/comment",
+        type: "POST",
+        data: $('#comment-form').serialize()
+    }).done(function(fragment) {
+        $('#detailBlock').empty().append(fragment);
+        $('#comment').val("");
+    })
+})
+
+function deleteComment(selectedDate, commentId, todoDateId) {
+    let uri = "/plan/todoDate/comment?selectedDate="+selectedDate+"&commentId="+commentId+"&todoDateId="+todoDateId;
+    $.ajax({
+        url: uri,
+        type: "DELETE"
+    }).done(function(fragment) {
+        $('#detailBlock').html(fragment);
     })
 }

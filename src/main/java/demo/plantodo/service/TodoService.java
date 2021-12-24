@@ -239,4 +239,19 @@ public class TodoService {
     public void deleteTodoDate(Long todoDateId) {
         todoRepository.deleteTodoDate(todoDateId);
     }
+
+
+    public List<TodoDateComment> getCommentsByTodoDateId(Long todoDateId) {
+        return todoRepository.getCommentsByTodoDateId(todoDateId);
+    }
+
+    public void saveComment(Long todoDateId, String comment) {
+        TodoDate todoDate = todoRepository.findOneTodoDate(todoDateId);
+        TodoDateComment todoDateComment = new TodoDateComment(todoDate, comment);
+        todoRepository.saveComment(todoDateComment);
+    }
+
+    public void deleteComment(Long commentId) {
+        todoRepository.deleteComment(commentId);
+    }
 }

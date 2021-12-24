@@ -1,10 +1,12 @@
 package demo.plantodo.controller;
 
+import demo.plantodo.DTO.TodoButtonDTO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.*;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
@@ -119,6 +121,7 @@ public class PlanController {
         return redirectView;
     }
 
+
     /*to-do 수정*/
     // 수정 폼 만들기
     @GetMapping("/todo")
@@ -149,6 +152,20 @@ public class PlanController {
         return redirectView;
     }
 
+    /*todoDate 상세조회*/
+    @GetMapping("/todoDate")
+    public String getTodoDateDetailBlock(@RequestParam Long todoDateId,
+                                         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
+                                         Model model) {
+        TodoDate todoDate = todoService.findOneTodoDate(todoDateId);
+        List<TodoDateComment> comments = todoService.getCommentsByTodoDateId(todoDateId);
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("comments", comments);
+        model.addAttribute("selectedDate", selectedDate);
+        model.addAttribute("todoDate", todoDate);
+        return "fragments/todoDate-detail-block :: todoDateDetailList";
+    }
+
     /*todoDate 삭제*/
     @DeleteMapping("/todoDate")
     public RedirectView deleteTodoDate(@RequestParam Long planId, @RequestParam Long todoDateId, RedirectView redirectView) {
@@ -158,6 +175,41 @@ public class PlanController {
         redirectView.setStatusCode(HttpStatus.SEE_OTHER);
         redirectView.setUrl(redirectURI);
         return redirectView;
+    }
+
+    /*comment 등록*/
+    @PostMapping("/todoDate/comment")
+    public String registerComment(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
+                                  @RequestParam Long todoDateId,
+                                  @RequestParam String comment,
+                                  Model model) {
+        System.out.println("selectedDate = " + selectedDate);
+        System.out.println("todoDateId = " + todoDateId);
+        System.out.println("comment = " + comment);
+        todoService.saveComment(todoDateId, comment);
+
+        TodoDate todoDate = todoService.findOneTodoDate(todoDateId);
+        List<TodoDateComment> comments = todoService.getCommentsByTodoDateId(todoDateId);
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("comments", comments);
+        model.addAttribute("selectedDate", selectedDate);
+        model.addAttribute("todoDate", todoDate);
+        return "fragments/todoDate-detail-block :: todoDateDetailList";
+    }
+    /*comment 삭제*/
+    @DeleteMapping("/todoDate/comment")
+    public String deleteComment(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
+                                @RequestParam Long commentId,
+                                @RequestParam Long todoDateId,
+                                Model model) {
+        todoService.deleteComment(commentId);
+        TodoDate todoDate = todoService.findOneTodoDate(todoDateId);
+        List<TodoDateComment> comments = todoService.getCommentsByTodoDateId(todoDateId);
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("comments", comments);
+        model.addAttribute("selectedDate", selectedDate);
+        model.addAttribute("todoDate", todoDate);
+        return "fragments/todoDate-detail-block :: todoDateDetailList";
     }
 
     /*일자별 필터*/

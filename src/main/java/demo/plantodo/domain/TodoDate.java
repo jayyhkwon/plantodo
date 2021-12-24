@@ -6,10 +6,7 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter @Setter
@@ -26,9 +23,6 @@ public class TodoDate {
     private TodoStatus todoStatus;
 
     private LocalDate dateKey;
-
-//    @ElementCollection(fetch = FetchType.LAZY)
-//    private LinkedHashMap<UUID, String> comments = new LinkedHashMap<>();
 
     public TodoDate() {
     }
