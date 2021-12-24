@@ -254,4 +254,12 @@ public class TodoService {
     public void deleteComment(Long commentId) {
         todoRepository.deleteComment(commentId);
     }
+
+    public void updateComment(Long commentId, String updatedComment) {
+        todoRepository.updateComment(commentId, updatedComment);
+    }
+
+    public TodoDateComment findComment(Long commentId) {
+        return todoRepository.findComment(commentId);
+    }
 }

@@ -85,3 +85,46 @@ function deleteComment(selectedDate, commentId, todoDateId) {
         $('#detailBlock').html(fragment);
     })
 }
+
+function getCommentUpdateForm(selectedDate, todoDateId, commentId, comment) {
+    let input = document.createElement("input");
+    input.id = "commentUpdateInput"
+    input.setAttribute("selectedDate", selectedDate);
+    input.setAttribute("todoDateId", todoDateId);
+    input.setAttribute("commentId", commentId);
+    input.value = comment;
+
+    let button = document.createElement("input");
+    button.id = "edit"
+    button.name = "edit"
+    button.type = "button"
+    button.value = "edit"
+
+    $('#'+commentId+"title").html(input);
+    $('#'+commentId+'editBtn').empty().html(button);
+    $('#' + commentId + "buttons").css("display", "none");
+
+}
+
+$('body').on('click', '#edit', function(event) {
+    let commentId = $("#commentUpdateInput").attr("commentId");
+    let updatedComment = $("#commentUpdateInput").val();
+    event.preventDefault();
+    $.ajax({
+        url: "/plan/todoDate/comment?commentId="+commentId+"&updatedComment="+updatedComment,
+        type: "PUT",
+        success: function() {
+            let div = document.createElement("div");
+            div.id = commentId + "title";
+            div.innerText = updatedComment;
+            div.value = commentId;
+
+            $("#"+commentId+"title").empty().html(div);
+            $("#"+commentId+"editBtn").empty();
+            $("#"+commentId+"buttons").css("display", "inline");
+        },
+        error: function(err) {
+            alert(err);
+        }
+    })
+})

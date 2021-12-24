@@ -124,4 +124,9 @@ public class TodoRepository {
         TodoDateComment comment = findComment(commentId);
         em.remove(comment);
     }
+
+    public void updateComment(Long commentId, String updatedComment) {
+        TodoDateComment comment = findComment(commentId);
+        comment.setComment(updatedComment);
+    }
 }

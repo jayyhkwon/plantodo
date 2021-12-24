@@ -212,6 +212,14 @@ public class PlanController {
         return "fragments/todoDate-detail-block :: todoDateDetailList";
     }
 
+    /*comment 수정*/
+    @ResponseBody
+    @PutMapping("/todoDate/comment")
+    public void updateComment(@RequestParam Long commentId,
+                                @RequestParam String updatedComment) {
+        todoService.updateComment(commentId, updatedComment);
+    }
+
     /*일자별 필터*/
     @PostMapping("/{planId}/filtering")
     public String filteredPlan(@PathVariable Long planId,
