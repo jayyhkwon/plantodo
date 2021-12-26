@@ -38,7 +38,7 @@
             <a th:href="@{/plan/{planId}(planId=${entry.key.id})}" th:text="${entry.key.title}"></a>
             <div th:each="todoDate : ${entry.value}">
                 <div>
-                    <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|homeSwtichTodoDateStatus('${selectedDate}', '${todoDate.id}')|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
+                    <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
                     <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.todo.title}"></a></span>
                     <span id="delete-box">
                         <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:action="@{/todoDate}" method="post">

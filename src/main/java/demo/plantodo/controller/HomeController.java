@@ -82,14 +82,6 @@ public class HomeController {
           return "main-home :: #dateBlock";
      }
 
-     @PostMapping("/calendar/todoDate/switching")
-     public String switchStatus(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
-                                @RequestParam Long todoDateId) {
-          todoDateService.switchStatus(todoDateId);
-          String redirectURI = "redirect:/home/calendar/" + selectedDate;
-          return redirectURI;
-     }
-
      public Cookie regularTodoDateInitiate(HttpServletRequest request, LocalDate today) {
           Long memberId = memberRepository.getMemberId(request);
           List<Plan> allPlan = planService.findAllPlan(memberId);

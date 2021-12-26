@@ -5,6 +5,7 @@ import demo.plantodo.domain.TodoDateComment;
 import demo.plantodo.service.CommentService;
 import demo.plantodo.service.TodoDateService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -48,12 +49,10 @@ public class TodoDateController {
     }
 
     /*todoDate 상태변경*/
+    @ResponseBody
     @PostMapping("/switching")
-    public String switchStatus(@RequestParam Long planId,
-                               @RequestParam Long todoDateId) {
+    public boolean switchStatus(@RequestParam Long todoDateId) {
         todoDateService.switchStatus(todoDateId);
-
-        String redirectURI = "redirect:/plan/" + planId;
-        return redirectURI;
+        return true;
     }
 }
