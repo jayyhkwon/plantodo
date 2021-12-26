@@ -26,9 +26,6 @@ public class CommentController {
                                   @RequestParam Long todoDateId,
                                   @RequestParam String comment,
                                   Model model) {
-        System.out.println("selectedDate = " + selectedDate);
-        System.out.println("todoDateId = " + todoDateId);
-        System.out.println("comment = " + comment);
         commentService.save(todoDateId, comment);
 
         TodoDate todoDate = todoDateService.findOne(todoDateId);

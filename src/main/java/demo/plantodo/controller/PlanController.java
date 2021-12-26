@@ -102,14 +102,13 @@ public class PlanController {
 
 
     /*일자별 필터*/
-    @PostMapping("/{planId}/filtering")
-    public String filteredPlan(@PathVariable Long planId,
-                               @ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
+    @PostMapping("/filtering")
+    public String filteredPlan(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
                                BindingResult bindingResult,
                                Model model) {
         String viewURI = "plan/plan-detail";
 
-        Plan selectedPlan = planService.findOne(planId);
+        Plan selectedPlan = planService.findOne(dateSearchForm.getPlanId());
         LocalDate searchStart = dateSearchForm.getStartDate();
         LocalDate searchEnd = dateSearchForm.getEndDate();
         LocalDate planStart = selectedPlan.getStartDate();
@@ -138,16 +137,16 @@ public class PlanController {
     }
 
     /*플랜 삭제*/
-    @DeleteMapping("/{planId}")
-    public String planDelete(@PathVariable Long planId) {
+    @DeleteMapping
+    public String planDelete(@RequestParam Long planId) {
         Plan plan = planService.findOne(planId);
         planService.remove(plan);
         return "redirect:/plan/plans";
     }
 
     /*플랜 변경 - 스테이터스 변경 (변경 감지 사용)*/
-    @PutMapping("/{planId}/switching")
-    public RedirectView planFinish(@PathVariable Long planId, RedirectView redirectView) {
+    @PutMapping("/switching")
+    public RedirectView planFinish(@RequestParam Long planId, RedirectView redirectView) {
         String uri = "/plan/" + planId.toString();
         planService.updateStatus(planId);
         redirectView.setStatusCode(HttpStatus.SEE_OTHER);

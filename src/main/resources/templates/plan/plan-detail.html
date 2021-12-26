@@ -16,12 +16,14 @@
     <div th:text="${plan.title}"></div>
 </div>
 <div>
-    <form th:action="@{/plan/{planId}(planId=${plan.id})}" method="post">
+    <form th:action="@{/plan}" method="post">
+        <input type="hidden" name="planId" th:value="${plan.id}">
         <input type="hidden" name="_method" value="DELETE"/>
         <input type="submit" th:value="DELETE"/>
     </form>
     <div th:if="${!plan.planStatus.toString().equals('PAST')}">
-        <form th:action="@{/plan/{planId}(planId=${plan.id})/switching}" method="post">
+        <form th:action="@{/plan/switching}" method="post">
+            <input type="hidden" name="planId" th:value="${plan.id}">
             <input type="hidden" name="_method" value="PUT"/>
             <input type="submit" th:value="SWITCH"/>
         </form>
@@ -29,7 +31,8 @@
     </div>
 </div>
 <!--날짜로 검색-->
-<form th:action="@{/plan/{planId}(planId=${plan.id})/filtering}" th:object="${dateSearchForm}" method="post">
+<form th:action="@{/plan/filtering}" th:object="${dateSearchForm}" method="post">
+    <input type="hidden" name="planId" th:value="${plan.id}">
     <input type="date" id="startDate" name="startDate">
     <input type="date" id="endDate" name="endDate">
     <input type="submit">

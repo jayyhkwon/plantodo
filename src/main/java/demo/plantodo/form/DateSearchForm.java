@@ -8,6 +8,8 @@ import java.time.LocalDate;
 
 @Getter @Setter
 public class DateSearchForm {
+    private Long planId;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
