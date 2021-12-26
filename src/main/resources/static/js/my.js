@@ -5,13 +5,14 @@ function loadDateBlockData(searchDate) {
         url: uri,
         type: "GET"
     }).done(function (fragment) {
+        console.log(fragment);
         $("#dateBlock").replaceWith(fragment);
     });
 }
 
 /*to-do 상태 바꾸기*/
 function planSwitchTodoDateStatus(planId, todoDateId) {
-    let uri = "/plan/todoDate/switching?planId=" + planId + "&todoDateId=" +todoDateId;
+    let uri = "/todoDate/switching?planId=" + planId + "&todoDateId=" +todoDateId;
     let tagId = "#" + todoDateId;
     $.ajax({
         url: uri,
@@ -32,7 +33,7 @@ function homeSwtichTodoDateStatus(selectedDate, todoDateId) {
 }
 
 function getButtonBlock(planId, todoId) {
-    let uri = "/plan/todo/block?planId=" + planId + "&todoId=" + todoId;
+    let uri = "/todo/block?planId=" + planId + "&todoId=" + todoId;
     $.ajax({
         url: uri,
         type: "GET"
@@ -42,7 +43,7 @@ function getButtonBlock(planId, todoId) {
 }
 
 function getTodoUpdateForm(planId, todoId) {
-    let uri = "/plan/todo?planId=" + planId + "&todoId=" + todoId;
+    let uri = "/todo?planId=" + planId + "&todoId=" + todoId;
     $.ajax({
         url: uri,
         type: "GET"
@@ -52,7 +53,7 @@ function getTodoUpdateForm(planId, todoId) {
 }
 
 function getTodoDateDetailBlock(selectedDate, tododateId) {
-    let uri = "/plan/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
+    let uri = "/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
     $.ajax({
         url: uri,
         type: "GET"
@@ -67,7 +68,7 @@ $('body').on('click', '#write', function(event) {
     event.preventDefault();
     let todoDateId = $("#todoDateId").val();
     $.ajax({
-        url: "/plan/todoDate/comment",
+        url: "/comment",
         type: "POST",
         data: $('#comment-form').serialize()
     }).done(function(fragment) {
@@ -77,7 +78,7 @@ $('body').on('click', '#write', function(event) {
 })
 
 function deleteComment(selectedDate, commentId, todoDateId) {
-    let uri = "/plan/todoDate/comment?selectedDate="+selectedDate+"&commentId="+commentId+"&todoDateId="+todoDateId;
+    let uri = "/comment?selectedDate="+selectedDate+"&commentId="+commentId+"&todoDateId="+todoDateId;
     $.ajax({
         url: uri,
         type: "DELETE"
@@ -111,7 +112,7 @@ $('body').on('click', '#edit', function(event) {
     let updatedComment = $("#commentUpdateInput").val();
     event.preventDefault();
     $.ajax({
-        url: "/plan/todoDate/comment?commentId="+commentId+"&updatedComment="+updatedComment,
+        url: "/comment?commentId="+commentId+"&updatedComment="+updatedComment,
         type: "PUT",
         success: function() {
             let span = document.createElement("span");

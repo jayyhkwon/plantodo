@@ -44,27 +44,6 @@ public class TodoRepository {
         }
     }
 
-
-    public void saveTodoDate(TodoDate todoDate) {
-        em.persist(todoDate);
-    }
-
-    public TodoDate findOneTodoDate(Long todoDateId) {
-        return em.find(TodoDate.class, todoDateId);
-    }
-
-    public List<TodoDate> getTodoDateByTodoAndDate(Todo todo, LocalDate searchDate) {
-        return em.createQuery("select td from TodoDate td where td.todo.id = :todoId and td.dateKey = :searchDate")
-                .setParameter("todoId", todo.getId())
-                .setParameter("searchDate", searchDate)
-                .getResultList();
-    }
-
-    public void switchStatus(Long todoDateId) {
-        TodoDate oneTodoDate = findOneTodoDate(todoDateId);
-        oneTodoDate.swtichStatus();
-    }
-
     public List<Todo> getTodoByPlanId(Long planId) {
         return em.createQuery("select t from Todo t where t.plan.id = :planId")
                 .setParameter("planId", planId)
@@ -84,49 +63,15 @@ public class TodoRepository {
                 .getResultList();
     }
 
-    public void deleteTodo(Long todoId) {
+    public void delete(Long todoId) {
         Todo todo = findOne(todoId);
         em.remove(todo);
     }
 
-    public void updateTodo(TodoUpdateForm todoUpdateForm, Long todoId) {
+    public void update(TodoUpdateForm todoUpdateForm, Long todoId) {
         Todo todo = findOne(todoId);
         todo.setTitle(todoUpdateForm.getTitle());
         todo.setRepOption(todoUpdateForm.getRepOption());
         todo.setRepValue(todoUpdateForm.getRepValue());
-    }
-
-    public void deleteTodoDate(Long todoDateId) {
-        TodoDate todoDate = findOneTodoDate(todoDateId);
-        em.remove(todoDate);
-    }
-
-    public void updateTodoDate(Todo todo, Long todoDateId) {
-        TodoDate todoDate = findOneTodoDate(todoDateId);
-        todoDate.setTodo(todo);
-    }
-
-    /*comment*/
-    public void saveComment(TodoDateComment todoDateComment) {
-        em.persist(todoDateComment);
-    }
-
-    public TodoDateComment findComment(Long commentId) {
-        return em.find(TodoDateComment.class, commentId);
-    }
-
-    public List<TodoDateComment> getCommentsByTodoDateId(Long todoDateId) {
-        return em.createQuery("select c from TodoDateComment c where c.todoDate.id=:todoDateId")
-                .setParameter("todoDateId", todoDateId).getResultList();
-    }
-
-    public void deleteComment(Long commentId) {
-        TodoDateComment comment = findComment(commentId);
-        em.remove(comment);
-    }
-
-    public void updateComment(Long commentId, String updatedComment) {
-        TodoDateComment comment = findComment(commentId);
-        comment.setComment(updatedComment);
     }
 }

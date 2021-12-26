@@ -5,10 +5,12 @@ import demo.plantodo.domain.*;
 import demo.plantodo.form.*;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
+import demo.plantodo.service.CommentService;
+import demo.plantodo.service.TodoDateService;
+import demo.plantodo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,8 +20,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -29,8 +29,10 @@ import java.util.List;
 @RequestMapping("/plan")
 public class PlanController {
     private final PlanRepository planService;
+    private final TodoDateService todoDateService;
     private final MemberRepository memberRepository;
-    private final demo.plantodo.service.TodoService todoService;
+    private final TodoService todoService;
+    private final CommentService commentService;
 
     /*등록 - regular*/
     @GetMapping("/type")
@@ -88,7 +90,7 @@ public class PlanController {
         LocalDate startDate = selectedPlan.getStartDate();
         LocalDate endDate = LocalDate.now();
 
-        LinkedHashMap<LocalDate, List<TodoDate>> allTodoDatesByDate = allTodosInTerm(selectedPlan, null, null);
+        LinkedHashMap<LocalDate, List<TodoDate>> allTodoDatesByDate = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
         List<Todo> todosByPlanId = todoService.getTodoByPlanId(planId);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("today", LocalDate.now());
@@ -98,127 +100,6 @@ public class PlanController {
         return "plan/plan-detail";
     }
 
-    /*to-do 삭제/수정 버튼 fragment 가져오기*/
-    @GetMapping("/todo/block")
-    public String getTodoButtonBlock(@RequestParam Long planId,
-                                     @RequestParam Long todoId,
-                                     Model model) {
-        TodoButtonDTO todoButtonDTO = new TodoButtonDTO(planId, todoId);
-        model.addAttribute("todoButtonDTO", todoButtonDTO);
-        return "fragments/todo-button-block :: todoButtonBlock";
-    }
-
-    /*to-do 삭제*/
-    @DeleteMapping("/todo")
-    public RedirectView deleteTodo(@RequestParam Long planId,
-                                   @RequestParam Long todoId,
-                                   RedirectView redirectView) {
-
-        todoService.deleteTodo(todoId);
-        String redirectURI = "/plan/" + planId;
-        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
-        redirectView.setUrl(redirectURI);
-        return redirectView;
-    }
-
-
-    /*to-do 수정*/
-    // 수정 폼 만들기
-    @GetMapping("/todo")
-    public String createUpdateTodoForm(@RequestParam Long planId,
-                                       @RequestParam Long todoId,
-                                       Model model) {
-
-        Todo selectedTodo = todoService.findOneTodo(todoId);
-        TodoUpdateForm todoUpdateForm = new TodoUpdateForm(planId, todoId, selectedTodo.getTitle(), selectedTodo.getRepOption(), selectedTodo.getRepValue());
-        model.addAttribute("todoUpdateForm", todoUpdateForm);
-        return "fragments/todo-update-form-block :: todoUpdateBlock";
-    }
-
-    // 수정
-    @PutMapping("/todo")
-    public RedirectView updateTodo(@RequestParam Long planId,
-                                   @RequestParam Long todoId,
-                                   @RequestParam String title,
-                                   @RequestParam int repOption,
-                                   @RequestParam List<String> repValue,
-                                   RedirectView redirectView) {
-        TodoUpdateForm todoUpdateForm = new TodoUpdateForm(planId, todoId, title, repOption, repValue);
-        Plan plan = planService.findOne(planId);
-        todoService.updateTodo(todoUpdateForm, todoId, plan);
-        String redirectURI = "/plan/" + planId;
-        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
-        redirectView.setUrl(redirectURI);
-        return redirectView;
-    }
-
-    /*todoDate 상세조회*/
-    @GetMapping("/todoDate")
-    public String getTodoDateDetailBlock(@RequestParam Long todoDateId,
-                                         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
-                                         Model model) {
-        TodoDate todoDate = todoService.findOneTodoDate(todoDateId);
-        List<TodoDateComment> comments = todoService.getCommentsByTodoDateId(todoDateId);
-        model.addAttribute("today", LocalDate.now());
-        model.addAttribute("comments", comments);
-        model.addAttribute("selectedDate", selectedDate);
-        model.addAttribute("todoDate", todoDate);
-        return "fragments/todoDate-detail-block :: todoDateDetailList";
-    }
-
-    /*todoDate 삭제*/
-    @DeleteMapping("/todoDate")
-    public RedirectView deleteTodoDate(@RequestParam Long planId, @RequestParam Long todoDateId, RedirectView redirectView) {
-        todoService.deleteTodoDate(todoDateId);
-
-        String redirectURI = "/plan/" + planId;
-        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
-        redirectView.setUrl(redirectURI);
-        return redirectView;
-    }
-
-    /*comment 등록*/
-    @PostMapping("/todoDate/comment")
-    public String registerComment(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
-                                  @RequestParam Long todoDateId,
-                                  @RequestParam String comment,
-                                  Model model) {
-        System.out.println("selectedDate = " + selectedDate);
-        System.out.println("todoDateId = " + todoDateId);
-        System.out.println("comment = " + comment);
-        todoService.saveComment(todoDateId, comment);
-
-        TodoDate todoDate = todoService.findOneTodoDate(todoDateId);
-        List<TodoDateComment> comments = todoService.getCommentsByTodoDateId(todoDateId);
-        model.addAttribute("today", LocalDate.now());
-        model.addAttribute("comments", comments);
-        model.addAttribute("selectedDate", selectedDate);
-        model.addAttribute("todoDate", todoDate);
-        return "fragments/todoDate-detail-block :: todoDateDetailList";
-    }
-    /*comment 삭제*/
-    @DeleteMapping("/todoDate/comment")
-    public String deleteComment(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
-                                @RequestParam Long commentId,
-                                @RequestParam Long todoDateId,
-                                Model model) {
-        todoService.deleteComment(commentId);
-        TodoDate todoDate = todoService.findOneTodoDate(todoDateId);
-        List<TodoDateComment> comments = todoService.getCommentsByTodoDateId(todoDateId);
-        model.addAttribute("today", LocalDate.now());
-        model.addAttribute("comments", comments);
-        model.addAttribute("selectedDate", selectedDate);
-        model.addAttribute("todoDate", todoDate);
-        return "fragments/todoDate-detail-block :: todoDateDetailList";
-    }
-
-    /*comment 수정*/
-    @ResponseBody
-    @PutMapping("/todoDate/comment")
-    public void updateComment(@RequestParam Long commentId,
-                                @RequestParam String updatedComment) {
-        todoService.updateComment(commentId, updatedComment);
-    }
 
     /*일자별 필터*/
     @PostMapping("/{planId}/filtering")
@@ -249,7 +130,7 @@ public class PlanController {
         if (bindingResult.hasErrors()) {
             return viewURI;
         }
-        LinkedHashMap all = allTodosInTerm(selectedPlan, searchStart, searchEnd);
+        LinkedHashMap all = todoDateService.allTodoDatesInTerm(selectedPlan, searchStart, searchEnd);
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("allTodosByDate", all);
         model.addAttribute("dateSearchForm", dateSearchForm);
@@ -325,44 +206,4 @@ public class PlanController {
         return "redirect:/plan/" + planId.toString();
     }
 
-    @PostMapping("/todoDate/switching")
-    public String switchStatus(@RequestParam Long planId,
-                               @RequestParam Long todoDateId) {
-        todoService.switchStatus(todoDateId);
-
-        String redirectURI = "redirect:/plan/" + planId;
-        return redirectURI;
-    }
-
-    /*기타 비즈니스 로직*/
-    public LinkedHashMap<LocalDate, List<TodoDate>> allTodosInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
-        if (startDate==null && endDate==null) {
-            startDate = plan.getStartDate();
-            endDate = LocalDate.now();
-            if (plan.getDtype().equals("Term")) {
-                PlanTerm planTerm = (PlanTerm) plan;
-                endDate = planTerm.getEndDate();
-            }
-        }
-        int days = Period.between(startDate, endDate).getDays();
-
-        LinkedHashMap<LocalDate, List<TodoDate>> allTodosByDate = new LinkedHashMap();
-        /*startDate에는 getTodoDateAndPlan을 적용하지 않고 그냥 todoDate를 조회만 하기*/
-        /*startDate 다음 날부터는 getTodoDateAndPlan을 적용하기*/
-
-        for (int i = 0; i < days + 1; i++) {
-            LocalDate date = startDate.plusDays(i);
-            List<TodoDate> todoDateList = new ArrayList<>();
-            if (date.isEqual(LocalDate.now())) {
-                todoDateList = todoService.getTodoDateByDateAndPlan(plan, date, false);
-            } else {
-                todoDateList = todoService.getTodoDateByDateAndPlan(plan, date, true);
-            }
-
-            if (!todoDateList.isEmpty()) {
-                allTodosByDate.put(date, todoDateList);
-            }
-        }
-        return allTodosByDate;
-    }
 }

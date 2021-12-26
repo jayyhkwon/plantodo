@@ -62,7 +62,8 @@
                 <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|planSwitchTodoDateStatus(${plan.id}, ${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
                 <span><a th:attr="onclick=|getTodoDateDetailBlock('${entry.key}','${todoDate.id}')|" th:text="${todoDate.todo.title}"></a></span>
                 <span id="delete-box">
-                    <form th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:action="@{/plan/todoDate}" method="post">
+                    <form th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:action="@{/todoDate}" method="post">
+                        <input type="hidden" name="pageInfo" value="plan">
                         <input type="hidden" name="planId" th:value="${plan.id}">
                         <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
                         <input type="hidden" name="_method" value="DELETE">

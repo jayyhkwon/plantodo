@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <div th:fragment="dateDisplay">
-    <div th:each="entry : ${dateBlock}">
-        <a th:href="@{/plan/{planId}(planId=${entry.key.id})}" th:text="${entry.key.title}"></a>
-        <div th:each="todo : ${entry.value}">
-            <input type="checkbox" th:value="${todo.id}" th:text="${todo.title}">
+    <div th:each="plan : ${dateBlockData}">
+        <a th:href="@{/plan/{planId}(planId=${plan.key.id})}" th:text="${plan.key.title}"></a>
+        <div th:each="todoDate : ${plan.value}">
+            <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|planSwitchTodoDateStatus(${plan.key.id}, ${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or plan.key.planStatus.toString().equals('PAST')}">
+            <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.todo.title}"></a></span>
+            <span id="delete-box">
+                <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:action="@{/plan/todoDate}" method="post">
+                    <input type="hidden" name="planId" th:value="${plan.key.id}">
+                    <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="submit" value="DEL">
+                </form>
+            </span>
         </div>
     </div>
 </div>

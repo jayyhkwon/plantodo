@@ -37,11 +37,30 @@
         <div th:each="entry : ${dateBlockData}">
             <a th:href="@{/plan/{planId}(planId=${entry.key.id})}" th:text="${entry.key.title}"></a>
             <div th:each="todoDate : ${entry.value}">
-                <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:text="${todoDate.todo.title}" th:value="${todoDate.id}" th:attr="onclick=|homeSwtichTodoDateStatus('${selectedDate}', '${todoDate.id}')|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
-                <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:action="@{/todo/todoDate/{todoDateId}(todoDateId=${todoDate.id})}" method="post">
-                    <input type="hidden" name="_method" value="DELETE"/>
-                    <input type="submit" th:value="DEL"/>
-                </form>
+                <div>
+                    <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|homeSwtichTodoDateStatus('${selectedDate}', '${todoDate.id}')|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
+                    <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.todo.title}"></a></span>
+                    <span id="delete-box">
+                        <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:action="@{/todoDate}" method="post">
+                            <input type="hidden" name="pageInfo" value="home">
+                            <input type="hidden" name="planId" th:value="${entry.key.id}">
+                            <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="submit" value="DEL">
+                        </form>
+                    </span>
+                </div>
+
+                <div th:id="${'detailBlock'+todoDate.id}"></div>
+
+                <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'comment-register-box'+todoDate.id}" style="display: none;">
+                    <form id="comment-form">
+                        <input type="hidden" id="selectedDate" name="selectedDate" th:value="${selectedDate}">
+                        <input type="hidden" id="todoDateId" name="todoDateId" th:value="${todoDate.id}">
+                        <input type="text" id="comment" name="comment" >
+                        <button id="write" name="write" type="submit">Submit</button>
+                    </form>
+                </div>
             </div>
         </div>
     </th:block>

@@ -1,16 +1,22 @@
 package demo.plantodo.controller;
 
+import demo.plantodo.DTO.TodoButtonDTO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoRegisterForm;
+import demo.plantodo.form.TodoUpdateForm;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
+import demo.plantodo.service.PlanService;
+import demo.plantodo.service.TodoDateService;
 import demo.plantodo.service.TodoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,9 +27,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/todo")
 public class TodoController {
-    private final PlanRepository planRepository;
+    private final PlanService planService;
     private final MemberRepository memberRepository;
     private final HomeController homeController;
+    private final TodoDateService todoDateService;
 
     private final TodoService todoService;
 
@@ -31,7 +38,7 @@ public class TodoController {
     public String createRegisterForm(HttpServletRequest request, Model model) {
         Long memberId = memberRepository.getMemberId(request);
 
-        List<Plan> plans = planRepository.findAllPlan(memberId);
+        List<Plan> plans = planService.findAllPlan(memberId);
 
         model.addAttribute("plans", plans);
         model.addAttribute("todoRegisterForm", new TodoRegisterForm());
@@ -48,7 +55,7 @@ public class TodoController {
         List<String> repValue = todoRegisterForm.getRepValue();
         if ((repOption == 1 && repValue == null) || (repOption == 2 && repValue == null)) {
             Long memberId = memberRepository.getMemberId(request);
-            List<Plan> plans = planRepository.findAllPlan(memberId);
+            List<Plan> plans = planService.findAllPlan(memberId);
             model.addAttribute("plans", plans);
             bindingResult.addError(new FieldError("todoRegisterForm", "repValue", "옵션을 추가해야 합니다."));
         }
@@ -59,10 +66,10 @@ public class TodoController {
         Long memberId = memberRepository.getMemberId(request);
         Member member = memberRepository.getMemberById(memberId).get(0);
 
-        Plan plan = planRepository.findOne(todoRegisterForm.getPlanId());
+        Plan plan = planService.findOne(todoRegisterForm.getPlanId());
 
         Todo todo = new Todo(member, plan, todoRegisterForm.getTitle(), repOption, repValue);
-        todoService.todoSave(todo);
+        todoService.save(todo);
 
         /*TodoDate 만들기*/
         /*startDate, endDate 정의*/
@@ -74,8 +81,61 @@ public class TodoController {
         }
 
         /*todoDate 만들기*/
-        todoService.todoDateInitiate(startDate, endDate, todo);
+        todoDateService.todoDateInitiate(startDate, endDate, todo);
         return "redirect:/home";
     }
 
+    /*to-do 삭제/수정 버튼 fragment 가져오기*/
+    @GetMapping("/block")
+    public String getTodoButtonBlock(@RequestParam Long planId,
+                                     @RequestParam Long todoId,
+                                     Model model) {
+        TodoButtonDTO todoButtonDTO = new TodoButtonDTO(planId, todoId);
+        model.addAttribute("todoButtonDTO", todoButtonDTO);
+        return "fragments/todo-button-block :: todoButtonBlock";
+    }
+
+    /*to-do 삭제*/
+    @DeleteMapping
+    public RedirectView deleteTodo(@RequestParam Long planId,
+                                   @RequestParam Long todoId,
+                                   RedirectView redirectView) {
+
+        todoService.delete(todoId);
+        String redirectURI = "/plan/" + planId;
+        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
+        redirectView.setUrl(redirectURI);
+        return redirectView;
+    }
+
+
+    /*to-do 수정*/
+    // 수정 폼 만들기
+    @GetMapping("/todo")
+    public String createUpdateTodoForm(@RequestParam Long planId,
+                                       @RequestParam Long todoId,
+                                       Model model) {
+
+        Todo selectedTodo = todoService.findOne(todoId);
+        TodoUpdateForm todoUpdateForm = new TodoUpdateForm(planId, todoId, selectedTodo.getTitle(), selectedTodo.getRepOption(), selectedTodo.getRepValue());
+        model.addAttribute("todoUpdateForm", todoUpdateForm);
+        return "fragments/todo-update-form-block :: todoUpdateBlock";
+    }
+
+    // 수정
+    @PutMapping
+    public RedirectView updateTodo(@RequestParam Long planId,
+                                   @RequestParam Long todoId,
+                                   @RequestParam String title,
+                                   @RequestParam int repOption,
+                                   @RequestParam List<String> repValue,
+                                   RedirectView redirectView) {
+        TodoUpdateForm todoUpdateForm = new TodoUpdateForm(planId, todoId, title, repOption, repValue);
+        Plan plan = planService.findOne(planId);
+        todoService.update(todoUpdateForm, todoId, plan);
+        String redirectURI = "/plan/" + planId;
+        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
+        redirectView.setUrl(redirectURI);
+        return redirectView;
+    }
 }

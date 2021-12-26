@@ -6,7 +6,9 @@ import demo.plantodo.domain.TodoDate;
 import demo.plantodo.form.CalendarSearchForm;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
+import demo.plantodo.service.CommentService;
 import demo.plantodo.service.PlanService;
+import demo.plantodo.service.TodoDateService;
 import demo.plantodo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,6 +33,8 @@ public class HomeController {
      private final PlanService planService;
      private final PlanRepository planRepository;
      private final TodoService todoService;
+     private final TodoDateService todoDateService;
+     private final CommentService commentService;
 
      @GetMapping
      public String createHome(HttpServletRequest request, HttpServletResponse response) {
@@ -69,7 +73,7 @@ public class HomeController {
           List<Plan> plans = planRepository.findAllPlan(memberId);
           LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
-               List<TodoDate> planTodoDate = todoService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
+               List<TodoDate> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
                dateBlockData.put(plan, planTodoDate);
           }
           model.addAttribute("selectedDate", eachDate);
@@ -81,7 +85,7 @@ public class HomeController {
      @PostMapping("/calendar/todoDate/switching")
      public String switchStatus(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
                                 @RequestParam Long todoDateId) {
-          todoService.switchStatus(todoDateId);
+          todoDateService.switchStatus(todoDateId);
           String redirectURI = "redirect:/home/calendar/" + selectedDate;
           return redirectURI;
      }
@@ -94,7 +98,7 @@ public class HomeController {
           if (!allPlan.isEmpty()) {
                for (Plan plan : allPlan) {
                     if (plan instanceof PlanRegular) {
-                         todoService.getTodoDateByDateAndPlan(plan, today, true);
+                         todoDateService.getTodoDateByDateAndPlan(plan, today, true);
                     }
                }
                return makeInitiateCookie(today);
