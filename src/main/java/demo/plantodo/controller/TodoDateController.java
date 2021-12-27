@@ -1,5 +1,8 @@
 package demo.plantodo.controller;
 
+import com.fasterxml.jackson.databind.util.JSONWrappedObject;
+import demo.plantodo.DTO.TodoDateDailyInputVO;
+import demo.plantodo.DTO.TodoDateDailyOutputVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.service.CommentService;
 import demo.plantodo.service.MemberService;
@@ -69,14 +72,17 @@ public class TodoDateController {
     }
 
     @PostMapping("/daily")
-    public String registerTodoDateDaily(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate,
-                                      @RequestParam Long planId,
-                                      @RequestParam String title,
+    @ResponseBody
+    public TodoDateDailyOutputVO registerTodoDateDaily(@ModelAttribute TodoDateDailyInputVO todoDateDailyInputVO,
                                       HttpServletRequest request) {
-        Plan plan = planService.findOne(planId);
-        TodoDate todoDate = new TodoDateDaily(TodoStatus.UNCHECKED, selectedDate, title, plan);
+        System.out.println("todoDateDailyInputVO.getPlanId() = " + todoDateDailyInputVO.getPlanId());
+        Plan plan = planService.findOne(todoDateDailyInputVO.getPlanId());
+        TodoDate todoDate = new TodoDateDaily(TodoStatus.UNCHECKED, todoDateDailyInputVO.getSelectedDailyDate(), todoDateDailyInputVO.getTitle(), plan);
         todoDateService.save(todoDate);
-
-        return "redirect:/home/calendar/" + selectedDate;
+        Long todoDateId = todoDate.getId();
+        TodoDateDailyOutputVO outputVO = new TodoDateDailyOutputVO();
+        outputVO.setTodoDateId(todoDateId);
+        outputVO.setSearchDate(todoDateDailyInputVO.getSelectedDailyDate());
+        return outputVO;
     }
 }
