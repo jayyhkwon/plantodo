@@ -4,8 +4,7 @@ import demo.plantodo.DTO.TodoButtonDTO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoRegisterForm;
 import demo.plantodo.form.TodoUpdateForm;
-import demo.plantodo.repository.MemberRepository;
-import demo.plantodo.repository.PlanRepository;
+import demo.plantodo.service.MemberService;
 import demo.plantodo.service.PlanService;
 import demo.plantodo.service.TodoDateService;
 import demo.plantodo.service.TodoService;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,15 +26,14 @@ import java.util.List;
 @RequestMapping("/todo")
 public class TodoController {
     private final PlanService planService;
-    private final MemberRepository memberRepository;
-    private final HomeController homeController;
+    private final MemberService memberService;
     private final TodoDateService todoDateService;
 
     private final TodoService todoService;
 
     @GetMapping("/register")
     public String createRegisterForm(HttpServletRequest request, Model model) {
-        Long memberId = memberRepository.getMemberId(request);
+        Long memberId = memberService.getMemberId(request);
 
         List<Plan> plans = planService.findAllPlan(memberId);
 
@@ -54,7 +51,7 @@ public class TodoController {
         int repOption = todoRegisterForm.getRepOption();
         List<String> repValue = todoRegisterForm.getRepValue();
         if ((repOption == 1 && repValue == null) || (repOption == 2 && repValue == null)) {
-            Long memberId = memberRepository.getMemberId(request);
+            Long memberId = memberService.getMemberId(request);
             List<Plan> plans = planService.findAllPlan(memberId);
             model.addAttribute("plans", plans);
             bindingResult.addError(new FieldError("todoRegisterForm", "repValue", "옵션을 추가해야 합니다."));
@@ -63,8 +60,8 @@ public class TodoController {
             return "todo/register-form";
         }
 
-        Long memberId = memberRepository.getMemberId(request);
-        Member member = memberRepository.getMemberById(memberId).get(0);
+        Long memberId = memberService.getMemberId(request);
+        Member member = memberService.findOne(memberId);
 
         Plan plan = planService.findOne(todoRegisterForm.getPlanId());
 

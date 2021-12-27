@@ -4,12 +4,8 @@ import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.PlanRegular;
 import demo.plantodo.domain.TodoDate;
 import demo.plantodo.form.CalendarSearchForm;
-import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
-import demo.plantodo.service.CommentService;
-import demo.plantodo.service.PlanService;
-import demo.plantodo.service.TodoDateService;
-import demo.plantodo.service.TodoService;
+import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -29,12 +25,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/home")
 public class HomeController {
-     private final MemberRepository memberRepository;
+     private final MemberService memberService;
      private final PlanService planService;
      private final PlanRepository planRepository;
-     private final TodoService todoService;
      private final TodoDateService todoDateService;
-     private final CommentService commentService;
 
      @GetMapping
      public String createHome(HttpServletRequest request, HttpServletResponse response) {
@@ -69,13 +63,14 @@ public class HomeController {
           if (eachDate.isEqual(LocalDate.now())) {
                needUpdate = false;
           }
-          Long memberId = memberRepository.getMemberId(request);
+          Long memberId = memberService.getMemberId(request);
           List<Plan> plans = planRepository.findAllPlan(memberId);
           LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
                List<TodoDate> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
                dateBlockData.put(plan, planTodoDate);
           }
+
           model.addAttribute("selectedDate", eachDate);
           model.addAttribute("today", LocalDate.now());
           model.addAttribute("dateBlockData", dateBlockData);
@@ -83,7 +78,7 @@ public class HomeController {
      }
 
      public Cookie regularTodoDateInitiate(HttpServletRequest request, LocalDate today) {
-          Long memberId = memberRepository.getMemberId(request);
+          Long memberId = memberService.getMemberId(request);
           List<Plan> allPlan = planService.findAllPlan(memberId);
 
           /*plan이 하나라도 있으면 planRegular인지 확인*/

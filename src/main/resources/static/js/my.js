@@ -29,6 +29,24 @@ function getButtonBlock(planId, todoId) {
     })
 }
 
+function getTodoDateRegisterForm(planId) {
+    $("#dailyTdRegister" + planId).css("display", "inline");
+}
+
+$('body').on("click", "#tdSubmit", function (event) {
+    event.preventDefault();
+    let selectedDate = $("#selectedDate").val();
+    let planId = $("#planId").val();
+    let title = $("#title").val();
+    $.ajax({
+        url: "/todoDate/daily?selectedDate="+selectedDate+"&planId="+planId+"&title="+title,
+        type: "POST"
+    }).done(function(fragment) {
+        console.log(fragment);
+        $('#dateBlock').empty().html(fragment);
+    })
+})
+
 function getTodoUpdateForm(planId, todoId) {
     let uri = "/todo?planId=" + planId + "&todoId=" + todoId;
     $.ajax({

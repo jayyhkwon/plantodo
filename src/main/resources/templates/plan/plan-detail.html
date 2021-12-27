@@ -56,14 +56,14 @@
         <div id="ButtonBlock"></div>
     </div>
 </div>
-<!--일자별 to-do 출력-->
+<!--일자별 to-do-Date 출력-->
 <div>
     <table th:each="entry : ${allToDatesByDate}">
         <th th:text="${entry.key}"></th>
         <tr th:each="todoDate : ${entry.value}">
             <div>
                 <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
-                <span><a th:attr="onclick=|getTodoDateDetailBlock('${entry.key}','${todoDate.id}')|" th:text="${todoDate.todo.title}"></a></span>
+                <span><a th:attr="onclick=|getTodoDateDetailBlock('${entry.key}','${todoDate.id}')|" th:text="${todoDate.title}"></a></span>
                 <span id="delete-box">
                     <form th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:action="@{/todoDate}" method="post">
                         <input type="hidden" name="pageInfo" value="plan">

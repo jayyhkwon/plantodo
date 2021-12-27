@@ -5,9 +5,7 @@ import demo.plantodo.domain.*;
 import demo.plantodo.form.*;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
-import demo.plantodo.service.CommentService;
-import demo.plantodo.service.TodoDateService;
-import demo.plantodo.service.TodoService;
+import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -28,9 +26,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/plan")
 public class PlanController {
-    private final PlanRepository planService;
+    private final PlanService planService;
     private final TodoDateService todoDateService;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final TodoService todoService;
     private final CommentService commentService;
 
@@ -49,8 +47,8 @@ public class PlanController {
     @PostMapping("/regular")
     public String planRegisterRegular(@ModelAttribute("planRegularRegisterForm") PlanRegularRegisterForm planRegularRegisterForm,
                                       HttpServletRequest request) {
-        Long memberId = memberRepository.getMemberId(request);
-        Member findMember = memberRepository.getMemberById(memberId).get(0);
+        Long memberId = memberService.getMemberId(request);
+        Member findMember = memberService.findOne(memberId);
         LocalDate startDate = LocalDate.now();
         PlanRegular planRegular = new PlanRegular(findMember, PlanStatus.NOW, startDate, planRegularRegisterForm.getTitle());
         planService.saveRegular(planRegular);
@@ -67,8 +65,8 @@ public class PlanController {
     @PostMapping("/term")
     public String planRegisterTerm(@ModelAttribute("planTermRegisterForm") PlanTermRegisterForm planTermRegisterForm,
                              HttpServletRequest request) {
-        Long memberId = memberRepository.getMemberId(request);
-        Member findMember = memberRepository.getMemberById(memberId).get(0);
+        Long memberId = memberService.getMemberId(request);
+        Member findMember = memberService.findOne(memberId);
         PlanTerm planTerm = new PlanTerm(findMember, PlanStatus.NOW, planTermRegisterForm.getStartDate(), planTermRegisterForm.getTitle(), planTermRegisterForm.getEndDate());
         planService.saveTerm(planTerm);
         return "redirect:/home";
@@ -77,7 +75,7 @@ public class PlanController {
     /*목록 조회*/
     @GetMapping("/plans")
     public String plans(Model model, HttpServletRequest request) {
-        Long memberId = memberRepository.getMemberId(request);
+        Long memberId = memberService.getMemberId(request);
         List<Plan> plans = planService.findAllPlan(memberId);
         model.addAttribute("plans", plans);
         return "plan/plan-list";
@@ -140,7 +138,7 @@ public class PlanController {
     @DeleteMapping
     public String planDelete(@RequestParam Long planId) {
         Plan plan = planService.findOne(planId);
-        planService.remove(plan);
+        planService.delete(plan);
         return "redirect:/plan/plans";
     }
 

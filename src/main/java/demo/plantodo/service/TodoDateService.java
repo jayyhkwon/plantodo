@@ -20,9 +20,22 @@ public class TodoDateService {
     private final TodoRepository todoRepository;
     private final CommonService commonService;
 
+    public void save(TodoDate todoDate) {
+        todoDateRepository.save(todoDate);
+    }
+
     public TodoDate findOne(Long todoDateId) {
         return todoDateRepository.findOne(todoDateId);
     }
+
+    public TodoDate findOneRep(Long todoDateId) {
+        return todoDateRepository.findOneRep(todoDateId);
+    }
+
+    public TodoDate findOneDaily(Long todoDateId) {
+        return todoDateRepository.findOneDaily(todoDateId);
+    }
+
 
     public boolean canMakeTodoDate(Todo todo, LocalDate date) {
         int repOption = todo.getRepOption();
@@ -53,8 +66,8 @@ public class TodoDateService {
         for (int i = 0; i < days+1; i++) {
             LocalDate date = startDate.plusDays(i);
             if (canMakeTodoDate(todo, date)) {
-                TodoDate todoDate = new TodoDate(todo, TodoStatus.UNCHECKED, date);
-                todoDateRepository.save(todoDate);
+                TodoDateRep todoDateRep = new TodoDateRep(TodoStatus.UNCHECKED, date, todo);
+                todoDateRepository.save(todoDateRep);
             }
 
         }
@@ -125,22 +138,33 @@ public class TodoDateService {
                 } else {
                     if (needUpdate) {
                         /*PlanRegular이면서 해당 날짜에 todoDate를 만들 수 있는데 없는 경우 새로 만들어서 저장*/
-                        TodoDate todoDate = new TodoDate(todo, TodoStatus.UNCHECKED, searchDate);
-                        todoDateRepository.save(todoDate);
-                        todoDateList.add(todoDate);
+                        TodoDateRep todoDateRep = new TodoDateRep(TodoStatus.UNCHECKED, searchDate, todo);
+                        todoDateRepository.save(todoDateRep);
+                        todoDateList.add(todoDateRep);
                     }
                 }
             }
         }
+        List<TodoDate> notBindingTodo = todoDateRepository.getTodoDateByPlanAndDate(plan, searchDate);
+        for (TodoDate todoDate : notBindingTodo) {
+            todoDateList.add(todoDate);
+        }
         return todoDateList;
     }
 
-    public void switchStatus(Long todoDateId) {
-        todoDateRepository.switchStatus(todoDateId);
+    public void switchStatusRep(Long todoDateId) {
+        todoDateRepository.switchStatusRep(todoDateId);
     }
 
-    public void delete(Long todoDateId) {
-        todoDateRepository.delete(todoDateId);
+    public void switchStatusDaily(Long todoDateId) {
+        todoDateRepository.switchStatusDaily(todoDateId);
     }
 
+    public void deleteRep(Long todoDateId) {
+        todoDateRepository.deleteRep(todoDateId);
+    }
+
+    public void deleteDaily(Long todoDateId) {
+        todoDateRepository.deleteDaily(todoDateId);
+    }
 }

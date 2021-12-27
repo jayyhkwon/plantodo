@@ -50,11 +50,6 @@ public class TodoRepository {
                 .getResultList();
     }
 
-    public List<TodoDate> getTodoDateByTodoId(Long todoId) {
-        return em.createQuery("select td from TodoDate td where td.todo.id = :todoId")
-                .setParameter("todoId", todoId)
-                .getResultList();
-    }
 
     public List<TodoDate> getTodoDateByTodoIdAfterToday(Long todoId, LocalDate today) {
         return em.createQuery("select td from TodoDate td where td.todo.id = :todoId and td.dateKey >= :today")
@@ -73,5 +68,12 @@ public class TodoRepository {
         todo.setTitle(todoUpdateForm.getTitle());
         todo.setRepOption(todoUpdateForm.getRepOption());
         todo.setRepValue(todoUpdateForm.getRepValue());
+    }
+
+
+    public List<TodoDate> getTodoDateRepByTodoId(Long todoId) {
+        return em.createQuery("select td from TodoDate td where treat(td as TodoDateRep).todo.id = :todoId")
+                .setParameter("todoId", todoId)
+                .getResultList();
     }
 }

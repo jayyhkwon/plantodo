@@ -60,7 +60,7 @@ public class PlanService {
     }
 
     /*삭제*/
-    public void planDelete(Plan plan) {
+    public void delete(Plan plan) {
         planRepository.remove(plan);
     }
 

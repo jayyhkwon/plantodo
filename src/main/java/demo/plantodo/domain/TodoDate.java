@@ -1,34 +1,35 @@
 package demo.plantodo.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.*;
 
+@Slf4j
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn
 @Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TodoDate {
     @Id @GeneratedValue
     @Column(name = "todo_date_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "todo_id")
-    private Todo todo;
 
     @Enumerated(value = EnumType.STRING)
     private TodoStatus todoStatus;
 
     private LocalDate dateKey;
 
-    public TodoDate() {
-    }
+    @Column(insertable=false, updatable=false)
+    private String dtype;
 
-    public TodoDate(Todo todo, TodoStatus todoStatus, LocalDate dateKey) {
-        this.todo = todo;
+    public TodoDate(TodoStatus todoStatus, LocalDate dateKey) {
         this.todoStatus = todoStatus;
         this.dateKey = dateKey;
     }

@@ -32,12 +32,12 @@ public class TodoService {
     public void delete(Long todoId) {
         /*todoDate 모두 불러오기*/
         LocalDate today = LocalDate.now();
-        List<TodoDate> todoDateByTodoId = todoRepository.getTodoDateByTodoId(todoId);
+        List<TodoDate> todoDateByTodoId = todoRepository.getTodoDateRepByTodoId(todoId);
         /*오늘 날짜 이후의 todoDate에 delete함수를 호출해서 삭제하기*/
         int deleteCnt = 0;
         for (TodoDate todoDate : todoDateByTodoId) {
             if (todoDate.getDateKey().equals(today) || todoDate.getDateKey().isAfter(today)) {
-                todoDateRepository.delete(todoDate.getId());
+                todoDateRepository.deleteRep(todoDate.getId());
                 deleteCnt += 1;
             }
         }
@@ -55,7 +55,9 @@ public class TodoService {
             /*오늘 이후의 todoDate 삭제*/
             List<TodoDate> todoDateAfterToday = todoRepository.getTodoDateByTodoIdAfterToday(todoId, today);
             for (TodoDate todoDate : todoDateAfterToday) {
-                todoDateRepository.delete(todoDate.getId());
+                if (todoDate instanceof TodoDateRep) {
+                    todoDateRepository.deleteRep(todoDate.getId());
+                }
             }
             /*to-do 저장*/
             todoRepository.update(todoUpdateForm, todoId);
@@ -77,9 +79,11 @@ public class TodoService {
             todoRepository.update(todoUpdateForm, todoId);
             Todo newTodo = todoRepository.findOne(todoId);
             /*todoDate 업데이트 (타이틀 변경)*/
-            List<TodoDate> todoDates = todoRepository.getTodoDateByTodoId(todoId);
+            List<TodoDate> todoDates = todoRepository.getTodoDateRepByTodoId(todoId);
             for (TodoDate todoDate : todoDates) {
-                todoDateRepository.update(newTodo, todoDate.getId());
+                if (todoDate instanceof TodoDateRep) {
+                    todoDateRepository.updateRep(newTodo, todoDate.getId());
+                }
             }
         }
     }

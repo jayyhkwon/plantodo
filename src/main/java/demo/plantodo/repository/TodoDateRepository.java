@@ -1,7 +1,6 @@
 package demo.plantodo.repository;
 
-import demo.plantodo.domain.Todo;
-import demo.plantodo.domain.TodoDate;
+import demo.plantodo.domain.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +22,10 @@ public class TodoDateRepository {
     public TodoDate findOne(Long todoDateId) {
         return em.find(TodoDate.class, todoDateId);
     }
+    public TodoDateDaily findOneDaily(Long todoDateId) {
+        return em.find(TodoDateDaily.class, todoDateId);
+    }
+    public TodoDateRep findOneRep(Long todoDateId) { return em.find(TodoDateRep.class, todoDateId); }
 
     public List<TodoDate> getTodoDateByTodoAndDate(Todo todo, LocalDate searchDate) {
         return em.createQuery("select td from TodoDate td where td.todo.id = :todoId and td.dateKey = :searchDate")
@@ -31,19 +34,35 @@ public class TodoDateRepository {
                 .getResultList();
     }
 
-    public void switchStatus(Long todoDateId) {
-        TodoDate oneTodoDate = findOne(todoDateId);
-        oneTodoDate.swtichStatus();
+    public void switchStatusRep(Long todoDateId) {
+        TodoDateRep rep = findOneRep(todoDateId);
+        rep.swtichStatus();
     }
 
-    public void delete(Long todoDateId) {
-        TodoDate todoDate = findOne(todoDateId);
+    public void switchStatusDaily(Long todoDateId) {
+        TodoDateDaily daily = findOneDaily(todoDateId);
+        daily.swtichStatus();
+    }
+
+    public void deleteRep(Long todoDateId) {
+        TodoDate todoDate = findOneRep(todoDateId);
         em.remove(todoDate);
     }
 
-    public void update(Todo todo, Long todoDateId) {
-        TodoDate todoDate = findOne(todoDateId);
-        todoDate.setTodo(todo);
+    public void deleteDaily(Long todoDateId) {
+        TodoDate todoDate = findOneDaily(todoDateId);
+        em.remove(todoDate);
     }
 
+    public void updateRep(Todo todo, Long todoDateId) {
+        TodoDateRep oneRep = findOneRep(todoDateId);
+        oneRep.setTodo(todo);
+    }
+
+    public List<TodoDate> getTodoDateByPlanAndDate(Plan plan, LocalDate searchDate) {
+        return em.createQuery("select td from TodoDate td where treat(td as TodoDateDaily).plan.id=:planId and td.dateKey=:searchDate")
+                .setParameter("planId", plan.getId())
+                .setParameter("searchDate", searchDate)
+                .getResultList();
+    }
 }

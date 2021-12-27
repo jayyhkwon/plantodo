@@ -4,6 +4,7 @@ import demo.plantodo.domain.Member;
 import demo.plantodo.form.MemberJoinForm;
 import demo.plantodo.form.MemberLoginForm;
 import demo.plantodo.repository.MemberRepository;
+import demo.plantodo.service.MemberService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class MemberController {
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final HomeController homeController;
     @GetMapping(value = "/join")
     public String createJoinForm(Model model) {
@@ -32,7 +33,7 @@ public class MemberController {
     public String joinMember(@ModelAttribute("memberJoinForm") MemberJoinForm memberJoinForm,
                              BindingResult bindingResult,
                              Model model) {
-        List<Member> memberByEmail = memberRepository.getMemberByEmail(memberJoinForm.getEmail());
+        List<Member> memberByEmail = memberService.getMemberByEmail(memberJoinForm.getEmail());
         /*검증 코드*/
         if (!memberByEmail.isEmpty()) {
             bindingResult.addError(new FieldError("memberJoinForm", "email", "사용할 수 없는 이메일입니다."));
@@ -41,7 +42,7 @@ public class MemberController {
             return "member/join-form";
         }
         Member member = new Member(memberJoinForm.getEmail(), memberJoinForm.getPassword(), memberJoinForm.getNickname());
-        memberRepository.save(member);
+        memberService.save(member);
         model.addAttribute("memberLoginForm", new MemberLoginForm());
         return "redirect:/login";
     }
@@ -57,7 +58,7 @@ public class MemberController {
                               BindingResult bindingResult,
                               HttpServletRequest request,
                               Model model) {
-        List<Member> findMember = memberRepository.getMemberByEmail(memberLoginForm.getEmail());
+        List<Member> findMember = memberService.getMemberByEmail(memberLoginForm.getEmail());
 
         if (findMember.isEmpty()) {
             bindingResult.addError(new FieldError("memberLoginForm", "email", "존재하지 않는 회원입니다."));
