@@ -64,7 +64,7 @@ public class HomeController {
                needUpdate = false;
           }
           Long memberId = memberService.getMemberId(request);
-          List<Plan> plans = planRepository.findAllPlan(memberId);
+          List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId);
           LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
                List<TodoDate> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);

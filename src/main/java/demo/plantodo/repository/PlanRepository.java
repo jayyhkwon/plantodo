@@ -111,4 +111,11 @@ public class PlanRepository {
         Plan plan = findOne(planId);
         plan.changeToDeleted();
     }
+    /*plan register용 메서드 (상태가 now인 것만 검색)*/
+    public List<Plan> findAllPlanForPlanRegister(Long memberId) {
+        return em.createQuery("select p from Plan p where p.member.id=:memberId and p.planStatus = :now")
+                .setParameter("memberId", memberId)
+                .setParameter("now", PlanStatus.NOW)
+                .getResultList();
+    }
 }

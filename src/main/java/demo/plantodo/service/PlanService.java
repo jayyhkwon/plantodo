@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -74,5 +75,31 @@ public class PlanService {
         } else {
             planRepository.remove(plan);
         }
+    }
+
+    public List<Plan> findAllPlanForPlanRegister(Long memberId) {
+        return planRepository.findAllPlanForPlanRegister(memberId);
+    }
+
+    public List<Plan> findAllPlanForBlock(LocalDate eachDate, Long memberId) {
+        /*planTerm인 경우 plan의 StartDate와 endDate 사이에 eachDate가 있어야 한다.*/
+        /*planRegular의 경우 plan의 StartDate >= eachDate*/
+        ArrayList<Plan> result = new ArrayList<>();
+        List<Plan> allPlan = planRepository.findAllPlan(memberId);
+        for (Plan plan : allPlan) {
+            if (plan.getDtype().equals("Term")) {
+                PlanTerm planTerm = (PlanTerm) plan;
+                if (eachDate.isBefore(planTerm.getStartDate()) || eachDate.isAfter(planTerm.getEndDate())) {
+                    continue;
+                }
+                result.add(plan);
+            } else {
+                if (eachDate.isBefore(plan.getStartDate())) {
+                    continue;
+                }
+                result.add(plan);
+            }
+        }
+        return result;
     }
 }

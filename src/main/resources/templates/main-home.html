@@ -38,7 +38,7 @@
         <div th:each="entry : ${dateBlockData}">
             <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title}"></button>
             <div th:id="${'dailyTdRegister'+entry.key.id}" style="display: none;">
-                <form th:id="${'dailyTdRegisterForm'+entry.key.id}">
+                <form th:if="${!entry.key.planStatus.toString().equals('DELETED')}" th:id="${'dailyTdRegisterForm'+entry.key.id}">
                     <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
                     <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
                     <input type="text" id="title" name="title"/>
