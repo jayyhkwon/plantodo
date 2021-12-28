@@ -92,6 +92,59 @@ function getTodoDateDetailBlock(selectedDate, tododateId) {
     })
 }
 
+function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
+    let div = document.createElement("div");
+
+    let input = document.createElement("input");
+    input.id = "editTitle";
+    input.name = "editTitle";
+    input.setAttribute("pageInfo", pageInfo);
+    input.setAttribute("selectedDate", selectedDate);
+    input.setAttribute("planId", planId);
+    input.setAttribute("todoDateId", todoDateId);
+
+    let btn = document.createElement("input");
+    btn.type = "button"
+    btn.id = "editBtn"
+    btn.name = "editBtn"
+    btn.value = "update"
+
+    div.appendChild(input);
+    div.appendChild(btn);
+
+    $("#" + todoDateId).empty().html(div);
+}
+
+$('body').on('click', '#editBtn', function (event) {
+    let pageInfo = $('#editTitle').attr("pageInfo");
+    let selectedDate = $('#editTitle').attr("selectedDate");
+    let planId = $('#editTitle').attr("planId");
+    let todoDateId = $('#editTitle').attr("todoDateId");
+
+    let data = { pageInfo: pageInfo,
+    selectedDate: selectedDate,
+    planId: planId,
+    todoDateId: todoDateId,
+    updateTitle: $('#editTitle').val() }
+
+    console.log(data);
+
+    $.ajax({
+        url: "/todoDate",
+        type: "PUT",
+        data: data,
+        success: function (res) {
+            setTimeout(function () {
+                if (res.pageInfo == "home") {
+                    loadDateBlockData(res.searchDate);
+                } else {
+                    planDetailAjax(res.planId);
+                }
+            }, 100);
+        }
+    })
+
+})
 
 $('body').on('click', '#write', function(event) {
     event.preventDefault();

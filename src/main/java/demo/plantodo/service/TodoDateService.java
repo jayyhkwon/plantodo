@@ -181,4 +181,7 @@ public class TodoDateService {
         return pastTodoDateCnt;
     }
 
+    public void updateTitle(Long todoDateId, String updateTitle) {
+        todoDateRepository.updateTitle(todoDateId, updateTitle);
+    }
 }

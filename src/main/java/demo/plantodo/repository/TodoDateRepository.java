@@ -65,4 +65,15 @@ public class TodoDateRepository {
                 .setParameter("searchDate", searchDate)
                 .getResultList();
     }
+
+    public void updateTitle(Long todoDateId, String updateTitle) {
+        TodoDate todoDate = findOne(todoDateId);
+        if (todoDate instanceof TodoDateRep) {
+            TodoDateRep todoDateRep = (TodoDateRep) todoDate;
+            todoDateRep.setTitle(updateTitle);
+        } else {
+            TodoDateDaily todoDateDaily = (TodoDateDaily) todoDate;
+            todoDateDaily.setTitle(updateTitle);
+        }
+    }
 }

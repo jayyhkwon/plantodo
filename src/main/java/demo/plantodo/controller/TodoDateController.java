@@ -8,13 +8,10 @@ import demo.plantodo.service.PlanService;
 import demo.plantodo.service.TodoDateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -46,7 +43,6 @@ public class TodoDateController {
     @ResponseBody
     public Object deleteTodoDate(@ModelAttribute TodoDateDeleteDataVO todoDateDeleteDataVO) {
         Long todoDateId = todoDateDeleteDataVO.getTodoDateId();
-        System.out.println("todoDateId = " + todoDateId);
         TodoDate one = todoDateService.findOne(todoDateId);
         if (one instanceof TodoDateRep) {
             todoDateService.deleteRep(todoDateId);
@@ -54,12 +50,12 @@ public class TodoDateController {
             todoDateService.deleteDaily(todoDateId);
         }
         if (todoDateDeleteDataVO.getPageInfo().equals("home")) {
-            TodoDateDeleteResHomeVO home = new TodoDateDeleteResHomeVO();
+            TodoDateResHomeVO home = new TodoDateResHomeVO();
             home.setSearchDate(todoDateDeleteDataVO.getSelectedDate());
             home.setPageInfo("home");
             return home;
         } else {
-            TodoDateDeleteResPlanVO plan = new TodoDateDeleteResPlanVO();
+            TodoDateResPlanVO plan = new TodoDateResPlanVO();
             plan.setPlanId(todoDateDeleteDataVO.getPlanId());
             plan.setPageInfo("plan");
             return plan;
@@ -81,9 +77,7 @@ public class TodoDateController {
 
     @PostMapping("/daily")
     @ResponseBody
-    public TodoDateDailyOutputVO registerTodoDateDaily(@ModelAttribute TodoDateDailyInputVO todoDateDailyInputVO,
-                                      HttpServletRequest request) {
-        System.out.println("todoDateDailyInputVO.getPlanId() = " + todoDateDailyInputVO.getPlanId());
+    public TodoDateDailyOutputVO registerTodoDateDaily(@ModelAttribute TodoDateDailyInputVO todoDateDailyInputVO) {
         Plan plan = planService.findOne(todoDateDailyInputVO.getPlanId());
         TodoDate todoDate = new TodoDateDaily(TodoStatus.UNCHECKED, todoDateDailyInputVO.getSelectedDailyDate(), todoDateDailyInputVO.getTitle(), plan);
         todoDateService.save(todoDate);
@@ -92,5 +86,22 @@ public class TodoDateController {
         outputVO.setTodoDateId(todoDateId);
         outputVO.setSearchDate(todoDateDailyInputVO.getSelectedDailyDate());
         return outputVO;
+    }
+
+    @PutMapping
+    @ResponseBody
+    public Object updateTodoDate(@ModelAttribute TodoDateUpdateDataVO todoDateUpdateDataVO) {
+        todoDateService.updateTitle(todoDateUpdateDataVO.getTodoDateId(), todoDateUpdateDataVO.getUpdateTitle());
+        if (todoDateUpdateDataVO.getPageInfo().equals("home")) {
+            TodoDateResHomeVO home = new TodoDateResHomeVO();
+            home.setPageInfo(todoDateUpdateDataVO.getPageInfo());
+            home.setSearchDate(todoDateUpdateDataVO.getSelectedDate());
+            return home;
+        } else {
+            TodoDateResPlanVO plan = new TodoDateResPlanVO();
+            plan.setPageInfo(todoDateUpdateDataVO.getPageInfo());
+            plan.setPlanId(todoDateUpdateDataVO.getPlanId());
+            return plan;
+        }
     }
 }

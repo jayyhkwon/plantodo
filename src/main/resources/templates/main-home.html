@@ -46,11 +46,14 @@
                 </form>
             </div>
             <div th:each="todoDate : ${entry.value}">
-                <div>
-                    <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
-                    <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.plan.planStatus.toString().equals('PAST')}">
+                <div th:id="${todoDate.id}">
+                    <div th:id="${'titleBox'+todoDate.id}">
+                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
+                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.plan.planStatus.toString().equals('PAST')}">
 
-                    <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.title}"></a></span>
+                        <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.title}"></a></span>
+                    </div>
+
                     <span id="delete-box">
                         <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
                             <input type="hidden" name="pageInfo" value="home">
@@ -61,17 +64,19 @@
                             <input type="button" value="DEL" th:attr="onclick=|deleteTodoDate(${todoDate.id})|">
                         </form>
                     </span>
-                </div>
 
-                <div th:id="${'detailBlock'+todoDate.id}"></div>
+                    <input type="button" value="EDT" th:attr="onclick=|getTodoDateEditForm('home', '${selectedDate}', '${entry.key.id}', '${todoDate.id}')|">
 
-                <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'comment-register-box'+todoDate.id}" style="display: none;">
-                    <form id="comment-form">
-                        <input type="hidden" id="selectedDate" name="selectedDate" th:value="${selectedDate}">
-                        <input type="hidden" id="todoDateId" name="todoDateId" th:value="${todoDate.id}">
-                        <input type="text" id="comment" name="comment" >
-                        <button id="write" name="write" type="submit">Submit</button>
-                    </form>
+                    <div th:id="${'detailBlock'+todoDate.id}"></div>
+
+                    <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'comment-register-box'+todoDate.id}" style="display: none;">
+                        <form id="comment-form">
+                            <input type="hidden" id="selectedDate" name="selectedDate" th:value="${selectedDate}">
+                            <input type="hidden" id="todoDateId" name="todoDateId" th:value="${todoDate.id}">
+                            <input type="text" id="comment" name="comment" >
+                            <button id="write" name="write" type="submit">Submit</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

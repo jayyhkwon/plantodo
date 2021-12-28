@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class TodoDateDeleteResPlanVO {
+public class TodoDateResPlanVO {
     private String pageInfo;
     private Long planId;
 }
