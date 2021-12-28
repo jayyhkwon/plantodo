@@ -67,12 +67,13 @@
 
                 <span><a th:attr="onclick=|getTodoDateDetailBlock('${entry.key}','${todoDate.id}')|" th:text="${todoDate.title}"></a></span>
                 <span id="delete-box">
-                    <form th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:action="@{/todoDate}" method="post">
+                    <form th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
                         <input type="hidden" name="pageInfo" value="plan">
+                        <input type="hidden" name="selectedDate" th:value="${entry.key}">
                         <input type="hidden" name="planId" th:value="${plan.id}">
                         <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
                         <input type="hidden" name="_method" value="DELETE">
-                        <input type="submit" value="DEL">
+                        <input type="button" value="DEL" th:attr="onclick=|deleteTodoDate(${todoDate.id})|">
                     </form>
                 </span>
             </div>

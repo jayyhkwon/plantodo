@@ -42,7 +42,7 @@
                     <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
                     <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
                     <input type="text" id="title" name="title"/>
-                    <input type="button" id="tdSubmit" name="tdSubmit" th:attr="onclick=|registerDaily(${entry.key.id})|">
+                    <input type="button" id="tdSubmit" name="tdSubmit" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|">
                 </form>
             </div>
             <div th:each="todoDate : ${entry.value}">
@@ -52,12 +52,13 @@
 
                     <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.title}"></a></span>
                     <span id="delete-box">
-                        <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:action="@{/todoDate}" method="post">
+                        <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
                             <input type="hidden" name="pageInfo" value="home">
+                            <input type="hidden" name="selectedDate" th:value="${selectedDate}">
                             <input type="hidden" name="planId" th:value="${entry.key.id}">
                             <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
                             <input type="hidden" name="_method" value="DELETE">
-                            <input type="submit" value="DEL">
+                            <input type="button" value="DEL" th:attr="onclick=|deleteTodoDate(${todoDate.id})|">
                         </form>
                     </span>
                 </div>

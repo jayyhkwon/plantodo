@@ -5,12 +5,14 @@
 </head>
 <body>
 <div th:each="plan : ${plans}">
-    <span>
-        <span th:if="${plan.dtype.equals('Term')}"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
-        <span th:if="${plan.dtype.equals('Regular')}">상시</span>
-    </span>
-    <a th:href="@{/plan/{planId}(planId=${plan.id})}" th:text="${plan.title}"></a>
-    <span th:text="${plan.planStatus}"></span>
+    <div th:if="${!plan.planStatus.toString().equals('DELETED')}">
+        <span>
+            <span th:if="${plan.dtype.equals('Term')}"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
+            <span th:if="${plan.dtype.equals('Regular')}">상시</span>
+        </span>
+        <a th:href="@{/plan/{planId}(planId=${plan.id})}" th:text="${plan.title}"></a>
+        <span th:text="${plan.planStatus}"></span>
+    </div>
 </div>
 <a th:href="@{/home}" th:text="'HOME'"/>
 </body>

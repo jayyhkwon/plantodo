@@ -32,7 +32,32 @@ function getTodoDateRegisterForm(planId) {
     $("#dailyTdRegister" + planId).css("display", "inline");
 }
 
-function registerDaily(planId) {
+function deleteTodoDate(todoDateId) {
+    let form = $('#deleteForm'+todoDateId).serialize();
+    $.ajax({
+        url: "/todoDate",
+        type: "DELETE",
+        data: form,
+        success: function (res) {
+            if (res.pageInfo == "home") {
+                loadDateBlockData(res.searchDate);
+            } else {
+                planDetailAjax(res.planId)
+            }
+        }
+    })
+}
+
+function planDetailAjax(planId) {
+    $.ajax({
+        url: "/plan/" + planId,
+        type: "GET"
+    }).done( function (fragment) {
+        $('body').empty().html(fragment);
+    })
+}
+
+function registerTodoDateDaily(planId) {
     let form = $('#dailyTdRegisterForm'+planId).serialize();
 
     $.ajax({

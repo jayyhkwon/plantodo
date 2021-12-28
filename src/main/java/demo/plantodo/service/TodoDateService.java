@@ -167,4 +167,18 @@ public class TodoDateService {
     public void deleteDaily(Long todoDateId) {
         todoDateRepository.deleteDaily(todoDateId);
     }
+
+    public int deleteDailyByPlan(LocalDate today, Long planId) {
+        List<TodoDate> todoDateDailyList = todoRepository.findDailiesByPlanIdandDate(planId);
+        int pastTodoDateCnt = 0;
+        for (TodoDate todoDate : todoDateDailyList) {
+            if (todoDate.getDateKey().isBefore(today)) {
+                pastTodoDateCnt += 1;
+            } else {
+                deleteDaily(todoDate.getId());
+            }
+        }
+        return pastTodoDateCnt;
+    }
+
 }

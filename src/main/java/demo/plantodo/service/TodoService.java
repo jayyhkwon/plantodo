@@ -29,10 +29,11 @@ public class TodoService {
         return todoRepository.findOne(todoId);
     }
 
-    public void delete(Long todoId) {
+    public int delete(Long todoId) {
         /*todoDate 모두 불러오기*/
         LocalDate today = LocalDate.now();
         List<TodoDate> todoDateByTodoId = todoRepository.getTodoDateRepByTodoId(todoId);
+
         /*오늘 날짜 이후의 todoDate에 delete함수를 호출해서 삭제하기*/
         int deleteCnt = 0;
         for (TodoDate todoDate : todoDateByTodoId) {
@@ -44,6 +45,7 @@ public class TodoService {
         if (deleteCnt == todoDateByTodoId.size()) {
             todoRepository.delete(todoId);
         }
+        return (todoDateByTodoId.size() - deleteCnt);
     }
 
     public void update(TodoUpdateForm todoUpdateForm, Long todoId, Plan plan) {

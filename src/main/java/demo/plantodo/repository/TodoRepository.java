@@ -76,4 +76,10 @@ public class TodoRepository {
                 .setParameter("todoId", todoId)
                 .getResultList();
     }
+
+    public List<TodoDate> findDailiesByPlanIdandDate(Long planId) {
+        return em.createQuery("select td from TodoDate td where treat(td as TodoDateDaily).plan.id = :planId")
+                .setParameter("planId", planId)
+                .getResultList();
+    }
 }

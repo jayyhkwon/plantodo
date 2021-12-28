@@ -137,6 +137,7 @@ public class PlanController {
     /*플랜 삭제*/
     @DeleteMapping
     public String planDelete(@RequestParam Long planId) {
+        System.out.println("planId = " + planId);
         Plan plan = planService.findOne(planId);
         planService.delete(plan);
         return "redirect:/plan/plans";

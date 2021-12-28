@@ -107,4 +107,8 @@ public class PlanRepository {
         planTerm.setEndDate(planTermUpdateForm.getEndDate());
     }
 
+    public void updateStatusDeleted(Long planId) {
+        Plan plan = findOne(planId);
+        plan.changeToDeleted();
+    }
 }

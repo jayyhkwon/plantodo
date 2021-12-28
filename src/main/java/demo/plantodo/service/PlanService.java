@@ -20,6 +20,7 @@ import java.util.List;
 public class PlanService {
     private final TodoService todoService;
     private final PlanRepository planRepository;
+    private final TodoDateService todoDateService;
 
     /*등록*/
     public void saveRegular(PlanRegular planRegular) {
@@ -61,7 +62,17 @@ public class PlanService {
 
     /*삭제*/
     public void delete(Plan plan) {
-        planRepository.remove(plan);
+        List<Todo> todo_list = todoService.getTodoByPlanId(plan.getId());
+        int canDeletePlan = 0;
+        for (Todo todo : todo_list) {
+            canDeletePlan += todoService.delete(todo.getId());
+        }
+        canDeletePlan += todoDateService.deleteDailyByPlan(LocalDate.now(), plan.getId());
+        /*과거 기록이 0개일 경우 plan 자체를 삭제. 과거 기록이 0개가 아닐 경우 plan의 status를 deleted로 변경*/
+        if (canDeletePlan != 0) {
+            planRepository.updateStatusDeleted(plan.getId());
+        } else {
+            planRepository.remove(plan);
+        }
     }
-
 }

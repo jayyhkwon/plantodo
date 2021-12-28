@@ -44,6 +44,14 @@ public class Plan {
     }
 
     /*비즈니스 로직*/
+    public void changeToDeleted() {
+        if (this.planStatus.equals(PlanStatus.NOW) || this.planStatus.equals(PlanStatus.COMPLETED)) {
+            this.planStatus = PlanStatus.DELETED;
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
     public void changeToPast() {
         if (this.planStatus.equals(PlanStatus.NOW) || this.planStatus.equals(PlanStatus.COMPLETED)) {
             this.planStatus = PlanStatus.PAST;

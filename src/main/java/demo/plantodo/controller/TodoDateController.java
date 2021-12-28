@@ -1,8 +1,6 @@
 package demo.plantodo.controller;
 
-import com.fasterxml.jackson.databind.util.JSONWrappedObject;
-import demo.plantodo.DTO.TodoDateDailyInputVO;
-import demo.plantodo.DTO.TodoDateDailyOutputVO;
+import demo.plantodo.VO.*;
 import demo.plantodo.domain.*;
 import demo.plantodo.service.CommentService;
 import demo.plantodo.service.MemberService;
@@ -45,17 +43,27 @@ public class TodoDateController {
 
     /*todoDate 삭제*/
     @DeleteMapping
-    public RedirectView deleteTodoDate(@RequestParam Long planId, @RequestParam Long todoDateId, RedirectView redirectView) {
+    @ResponseBody
+    public Object deleteTodoDate(@ModelAttribute TodoDateDeleteDataVO todoDateDeleteDataVO) {
+        Long todoDateId = todoDateDeleteDataVO.getTodoDateId();
+        System.out.println("todoDateId = " + todoDateId);
         TodoDate one = todoDateService.findOne(todoDateId);
         if (one instanceof TodoDateRep) {
             todoDateService.deleteRep(todoDateId);
         } else {
             todoDateService.deleteDaily(todoDateId);
         }
-        String redirectURI = "/plan/" + planId;
-        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
-        redirectView.setUrl(redirectURI);
-        return redirectView;
+        if (todoDateDeleteDataVO.getPageInfo().equals("home")) {
+            TodoDateDeleteResHomeVO home = new TodoDateDeleteResHomeVO();
+            home.setSearchDate(todoDateDeleteDataVO.getSelectedDate());
+            home.setPageInfo("home");
+            return home;
+        } else {
+            TodoDateDeleteResPlanVO plan = new TodoDateDeleteResPlanVO();
+            plan.setPlanId(todoDateDeleteDataVO.getPlanId());
+            plan.setPageInfo("plan");
+            return plan;
+        }
     }
 
     /*todoDate 상태변경*/
