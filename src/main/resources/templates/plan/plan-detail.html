@@ -80,7 +80,7 @@
 
                 <input type="button" value="EDT" th:attr="onclick=|getTodoDateEditForm('plan', '${entry.key}', '${plan.id}', '${todoDate.id}')|">
 
-                <div th:id="${'detailBlock'+todoDate.id}"></div>
+                <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked"></div>
 
                 <div th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:id="${'comment-register-box'+todoDate.id}" style="display: none;">
                     <form id="comment-form">

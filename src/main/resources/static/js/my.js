@@ -29,7 +29,12 @@ function getButtonBlock(planId, todoId) {
 }
 
 function getTodoDateRegisterForm(planId) {
-    $("#dailyTdRegister" + planId).css("display", "inline");
+    if ($("#dailyTdRegister"+planId).css("display") === "none") {
+        $("#dailyTdRegister" + planId).css("display", "inline");
+    } else {
+        $("#dailyTdRegister" + planId).css("display", "none");
+    }
+
 }
 
 function deleteTodoDate(todoDateId) {
@@ -82,14 +87,22 @@ function getTodoUpdateForm(planId, todoId) {
 }
 
 function getTodoDateDetailBlock(selectedDate, tododateId) {
-    let uri = "/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
-    $.ajax({
-        url: uri,
-        type: "GET"
-    }).done(function(fragment) {
-        $('#detailBlock'+tododateId).empty().append(fragment);
-        $('#comment-register-box'+tododateId).css("display", "inline");
-    })
+    let state = $('#detailBlock' + tododateId).data("state");
+    if (state === undefined) {
+        let uri = "/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
+        $.ajax({
+            url: uri,
+            type: "GET"
+        }).done(function(fragment) {
+            $('#detailBlock'+tododateId).data("state", "clicked")
+            $('#detailBlock'+tododateId).empty().append(fragment);
+            $('#comment-register-box'+tododateId).css("display", "inline");
+        })
+    } else {
+        $('#detailBlock'+tododateId).empty()
+        $('#detailBlock'+tododateId).removeData("state");
+        $('#comment-register-box'+tododateId).css("display", "none");
+    }
 }
 
 function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
