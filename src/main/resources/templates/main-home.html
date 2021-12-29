@@ -42,7 +42,7 @@
                     <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
                     <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
                     <input type="text" id="title" name="title"/>
-                    <input type="button" id="tdSubmit" name="tdSubmit" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|">
+                    <input type="button" id="tdSubmit" name="tdSubmit" value="submit" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|">
                 </form>
             </div>
             <div th:each="todoDate : ${entry.value}">

@@ -149,13 +149,17 @@ $('body').on('click', '#editBtn', function (event) {
 $('body').on('click', '#write', function(event) {
     event.preventDefault();
     let todoDateId = $("#todoDateId").val();
+    let form = $('#comment-form').serialize();
     $.ajax({
         url: "/comment",
         type: "POST",
-        data: $('#comment-form').serialize()
+        data: form
     }).done(function(fragment) {
-        $('#detailBlock'+todoDateId).empty().append(fragment);
-        $('#comment').val("");
+        setTimeout(function () {
+            $('#detailBlock' + todoDateId).empty().append(fragment);
+            $('#comment').val("");
+        }, 100);
+
     })
 })
 
