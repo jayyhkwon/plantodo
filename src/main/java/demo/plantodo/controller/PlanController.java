@@ -14,12 +14,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -103,10 +105,12 @@ public class PlanController {
     @PostMapping("/filtering")
     public String filteredPlan(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
                                BindingResult bindingResult,
-                               Model model) {
-        String viewURI = "plan/plan-detail";
+                               Model model,
+                               RedirectAttributes rttr) {
 
-        Plan selectedPlan = planService.findOne(dateSearchForm.getPlanId());
+        String viewURI = "plan/plan-detail";
+        Long planId = dateSearchForm.getPlanId();
+        Plan selectedPlan = planService.findOne(planId);
         LocalDate searchStart = dateSearchForm.getStartDate();
         LocalDate searchEnd = dateSearchForm.getEndDate();
         LocalDate planStart = selectedPlan.getStartDate();
@@ -115,7 +119,23 @@ public class PlanController {
             PlanTerm planTerm = (PlanTerm) selectedPlan;
             planEnd = planTerm.getEndDate();
         }
+        List<Todo> todosByPlanId = todoService.getTodoByPlanId(planId);
 
+        /*시작일이 없거나 종료일이 없거나 둘 다 없는 경우 validation 추가해야함*/
+        if (searchStart == null) {
+            String errMsg = "시작일을 입력해 주십시오.";
+            bindingResult.addError(new FieldError("dateSearchForm", "startDate", errMsg));
+        }
+        if (searchEnd == null) {
+            String errMsg = "종료일을 입력해 주십시오.";
+            bindingResult.addError(new FieldError("dateSearchForm", "endDate", errMsg));
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult);
+            LinkedHashMap<LocalDate, List<TodoDate>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
+            setAttributesForPast(dateSearchForm, model, selectedPlan, all, todosByPlanId);
+            return viewURI;
+        }
         if (searchStart.isBefore(planStart)) {
             String errMsg = "시작 날짜는 " + planStart + " 이후여야 합니다.";
             bindingResult.addError(new FieldError("dateSearchForm", "startDate", errMsg));
@@ -125,14 +145,24 @@ public class PlanController {
             bindingResult.addError(new FieldError("dateSearchForm", "endDate", errMsg));
         }
         if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult);
+            LinkedHashMap<LocalDate, List<TodoDate>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
+            setAttributesForPast(dateSearchForm, model, selectedPlan, all, todosByPlanId);
             return viewURI;
         }
-        LinkedHashMap all = todoDateService.allTodoDatesInTerm(selectedPlan, searchStart, searchEnd);
-        model.addAttribute("plan", selectedPlan);
-        model.addAttribute("allTodosByDate", all);
-        model.addAttribute("dateSearchForm", dateSearchForm);
+        LinkedHashMap<LocalDate, List<TodoDate>> all = todoDateService.allTodoDatesInTerm(selectedPlan, searchStart, searchEnd);
+        setAttributesForPast(dateSearchForm, model, selectedPlan, all, todosByPlanId);
         return viewURI;
     }
+
+    private void setAttributesForPast(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm, Model model, Plan selectedPlan, LinkedHashMap<LocalDate, List<TodoDate>> all, List<Todo> todosByPlanId) {
+        model.addAttribute("plan", selectedPlan);
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("todosByPlanId", todosByPlanId);
+        model.addAttribute("allToDatesByDate", all);
+        model.addAttribute("dateSearchForm", dateSearchForm);
+    }
+
 
     /*플랜 삭제*/
     @DeleteMapping

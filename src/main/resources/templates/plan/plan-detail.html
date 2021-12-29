@@ -33,8 +33,10 @@
 <!--날짜로 검색-->
 <form th:action="@{/plan/filtering}" th:object="${dateSearchForm}" method="post">
     <input type="hidden" name="planId" th:value="${plan.id}">
-    <input type="date" id="startDate" name="startDate">
-    <input type="date" id="endDate" name="endDate">
+    <input type="date" id="startDate" name="startDate" th:value="${dateSearchForm.startDate}">
+    <p th:errors="*{startDate}"></p>
+    <input type="date" id="endDate" name="endDate" th:value="${dateSearchForm.endDate}">
+    <p th:errors="*{endDate}"></p>
     <input type="submit">
 </form>
 <!--to-do 목록 출력-->
