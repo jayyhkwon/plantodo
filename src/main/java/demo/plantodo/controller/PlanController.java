@@ -1,11 +1,14 @@
 package demo.plantodo.controller;
 
 import demo.plantodo.DTO.TodoButtonDTO;
+import demo.plantodo.VO.FilteredPlanVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.*;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
 import demo.plantodo.service.*;
+import demo.plantodo.validation.DateFilterValidatorIsInRange;
+import demo.plantodo.validation.DateFilterValidatorIsNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -32,7 +36,8 @@ public class PlanController {
     private final TodoDateService todoDateService;
     private final MemberService memberService;
     private final TodoService todoService;
-    private final CommentService commentService;
+    private final DateFilterValidatorIsNull isNullValidator;
+    private final DateFilterValidatorIsInRange isInRangeValidator;
 
     /*등록 - regular*/
     @GetMapping("/type")
@@ -105,8 +110,7 @@ public class PlanController {
     @PostMapping("/filtering")
     public String filteredPlan(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
                                BindingResult bindingResult,
-                               Model model,
-                               RedirectAttributes rttr) {
+                               Model model) {
 
         String viewURI = "plan/plan-detail";
         Long planId = dateSearchForm.getPlanId();
@@ -121,29 +125,19 @@ public class PlanController {
         }
         List<Todo> todosByPlanId = todoService.getTodoByPlanId(planId);
 
-        /*시작일이 없거나 종료일이 없거나 둘 다 없는 경우 validation 추가해야함*/
-        if (searchStart == null) {
-            String errMsg = "시작일을 입력해 주십시오.";
-            bindingResult.addError(new FieldError("dateSearchForm", "startDate", errMsg));
-        }
-        if (searchEnd == null) {
-            String errMsg = "종료일을 입력해 주십시오.";
-            bindingResult.addError(new FieldError("dateSearchForm", "endDate", errMsg));
-        }
+        /*validation - is null*/
+        FilteredPlanVO filteredPlanVO = new FilteredPlanVO(searchStart, searchEnd, planStart, planEnd);
+        isNullValidator.validate(filteredPlanVO, bindingResult);
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
             LinkedHashMap<LocalDate, List<TodoDate>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
             setAttributesForPast(dateSearchForm, model, selectedPlan, all, todosByPlanId);
             return viewURI;
         }
-        if (searchStart.isBefore(planStart)) {
-            String errMsg = "시작 날짜는 " + planStart + " 이후여야 합니다.";
-            bindingResult.addError(new FieldError("dateSearchForm", "startDate", errMsg));
-        }
-        if (searchEnd.isAfter(planEnd)) {
-            String errMsg = "종료 날짜는 " + planEnd + " 이전이어야 합니다.";
-            bindingResult.addError(new FieldError("dateSearchForm", "endDate", errMsg));
-        }
+
+        /*validation - is in range*/
+        isInRangeValidator.validate(filteredPlanVO, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
             LinkedHashMap<LocalDate, List<TodoDate>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
