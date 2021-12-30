@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -36,7 +37,6 @@ public class PlanController {
     private final TodoDateService todoDateService;
     private final MemberService memberService;
     private final TodoService todoService;
-    private final DateFilterValidatorIsNull isNullValidator;
     private final DateFilterValidatorIsInRange isInRangeValidator;
 
     /*등록 - regular*/
@@ -108,7 +108,7 @@ public class PlanController {
 
     /*일자별 필터*/
     @PostMapping("/filtering")
-    public String filteredPlan(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
+    public String filteredPlan(@Validated @ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm,
                                BindingResult bindingResult,
                                Model model) {
 
@@ -127,8 +127,6 @@ public class PlanController {
 
         /*validation - is null*/
         FilteredPlanVO filteredPlanVO = new FilteredPlanVO(searchStart, searchEnd, planStart, planEnd);
-        isNullValidator.validate(filteredPlanVO, bindingResult);
-
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
             LinkedHashMap<LocalDate, List<TodoDate>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
