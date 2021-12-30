@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
@@ -12,8 +13,13 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    @NotBlank
     private String email;
+
+    @NotBlank
     private String password;
+
+    @NotBlank
     private String nickname;
 
     public Member() {

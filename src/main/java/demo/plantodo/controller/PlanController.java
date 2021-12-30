@@ -1,32 +1,23 @@
 package demo.plantodo.controller;
 
-import demo.plantodo.DTO.TodoButtonDTO;
 import demo.plantodo.VO.FilteredPlanVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.*;
-import demo.plantodo.repository.MemberRepository;
-import demo.plantodo.repository.PlanRepository;
 import demo.plantodo.service.*;
 import demo.plantodo.validation.DateFilterValidatorIsInRange;
-import demo.plantodo.validation.DateFilterValidatorIsNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Controller

@@ -9,12 +9,12 @@
 <form th:object="${memberLoginForm}" th:action="@{/member/login}" method="post">
     <div>
         <label for="email">이메일</label>
-        <input type="text" id="email" name="email" th:value="${memberLoginForm?.email}" placeholder="이메일을 입력해주세요."/>
+        <input type="text" id="email" name="email" th:field="*{email}" placeholder="이메일을 입력해주세요."/>
         <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
     </div>
     <div>
         <label for="password">비밀번호</label>
-        <input type="text" id="password" name="password" th:value="${memberLoginForm?.password}" placeholder="비밀번호를 입력해주세요."/>
+        <input type="text" id="password" name="password" th:field="*{password}" placeholder="비밀번호를 입력해주세요."/>
         <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
     </div>
     <button type="submit">commit</button>
