@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -17,22 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Transactional
+@AutoConfigureMockMvc
 class MemberControllerTest {
     @Autowired MemberController memberController;
 
+    @Autowired
     private MockMvc mock;
-
-    @BeforeEach
-    public void setup() {
-        mock = MockMvcBuilders.standaloneSetup(memberController).build();
-    }
 
     @Test
     public void 중복회원가입테스트() throws Exception {
@@ -57,5 +54,16 @@ class MemberControllerTest {
                 .andExpect(view().name("/member/join-form"))
                 .andExpect(model().attributeExists("errors"))
                 .andDo(print());
+    }
+
+
+    @Test
+    public void joinToLoginRedirect404Test() throws Exception {
+        /*정상 값이 들어가면 302 redirect*/
+        mock.perform(post("/join")
+                .param("email", "test@abc.co.kr")
+                .param("password", "abc123!@#")
+                .param("nickname", "test"))
+                .andExpect(status().isFound());
     }
 }

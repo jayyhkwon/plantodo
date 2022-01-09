@@ -6,9 +6,12 @@
 </head>
 <body>
 <form th:object="${planTermRegisterForm}" th:action="@{/plan/term}" method="post">
-    <input type="date" id="startDate" name="startDate">
-    <input type="date" id="endDate" name="endDate">
-    <input type="text" id="title" name="title">
+    <input type="date" id="startDate" name="startDate" th:value = "*{startDate}">
+    <small th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></small>
+    <input type="date" id="endDate" name="endDate" th:value = "*{endDate}">
+    <small th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></small>
+    <input type="text" id="title" name="title" th:value = "*{title}">
+    <small th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></small>
     <input type="submit" value="전송"/>
 </form>
 <a th:href="@{/home}" th:text="'X'"/>

@@ -5,6 +5,7 @@ import demo.plantodo.domain.*;
 import demo.plantodo.form.*;
 import demo.plantodo.service.*;
 import demo.plantodo.validation.DateFilterValidatorIsInRange;
+import demo.plantodo.validation.PlanTermRegisterValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,7 @@ public class PlanController {
     private final MemberService memberService;
     private final TodoService todoService;
     private final DateFilterValidatorIsInRange isInRangeValidator;
+    private final PlanTermRegisterValidator planTermRegisterValidator;
 
     /*등록 - regular*/
     @GetMapping("/type")
@@ -61,8 +63,19 @@ public class PlanController {
     }
 
     @PostMapping("/term")
-    public String planRegisterTerm(@ModelAttribute("planTermRegisterForm") PlanTermRegisterForm planTermRegisterForm,
+    public String planRegisterTerm(@Validated @ModelAttribute("planTermRegisterForm") PlanTermRegisterForm planTermRegisterForm,
+                             BindingResult bindingResult,
                              HttpServletRequest request) {
+        /*null 검증*/
+        if (bindingResult.hasErrors()) {
+            return "plan/register-term";
+        }
+        /*startDate가 오늘 이전인 경우 / endDate가 startDate 이전인 경우 검증*/
+        planTermRegisterValidator.validate(planTermRegisterForm, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "plan/register-term";
+        }
+
         Long memberId = memberService.getMemberId(request);
         Member findMember = memberService.findOne(memberId);
         PlanTerm planTerm = new PlanTerm(findMember, PlanStatus.NOW, planTermRegisterForm.getStartDate(), planTermRegisterForm.getTitle(), planTermRegisterForm.getEndDate());

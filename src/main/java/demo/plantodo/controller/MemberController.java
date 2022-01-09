@@ -59,7 +59,7 @@ public class MemberController {
         Member member = new Member(memberJoinForm.getEmail(), memberJoinForm.getPassword(), memberJoinForm.getNickname());
         memberService.save(member);
         model.addAttribute("memberLoginForm", new MemberLoginForm());
-        return "redirect:/login";
+        return "redirect:/member/login";
     }
 
     @GetMapping("/login")
