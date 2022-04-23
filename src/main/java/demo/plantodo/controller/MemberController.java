@@ -102,8 +102,16 @@ public class MemberController {
 
         HttpSession session = request.getSession();
         session.setAttribute("memberId", rightMember.getId());
+        session.setAttribute("nickname", rightMember.getNickname());
         /*로그인 세션 유지 시간 (임의 변경 가능)*/
         session.setMaxInactiveInterval(300);
         return "redirect:/home";
+    }
+
+    @GetMapping("/logout")
+    public String logoutMember(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        session.invalidate();
+        return "redirect:/";
     }
 }
