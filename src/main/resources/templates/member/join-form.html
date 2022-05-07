@@ -18,17 +18,17 @@
             <div class="mb-3">
                 <label for="email" class="form-label">이메일</label>
                 <input type="text" id="email" name="email" class="form-control" th:field="*{email}" placeholder="이메일을 입력해주세요."/>
-                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-text"></div>
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">비밀번호</label>
                 <input type="password" id="password" name="password" class="form-control" th:field="*{password}" placeholder="비밀번호를 입력해주세요."/>
-                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="form-text"></div>
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
             </div>
             <div class="mb-3">
                 <label for="nickname" class="form-label">별명</label>
                 <input type="text" id="nickname" name="nickname" class="form-control" th:field="*{nickname}" placeholder="사용할 별명을 입력해주세요.">
-                <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="form-text"></div>
+                <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="text-danger"></div>
             </div>
             <div class="row gap-2">
                 <input type="submit" value="가입하기" class="btn btn-success"/>

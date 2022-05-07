@@ -6,93 +6,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Bootstrap CSS-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
-    <div th:replace="/fragments/header.html :: fragment-header"></div>
     <script async src="/js/jquery-3.6.0.min.js"></script>
     <script async src="/js/my.js"></script>
 </head>
 <body>
-<div th:replace="/fragments/nav.html :: fragment-nav"></div>
 
-<form th:action="@{/home}" th:object="${calendarSearchForm}" method="post">
-    <input type="text" id="targetYear" name="targetYear" th:value="*{targetYear}">년
-    <input type="text" id="targetMonth" name="targetMonth" th:value="*{targetMonth}">월
-    <input type="submit" value="검색">
-</form>
-<caption th:text="${calendarSearchForm.targetMonth}"></caption>월
-<table>
-    <tr>
-        <th>월</th>
-        <th>화</th>
-        <th>수</th>
-        <th>목</th>
-        <th>금</th>
-        <th>토</th>
-        <th>일</th>
-    </tr>
-    <tr th:each="calrow : ${calendar}">
-        <th th:each="eachDate : ${calrow}">
-            <span th:if="${eachDate == null}"> </span>
-            <button th:if="${eachDate != null}" id = "eachDate" th:attr="onclick=|loadDateBlockData('${eachDate}')|" th:text="${eachDate.getDayOfMonth()}" th:value="${eachDate.getDayOfMonth()}"></button>
-        </th>
-    </tr>
-</table>
-<div id="dateBlock">
-    <th:block id="selectedDate" th:if="${selectedDate != null}" th:text="${selectedDate}" th:value="${selectedDate}"></th:block>
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header th:replace="fragments/common :: fragment-header" class="mb-auto"></header>
 
-    <th:block th:if="${dateBlockData != null}">
-        <div th:each="entry : ${dateBlockData}">
-            <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title}"></button>
-            <div th:id="${'dailyTdRegister'+entry.key.id}" style="display: none;">
-                <form th:if="${!entry.key.planStatus.toString().equals('DELETED')}" th:id="${'dailyTdRegisterForm'+entry.key.id}">
-                    <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
-                    <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
-                    <input type="text" id="title" name="title"/>
-                    <input type="button" id="tdSubmit" name="tdSubmit" value="submit" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|">
-                </form>
-            </div>
-            <div th:each="todoDate : ${entry.value}">
-                <div th:id="${todoDate.id}">
-                    <div th:id="${'titleBox'+todoDate.id}">
-                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}">
-                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.plan.planStatus.toString().equals('PAST')}">
-
-                        <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.title}"></a></span>
+    <main class="px-3">
+        <form th:action="@{/home}" th:object="${calendarSearchForm}" method="post">
+            <div class="row g-2">
+                <div class="col-md">
+                    <div class="form-floating">
+                        <input type="text" id="targetYear" name="targetYear" th:value="*{targetYear}" class="form-control">
+                        <label for="targetYear">년</label>
                     </div>
-
-                    <span id="delete-box">
-                        <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
-                            <input type="hidden" name="pageInfo" value="home">
-                            <input type="hidden" name="selectedDate" th:value="${selectedDate}">
-                            <input type="hidden" name="planId" th:value="${entry.key.id}">
-                            <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <input type="button" value="DEL" th:attr="onclick=|deleteTodoDate(${todoDate.id})|">
-                        </form>
-                    </span>
-
-                    <input type="button" value="EDT" th:attr="onclick=|getTodoDateEditForm('home', '${selectedDate}', '${entry.key.id}', '${todoDate.id}')|">
-
-                    <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked"></div>
-
-                    <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'comment-register-box'+todoDate.id}" style="display: none;">
-                        <form id="comment-form">
-                            <input type="hidden" id="selectedDate" name="selectedDate" th:value="${selectedDate}">
-                            <input type="hidden" id="todoDateId" name="todoDateId" th:value="${todoDate.id}">
-                            <input type="text" id="comment" name="comment" >
-                            <button id="write" name="write" type="submit">Submit</button>
-                        </form>
+                </div>
+                <div class="col-md">
+                    <div class="form-floating">
+                        <input type="text" id="targetMonth" name="targetMonth" th:value="*{targetMonth}" class="form-control">
+                        <label for="targetMonth">월</label>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="d-grid gap-2">
+                        <input type="submit" value="검색" class="btn btn-primary">
                     </div>
                 </div>
             </div>
-        </div>
-    </th:block>
-</div>
 
-<a href="/plan/type">PLAN REGISTER</a>
-<a href="/plan/plans">MY PLANS</a>
-<a href="/todo/register">TODO REGISTER</a>
-<footer th:replace="/fragments/footer.html :: fragment-footer"></footer>
+        </form>
+        <caption th:text="${calendarSearchForm.targetMonth}"></caption>월
+        <table class="table">
+            <tr>
+                <th>월</th>
+                <th>화</th>
+                <th>수</th>
+                <th>목</th>
+                <th>금</th>
+                <th>토</th>
+                <th>일</th>
+            </tr>
+            <tr th:each="calrow : ${calendar}">
+                <th th:each="eachDate : ${calrow}">
+                    <span th:if="${eachDate == null}"> </span>
+                    <a th:if="${eachDate != null}" id = "eachDate" th:attr="onclick=|loadDateBlockData('${eachDate}')|" th:text="${eachDate.getDayOfMonth()}" th:value="${eachDate.getDayOfMonth()}"></a>
+                </th>
+            </tr>
+        </table>
+
+        <div>
+            <a href="/plan/type" role="button" class="btn btn-primary">PLAN REGISTER</a>
+            <a href="/todo/register" role="button" class="btn btn-primary">TODO REGISTER</a>
+        </div>
+
+        <div id="dateBlock">
+            <th:block id="selectedDate" th:if="${selectedDate != null}" th:text="${selectedDate}" th:value="${selectedDate}"></th:block>
+
+            <th:block th:if="${dateBlockData != null}">
+                <div th:each="entry : ${dateBlockData}" class="container-sm">
+                    <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title}" class="btn btn-info"></button>
+                    <div th:id="${'dailyTdRegister'+entry.key.id}" style="display: none;">
+                        <form th:if="${!entry.key.planStatus.toString().equals('DELETED')}" th:id="${'dailyTdRegisterForm'+entry.key.id}" class="row g-1">
+                            <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
+                            <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
+                            <div class="col-8">
+                                <label for="title" class="form-label">타이틀</label>
+                                <input type="text" id="title" name="title" class="form-control"/>
+                            </div>
+                            <div class="col-4">
+                                <input type="button" id="tdSubmit" name="tdSubmit" value="전송" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|" class="btn btn-primary btn-sm">
+                            </div>
+                        </form>
+                    </div>
+                    <div th:each="todoDate : ${entry.value}">
+                        <div th:id="${todoDate.id}" class="container">
+                            <div class="container">
+                                <div class="row">
+                                    <div th:id="${'titleBox'+todoDate.id}" class="col-10">
+                                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}" class="form-check-input">
+                                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.plan.planStatus.toString().equals('PAST')}" class="form-check-input">
+                                        <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.title}"></a></span>
+                                    </div>
+                                    <div class="col-1">
+                                        <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
+                                            <input type="hidden" name="pageInfo" value="home">
+                                            <input type="hidden" name="selectedDate" th:value="${selectedDate}">
+                                            <input type="hidden" name="planId" th:value="${entry.key.id}">
+                                            <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <input type="button" value="DEL" th:attr="onclick=|deleteTodoDate(${todoDate.id})|" class="btn btn-primary btn-sm">
+                                        </form>
+                                    </div>
+                                    <div class="col-1">
+                                        <input type="button" value="EDT" th:attr="onclick=|getTodoDateEditForm('home', '${selectedDate}', '${entry.key.id}', '${todoDate.id}')|" class="btn btn-primary btn-sm">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container">
+                                <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked" class="row"></div>
+
+                                <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'comment-register-box'+todoDate.id}" style="display: none;">
+                                    <form th:id="${'comment-form'+todoDate.id}" class="row">
+                                        <input type="text" th:id="${'comment-input'+todoDate.id}" th:name=${'comment-input'+todoDate.id} class="form-control">
+                                        <button id="write" type="button" name="write" class="btn btn-dark btn-sm" th:attr="onclick=|registerComment('${selectedDate}', '${todoDate.id}')|">전송</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+
+    </main>
+
+    <footer th:replace="/fragments/common :: fragment-footer"></footer>
+
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 </html>

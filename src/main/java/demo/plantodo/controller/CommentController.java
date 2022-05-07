@@ -26,6 +26,7 @@ public class CommentController {
                                   @RequestParam Long todoDateId,
                                   @RequestParam String comment,
                                   Model model) {
+
         commentService.save(todoDateId, comment);
 
         TodoDate todoDate = todoDateService.findOne(todoDateId);

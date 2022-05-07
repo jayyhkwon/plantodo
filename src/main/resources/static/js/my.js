@@ -121,6 +121,35 @@ function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
     btn.id = "editBtn"
     btn.name = "editBtn"
     btn.value = "update"
+    btn.onclick = function() {
+        let pageInfo = $('#editTitle').attr("pageInfo");
+        let selectedDate = $('#editTitle').attr("selectedDate");
+        let planId = $('#editTitle').attr("planId");
+        let todoDateId = $('#editTitle').attr("todoDateId");
+
+        let data = { pageInfo: pageInfo,
+            selectedDate: selectedDate,
+            planId: planId,
+            todoDateId: todoDateId,
+            updateTitle: $('#editTitle').val() }
+
+        console.log(data);
+
+        $.ajax({
+            url: "/todoDate",
+            type: "PUT",
+            data: data,
+            success: function (res) {
+                setTimeout(function () {
+                    if (res.pageInfo == "home") {
+                        loadDateBlockData(res.searchDate);
+                    } else {
+                        planDetailAjax(res.planId);
+                    }
+                }, 100);
+            }
+        })
+    }
 
     div.appendChild(input);
     div.appendChild(btn);
@@ -128,53 +157,55 @@ function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
     $("#" + todoDateId).empty().html(div);
 }
 
-$('body').on('click', '#editBtn', function (event) {
-    let pageInfo = $('#editTitle').attr("pageInfo");
-    let selectedDate = $('#editTitle').attr("selectedDate");
-    let planId = $('#editTitle').attr("planId");
-    let todoDateId = $('#editTitle').attr("todoDateId");
+// $('body').on('click', '#editBtn', function (event) {
+//     let pageInfo = $('#editTitle').attr("pageInfo");
+//     let selectedDate = $('#editTitle').attr("selectedDate");
+//     let planId = $('#editTitle').attr("planId");
+//     let todoDateId = $('#editTitle').attr("todoDateId");
+//
+//     let data = { pageInfo: pageInfo,
+//     selectedDate: selectedDate,
+//     planId: planId,
+//     todoDateId: todoDateId,
+//     updateTitle: $('#editTitle').val() }
+//
+//     console.log(data);
+//
+//     $.ajax({
+//         url: "/todoDate",
+//         type: "PUT",
+//         data: data,
+//         success: function (res) {
+//             setTimeout(function () {
+//                 if (res.pageInfo == "home") {
+//                     loadDateBlockData(res.searchDate);
+//                 } else {
+//                     planDetailAjax(res.planId);
+//                 }
+//             }, 100);
+//         }
+//     })
+//
+// })
 
-    let data = { pageInfo: pageInfo,
-    selectedDate: selectedDate,
-    planId: planId,
-    todoDateId: todoDateId,
-    updateTitle: $('#editTitle').val() }
+function registerComment(selectedDate, todoDateId) {
 
-    console.log(data);
+    let data = {
+        'selectedDate': selectedDate,
+        'todoDateId': todoDateId,
+        'comment': $('#comment-input'+todoDateId).val()
+    }
 
-    $.ajax({
-        url: "/todoDate",
-        type: "PUT",
-        data: data,
-        success: function (res) {
-            setTimeout(function () {
-                if (res.pageInfo == "home") {
-                    loadDateBlockData(res.searchDate);
-                } else {
-                    planDetailAjax(res.planId);
-                }
-            }, 100);
-        }
-    })
-
-})
-
-$('body').on('click', '#write', function(event) {
-    event.preventDefault();
-    let todoDateId = $("#todoDateId").val();
-    let form = $('#comment-form').serialize();
     $.ajax({
         url: "/comment",
         type: "POST",
-        data: form
+        data: data
     }).done(function(fragment) {
-        setTimeout(function () {
-            $('#detailBlock' + todoDateId).empty().append(fragment);
-            $('#comment').val("");
-        }, 100);
-
+        $('#detailBlock' + todoDateId).empty().append(fragment);
+        $('#comment-input' + todoDateId).val("");
     })
-})
+}
+
 
 function deleteComment(selectedDate, commentId, todoDateId) {
     let uri = "/comment?selectedDate="+selectedDate+"&commentId="+commentId+"&todoDateId="+todoDateId;
@@ -202,7 +233,8 @@ function getCommentUpdateForm(selectedDate, todoDateId, commentId, comment) {
 
     $('#'+commentId+"title").html(input);
     $('#'+commentId+'editBtn').empty().html(button);
-    $('#' + commentId + "buttons").css("display", "none");
+    $('#' + commentId + "delbtn").css("display", "none");
+    $('#' + commentId + "edtbtn").css("display", "none");
 
 }
 
@@ -221,7 +253,8 @@ $('body').on('click', '#edit', function(event) {
 
             $("#"+commentId+"title").empty().html(span);
             $("#"+commentId+"editBtn").empty();
-            $("#"+commentId+"buttons").css("display", "inline");
+            $("#"+commentId+"delbtn").css("display", "inline");
+            $("#"+commentId+"edtbtn").css("display", "inline");
         },
         error: function(err) {
             alert(err);
