@@ -62,6 +62,9 @@ function planDetailAjax(planId) {
     })
 }
 
+
+// tododate
+
 function registerTodoDateDaily(planId) {
     let form = $('#dailyTdRegisterForm'+planId).serialize();
 
@@ -85,27 +88,6 @@ function getTodoUpdateForm(planId, todoId) {
         $('#todoButtonBlock').replaceWith(fragment);
     })
 }
-
-
-$(document).on("click", "#blockTrigger", function(event) {
-    event.preventDefault();
-    let selectedDate = $(this).attr("selectedDate");
-    let tododateId = $(this).attr("todoDateId");
-    let state = $('#detailBlock' + tododateId).data("state");
-    if (state === undefined) {
-        let uri = "/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
-        $.ajax({
-            url: uri,
-            type: "GET"
-        }).done(function(fragment) {
-            $('#detailBlock'+tododateId).data("state", "clicked");
-            $('#detailBlock'+tododateId).empty().append(fragment);
-        })
-    } else {
-        $('#detailBlock'+tododateId).empty()
-        $('#detailBlock'+tododateId).removeData("state");
-    }
-});
 
 
 function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
@@ -160,36 +142,28 @@ function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
     $("#" + todoDateId).empty().html(div);
 }
 
-// $('body').on('click', '#editBtn', function (event) {
-//     let pageInfo = $('#editTitle').attr("pageInfo");
-//     let selectedDate = $('#editTitle').attr("selectedDate");
-//     let planId = $('#editTitle').attr("planId");
-//     let todoDateId = $('#editTitle').attr("todoDateId");
-//
-//     let data = { pageInfo: pageInfo,
-//     selectedDate: selectedDate,
-//     planId: planId,
-//     todoDateId: todoDateId,
-//     updateTitle: $('#editTitle').val() }
-//
-//     console.log(data);
-//
-//     $.ajax({
-//         url: "/todoDate",
-//         type: "PUT",
-//         data: data,
-//         success: function (res) {
-//             setTimeout(function () {
-//                 if (res.pageInfo == "home") {
-//                     loadDateBlockData(res.searchDate);
-//                 } else {
-//                     planDetailAjax(res.planId);
-//                 }
-//             }, 100);
-//         }
-//     })
-//
-// })
+// comment
+
+$(document).on("click", "#blockTrigger", function(event) {
+    event.preventDefault();
+    let selectedDate = $(this).attr("selectedDate");
+    let tododateId = $(this).attr("todoDateId");
+    let state = $('#detailBlock' + tododateId).data("state");
+    if (state === undefined) {
+        let uri = "/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
+        $.ajax({
+            url: uri,
+            type: "GET"
+        }).done(function(fragment) {
+            $('#detailBlock'+tododateId).data("state", "clicked");
+            $('#detailBlock'+tododateId).empty().append(fragment);
+        })
+    } else {
+        $('#detailBlock'+tododateId).empty()
+        $('#detailBlock'+tododateId).removeData("state");
+    }
+});
+
 
 function registerComment(selectedDate, todoDateId) {
 
@@ -220,20 +194,21 @@ function deleteComment(selectedDate, commentId, todoDateId) {
     })
 }
 
-function getCommentUpdateForm(selectedDate, todoDateId, commentId, comment) {
+function getCommentUpdateForm(selectedDate, todoDateId, commentId) {
     let input = document.createElement("input");
     input.id = "commentUpdateInput"
     input.setAttribute("selectedDate", selectedDate);
     input.setAttribute("todoDateId", todoDateId);
     input.setAttribute("commentId", commentId);
-    input.value = comment;
+    input.className = "form-control"
+    input.value = $('#'+commentId+"title").text();
 
     let button = document.createElement("input");
     button.id = "edit"
     button.name = "edit"
     button.type = "button"
     button.value = "edit"
-
+    button.className = "btn btn-light btn-sm"
     $('#'+commentId+"title").html(input);
     $('#'+commentId+'editBtn').empty().html(button);
     $('#' + commentId + "delbtn").css("display", "none");
@@ -241,7 +216,7 @@ function getCommentUpdateForm(selectedDate, todoDateId, commentId, comment) {
 
 }
 
-$('body').on('click', '#edit', function(event) {
+$(document).on('click', '#edit', function(event) {
     let commentId = $("#commentUpdateInput").attr("commentId");
     let updatedComment = $("#commentUpdateInput").val();
     event.preventDefault();
