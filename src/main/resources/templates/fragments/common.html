@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<header th:fragment="fragment-header" class="mb-auto">
+    <div>
+        <h3 th:text="${session.nickname}" class="float-md-start mb-0"></h3>
+        <nav class="nav nav-masthead justify-content-center float-md-end">
+            <a th:href="@{/home}" th:text="'HOME'" class="nav-link"/>
+            <a href="/plan/plans" class="nav-link">MY PLANS</a>
+            <a href="/member/logout" class="nav-link">LOGOUT</a>
+        </nav>
+    </div>
+</header>
+
+<footer th:fragment="fragment-footer" class="mt-auto text-white-50">
+    <p>Cover template for <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>, by <a href="https://github.com/yeonleaf/plantodo" class="text-white">@yeon_leaf</a>.</p>
+</footer>
+
+</body>
+</html>

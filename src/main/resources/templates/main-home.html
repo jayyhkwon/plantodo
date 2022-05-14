@@ -109,7 +109,7 @@
 
                                 <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'comment-register-box'+todoDate.id}" style="display: none;">
                                     <form th:id="${'comment-form'+todoDate.id}" class="row">
-                                        <input type="text" th:id="${'comment-input'+todoDate.id}" th:name=${'comment-input'+todoDate.id} class="form-control">
+                                        <input type="text" th:id="${'comment-input'+todoDate.id}" th:name="${'comment-input'+todoDate.id}" class="form-control">
                                         <button id="write" type="button" name="write" class="btn btn-dark btn-sm" th:attr="onclick=|registerComment('${selectedDate}', '${todoDate.id}')|">전송</button>
                                     </form>
                                 </div>

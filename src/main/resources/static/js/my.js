@@ -88,13 +88,15 @@ function getTodoUpdateForm(planId, todoId) {
 
 function getTodoDateDetailBlock(selectedDate, tododateId) {
     let state = $('#detailBlock' + tododateId).data("state");
+
     if (state === undefined) {
         let uri = "/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
         $.ajax({
             url: uri,
             type: "GET"
         }).done(function(fragment) {
-            $('#detailBlock'+tododateId).data("state", "clicked")
+            console.log("done");
+            $('#detailBlock'+tododateId).data("state", "clicked");
             $('#detailBlock'+tododateId).empty().append(fragment);
             $('#comment-register-box'+tododateId).css("display", "inline");
         })
