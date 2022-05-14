@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Bootstrap CSS-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script async src="/js/jquery-3.6.0.min.js"></script>
-    <script async src="/js/my.js"></script>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/my.js"></script>
 </head>
 <body>
 
@@ -87,7 +87,7 @@
                                     <div th:id="${'titleBox'+todoDate.id}" class="col-10">
                                         <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}" class="form-check-input">
                                         <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.plan.planStatus.toString().equals('PAST')}" class="form-check-input">
-                                        <span><a th:attr="onclick=|getTodoDateDetailBlock('${selectedDate}','${todoDate.id}')|" th:text="${todoDate.title}"></a></span>
+                                        <span><input id="blockTrigger" type="button" th:selectedDate="${selectedDate}" th:todoDateId="${todoDate.id}" th:value="${todoDate.title}" class="btn btn-sm btn-link"></span>
                                     </div>
                                     <div class="col-1">
                                         <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
@@ -106,13 +106,6 @@
                             </div>
                             <div class="container">
                                 <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked" class="row"></div>
-
-                                <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'comment-register-box'+todoDate.id}" style="display: none;">
-                                    <form th:id="${'comment-form'+todoDate.id}" class="row">
-                                        <input type="text" th:id="${'comment-input'+todoDate.id}" th:name="${'comment-input'+todoDate.id}" class="form-control">
-                                        <button id="write" type="button" name="write" class="btn btn-dark btn-sm" th:attr="onclick=|registerComment('${selectedDate}', '${todoDate.id}')|">전송</button>
-                                    </form>
-                                </div>
                             </div>
                         </div>
                     </div>

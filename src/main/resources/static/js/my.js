@@ -86,26 +86,27 @@ function getTodoUpdateForm(planId, todoId) {
     })
 }
 
-function getTodoDateDetailBlock(selectedDate, tododateId) {
-    let state = $('#detailBlock' + tododateId).data("state");
 
+$(document).on("click", "#blockTrigger", function(event) {
+    event.preventDefault();
+    let selectedDate = $(this).attr("selectedDate");
+    let tododateId = $(this).attr("todoDateId");
+    let state = $('#detailBlock' + tododateId).data("state");
     if (state === undefined) {
         let uri = "/todoDate?todoDateId=" + tododateId + "&selectedDate=" + selectedDate;
         $.ajax({
             url: uri,
             type: "GET"
         }).done(function(fragment) {
-            console.log("done");
             $('#detailBlock'+tododateId).data("state", "clicked");
             $('#detailBlock'+tododateId).empty().append(fragment);
-            $('#comment-register-box'+tododateId).css("display", "inline");
         })
     } else {
         $('#detailBlock'+tododateId).empty()
         $('#detailBlock'+tododateId).removeData("state");
-        $('#comment-register-box'+tododateId).css("display", "none");
     }
-}
+});
+
 
 function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
     let div = document.createElement("div");
@@ -195,7 +196,7 @@ function registerComment(selectedDate, todoDateId) {
     let data = {
         'selectedDate': selectedDate,
         'todoDateId': todoDateId,
-        'comment': $('#comment-input'+todoDateId).val()
+        'comment': $('#comment-input').val()
     }
 
     $.ajax({
@@ -204,7 +205,7 @@ function registerComment(selectedDate, todoDateId) {
         data: data
     }).done(function(fragment) {
         $('#detailBlock' + todoDateId).empty().append(fragment);
-        $('#comment-input' + todoDateId).val("");
+        $('#comment-input').val("");
     })
 }
 

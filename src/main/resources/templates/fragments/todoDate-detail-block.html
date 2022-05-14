@@ -6,14 +6,22 @@
     <script async src="/js/my.js"></script>
 </head>
 <body>
-    <div id="todoDateDetailList" th:fragment="todoDateDetailList" th:each="comment : ${comments}" class="row">
-        <div th:id="${comment.id+'editBtn'}"></div>
-        <div th:id="${comment.id+'title'}" th:text="${comment.comment}" th:value="${comment.id}" class="col-8"></div>
-        <div th:id="${comment.id+'delbtn'}" class="col-1">
-            <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|deleteComment('${selectedDate}', '${comment.id}', '${todoDate.id}')|" class="btn btn-light btn-sm">DEL</a>
+    <div id="todoDateDetailList" th:fragment="todoDateDetailList">
+        <div th:each="comment : ${comments}" class="row">
+            <div th:id="${comment.id+'editBtn'}"></div>
+            <div th:id="${comment.id+'title'}" th:text="${comment.comment}" th:value="${comment.id}" class="col-8"></div>
+            <div th:id="${comment.id+'delbtn'}" class="col-1">
+                <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|deleteComment('${selectedDate}', '${comment.id}', '${todoDate.id}')|" class="btn btn-light btn-sm">DEL</a>
+            </div>
+            <div th:id="${comment.id+'edtbtn'}" class="col-1">
+                <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|getCommentUpdateForm('${selectedDate}', '${todoDate.id}', '${comment.id}', '${comment.comment}')|" class="btn btn-light btn-sm">EDT</a>
+            </div>
         </div>
-        <div th:id="${comment.id+'edtbtn'}" class="col-1">
-            <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|getCommentUpdateForm('${selectedDate}', '${todoDate.id}', '${comment.id}', '${comment.comment}')|" class="btn btn-light btn-sm">EDT</a>
+        <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}">
+            <form th:id="${'comment-form'}" class = row>
+                <input type="text" th:id="${'comment-input'}" class="form-control">
+                <button th:id="${'comment-write'}" type="button" class="btn btn-dark btn-sm" th:attr="onclick=|registerComment('${selectedDate}', '${todoDate.id}')|">전송</button>
+            </form>
         </div>
     </div>
 </body>
