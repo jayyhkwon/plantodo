@@ -8,19 +8,28 @@
 <body>
     <div id="todoDateDetailList" th:fragment="todoDateDetailList">
         <div th:each="comment : ${comments}" class="row">
-            <div th:id="${comment.id+'editBtn'}"></div>
             <div th:id="${comment.id+'title'}" th:text="${comment.comment}" th:value="${comment.id}" class="col-8"></div>
-            <div th:id="${comment.id+'delbtn'}" class="col-1">
+
+            <div th:id="${comment.id+'delbtn'}" class="col">
                 <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|deleteComment('${selectedDate}', '${comment.id}', '${todoDate.id}')|" class="btn btn-light btn-sm">DEL</a>
             </div>
-            <div th:id="${comment.id+'edtbtn'}" class="col-1">
+            <div th:id="${comment.id+'edtAfter'}" class="col" style="display: none">
+                <button id="edit" type="button" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" class="btn btn-light btn-sm">EDT</button>
+            </div>
+            <div th:id="${comment.id+'edtBefore'}" class="col">
                 <a th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|getCommentUpdateForm('${selectedDate}', '${todoDate.id}', '${comment.id}', '${comment.comment}')|" class="btn btn-light btn-sm">EDT</a>
             </div>
         </div>
-        <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}">
-            <form th:id="${'comment-form'}" class = row>
-                <input type="text" th:id="${'comment-input'}" class="form-control">
-                <button th:id="${'comment-write'}" type="button" class="btn btn-dark btn-sm" th:attr="onclick=|registerComment('${selectedDate}', '${todoDate.id}')|">전송</button>
+        <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" class = "row">
+            <form th:id="${'comment-form'}">
+                <div class="col-sm">
+                    <input type="text" th:id="${'comment-input'}" class="form-control">
+                </div>
+                <div class="col-sm">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button th:id="${'comment-write'}" type="button" class="btn btn-dark btn-sm" th:attr="onclick=|registerComment('${selectedDate}', '${todoDate.id}')|">전송</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

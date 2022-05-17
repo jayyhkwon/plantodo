@@ -37,7 +37,8 @@
             </div>
 
         </form>
-        <caption th:text="${calendarSearchForm.targetMonth}"></caption>월
+        <br>
+        <p th:text="${calendarSearchForm.targetMonth+'월'}" class="fs-3 fw-bold"></p>
         <table class="table">
             <tr>
                 <th>월</th>
@@ -55,35 +56,37 @@
                 </th>
             </tr>
         </table>
-
-        <div>
+        <div class="d-grid gap-2">
             <a href="/plan/type" role="button" class="btn btn-primary">PLAN REGISTER</a>
             <a href="/todo/register" role="button" class="btn btn-primary">TODO REGISTER</a>
         </div>
-
-        <div id="dateBlock">
-            <th:block id="selectedDate" th:if="${selectedDate != null}" th:text="${selectedDate}" th:value="${selectedDate}"></th:block>
-
-            <th:block th:if="${dateBlockData != null}">
-                <div th:each="entry : ${dateBlockData}" class="container-sm">
-                    <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title}" class="btn btn-info"></button>
-                    <div th:id="${'dailyTdRegister'+entry.key.id}" style="display: none;">
-                        <form th:if="${!entry.key.planStatus.toString().equals('DELETED')}" th:id="${'dailyTdRegisterForm'+entry.key.id}" class="row g-1">
-                            <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
-                            <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
-                            <div class="col-8">
-                                <label for="title" class="form-label">타이틀</label>
-                                <input type="text" id="title" name="title" class="form-control"/>
+        <br>
+        <div class="container-sm overflow-hidden">
+            <div id="dateBlock">
+                <th:block th:if="${dateBlockData != null}">
+                    <p id="selectedDate" th:text="${selectedDate}" th:value="${selectedDate}" class="fs-3 fw-bold"></p>
+                    <div th:each="entry : ${dateBlockData}">
+                        <div class="row g-3">
+                            <div class="col-1">
+                                <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title}" class="btn btn-info"></button>
                             </div>
-                            <div class="col-4">
-                                <input type="button" id="tdSubmit" name="tdSubmit" value="전송" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|" class="btn btn-primary btn-sm">
-                            </div>
-                        </form>
-                    </div>
-                    <div th:each="todoDate : ${entry.value}">
-                        <div th:id="${todoDate.id}" class="container">
-                            <div class="container">
-                                <div class="row">
+                        </div>
+                        <div th:id="${'dailyTdRegister'+entry.key.id}" style="display: none;" class="row gy-3">
+                            <form th:if="${!entry.key.planStatus.toString().equals('DELETED')}" th:id="${'dailyTdRegisterForm'+entry.key.id}" class="row g-1">
+                                <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
+                                <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
+                                <div class="col-8">
+                                    <label for="title" class="form-label">타이틀</label>
+                                    <input type="text" id="title" name="title" class="form-control"/>
+                                </div>
+                                <div class="col-4">
+                                    <input type="button" id="tdSubmit" name="tdSubmit" value="전송" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|" class="btn btn-primary btn-sm">
+                                </div>
+                            </form>
+                        </div>
+                        <div th:each="todoDate : ${entry.value}">
+                            <div th:id="${todoDate.id}" class="container">
+                                <div class="row g-3">
                                     <div th:id="${'titleBox'+todoDate.id}" class="col-10">
                                         <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}" class="form-check-input">
                                         <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.plan.planStatus.toString().equals('PAST')}" class="form-check-input">
@@ -103,18 +106,19 @@
                                         <input type="button" value="EDT" th:attr="onclick=|getTodoDateEditForm('home', '${selectedDate}', '${entry.key.id}', '${todoDate.id}')|" class="btn btn-primary btn-sm">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="container">
-                                <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked" class="row"></div>
+                                <div class="row g-3">
+                                    <div class="col-1"></div>
+                                    <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked" class="col"></div>
+                                    <div class="col-1"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </th:block>
+                </th:block>
+            </div>
         </div>
-
     </main>
-
+    <br>
     <footer th:replace="/fragments/common :: fragment-footer"></footer>
 
 </div>

@@ -203,16 +203,10 @@ function getCommentUpdateForm(selectedDate, todoDateId, commentId) {
     input.className = "form-control"
     input.value = $('#'+commentId+"title").text();
 
-    let button = document.createElement("input");
-    button.id = "edit"
-    button.name = "edit"
-    button.type = "button"
-    button.value = "edit"
-    button.className = "btn btn-light btn-sm"
     $('#'+commentId+"title").html(input);
-    $('#'+commentId+'editBtn').empty().html(button);
     $('#' + commentId + "delbtn").css("display", "none");
-    $('#' + commentId + "edtbtn").css("display", "none");
+    $('#' + commentId + "edtBefore").css("display", "none");
+    $('#' + commentId + "edtAfter").css("display", "inline");
 
 }
 
