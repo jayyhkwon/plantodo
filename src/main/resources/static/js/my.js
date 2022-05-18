@@ -210,10 +210,10 @@ function getCommentUpdateForm(selectedDate, todoDateId, commentId) {
 
 }
 
-$(document).on('click', '#edit', function(event) {
+
+function editComment() {
     let commentId = $("#commentUpdateInput").attr("commentId");
     let updatedComment = $("#commentUpdateInput").val();
-    event.preventDefault();
     $.ajax({
         url: "/comment?commentId="+commentId+"&updatedComment="+updatedComment,
         type: "PUT",
@@ -232,4 +232,4 @@ $(document).on('click', '#edit', function(event) {
             alert(err);
         }
     })
-})
+}

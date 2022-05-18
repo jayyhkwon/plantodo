@@ -66,7 +66,7 @@
                 <th:block th:if="${dateBlockData != null}">
                     <p id="selectedDate" th:text="${selectedDate}" th:value="${selectedDate}" class="fs-3 fw-bold"></p>
                     <div th:each="entry : ${dateBlockData}">
-                        <div class="row g-3">
+                        <div class="row mx-2 my-2">
                             <div class="col-1">
                                 <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title}" class="btn btn-info"></button>
                             </div>
@@ -86,27 +86,27 @@
                         </div>
                         <div th:each="todoDate : ${entry.value}">
                             <div th:id="${todoDate.id}" class="container">
-                                <div class="row g-3">
+                                <div class="row mx-1 my-1">
                                     <div th:id="${'titleBox'+todoDate.id}" class="col-10">
                                         <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.todo.plan.planStatus.toString().equals('PAST')}" class="form-check-input">
                                         <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.plan.planStatus.toString().equals('PAST')}" class="form-check-input">
                                         <span><input id="blockTrigger" type="button" th:selectedDate="${selectedDate}" th:todoDateId="${todoDate.id}" th:value="${todoDate.title}" class="btn btn-sm btn-link"></span>
                                     </div>
-                                    <div class="col-1">
-                                        <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
-                                            <input type="hidden" name="pageInfo" value="home">
-                                            <input type="hidden" name="selectedDate" th:value="${selectedDate}">
-                                            <input type="hidden" name="planId" th:value="${entry.key.id}">
-                                            <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <input type="button" value="DEL" th:attr="onclick=|deleteTodoDate(${todoDate.id})|" class="btn btn-primary btn-sm">
-                                        </form>
-                                    </div>
-                                    <div class="col-1">
-                                        <input type="button" value="EDT" th:attr="onclick=|getTodoDateEditForm('home', '${selectedDate}', '${entry.key.id}', '${todoDate.id}')|" class="btn btn-primary btn-sm">
+                                    <div class="col-2">
+                                        <div class="btn-group" role="group" area-label="Basic example">
+                                            <form th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
+                                                <input type="hidden" name="pageInfo" value="home">
+                                                <input type="hidden" name="selectedDate" th:value="${selectedDate}">
+                                                <input type="hidden" name="planId" th:value="${entry.key.id}">
+                                                <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="button" th:attr="onclick=|deleteTodoDate(${todoDate.id})|" class="btn btn-primary btn-sm">DEL</button>
+                                            </form>
+                                            <button type="button" th:attr="onclick=|getTodoDateEditForm('home', '${selectedDate}', '${entry.key.id}', '${todoDate.id}')|" class="btn btn-primary btn-sm">EDT</button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row g-3">
+                                <div class="row mx-3 my-3">
                                     <div class="col-1"></div>
                                     <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked" class="col"></div>
                                     <div class="col-1"></div>
