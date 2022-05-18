@@ -10,19 +10,34 @@
     <script async src="/js/my.js"></script>
 </head>
 <body>
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header th:replace="fragments/common :: fragment-header"></header>
 
-<div th:replace="fragments/common :: fragment-header"></div>
-
-<div th:each="plan : ${plans}">
-    <div th:if="${!plan.planStatus.toString().equals('DELETED')}">
-        <span>
-            <span th:if="${plan.dtype.equals('Term')}"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
-            <span th:if="${plan.dtype.equals('Regular')}">상시</span>
-        </span>
-        <a th:href="@{/plan/{planId}(planId=${plan.id})}" th:text="${plan.title}"></a>
-        <span th:text="${plan.planStatus}"></span>
+    <div class="container-fluid position-relative m-4">
+        <div th:each="plan : ${plans}">
+            <div th:if="${!plan.planStatus.toString().equals('DELETED')}" class="row mx-auto my-auto">
+                <th:block th:if="${plan.dtype.equals('Term')}">
+                    <div class="col">
+                        <div class="position-relative"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></div>
+                    </div>
+                </th:block>
+                <th:block th:if="${plan.dtype.equals('Regular')}">
+                    <div class="col">
+                        <div class="position-relative">상시</div>
+                    </div>
+                </th:block>
+                <div class="col">
+                    <a th:href="@{/plan/{planId}(planId=${plan.id})}" th:text="${plan.title}"></a>
+                </div>
+                <div class="col">
+                    <span th:if="${plan.planStatus.toString().equals('PAST')}" th:text="${plan.planStatus}" class="badge bg-dark position-relative"></span>
+                    <span th:if="${plan.planStatus.toString().equals('COMPLETED')}" th:text="${plan.planStatus}" class="badge bg-secondary position-relative"></span>
+                    <span th:if="${plan.planStatus.toString().equals('NOW')}" th:text="${plan.planStatus}" class="badge bg-primary position-relative"></span>
+                </div>
+            </div>
+        </div>
     </div>
+
 </div>
-<a th:href="@{/home}" th:text="'HOME'"/>
 </body>
 </html>
