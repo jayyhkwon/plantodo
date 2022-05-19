@@ -102,7 +102,7 @@
                                                 <input type="hidden" name="_method" value="DELETE">
                                                 <button type="button" th:attr="onclick=|deleteTodoDate(${todoDate.id})|" class="btn btn-primary btn-sm">DEL</button>
                                             </form>
-                                            <button type="button" th:attr="onclick=|getTodoDateEditForm('home', '${selectedDate}', '${entry.key.id}', '${todoDate.id}')|" class="btn btn-primary btn-sm">EDT</button>
+                                            <button th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" type="button" th:attr="onclick=|getTodoDateEditForm('home', '${selectedDate}', '${entry.key.id}', '${todoDate.id}')|" class="btn btn-primary btn-sm">EDT</button>
                                         </div>
                                     </div>
                                 </div>

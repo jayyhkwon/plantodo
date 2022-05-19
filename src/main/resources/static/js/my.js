@@ -145,6 +145,7 @@ function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
 // comment
 
 $(document).on("click", "#blockTrigger", function(event) {
+    console.log("*");
     event.preventDefault();
     let selectedDate = $(this).attr("selectedDate");
     let tododateId = $(this).attr("todoDateId");
