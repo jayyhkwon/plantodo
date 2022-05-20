@@ -14,39 +14,69 @@
 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
     <header th:replace="fragments/common :: fragment-header"></header>
 
-    <div class="container">
+    <div class="container bg-primary">
         <div class="row mx-2 my-2">
             <span th:if="${plan.dtype.equals('Term')}" class="col d-flex justify-content-start"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
             <span th:if="${plan.dtype.equals('Regular')}" class="col d-flex justify-content-start">상시(시작일 : <span th:text="${plan.startDate}"></span> )</span>
             <span th:text="${plan.planStatus}" class="col d-flex justify-content-end"></span>
         </div>
         <div class="row mx-2 my-2">
-            <p th:text="${plan.title}" class="fs-3"></p>
+            <div class="d-flex justify-content-center">
+                <p th:text="${plan.title}" class="fs-3"></p>
+            </div>
         </div>
-    </div>
-    <div class="container">
-        <div class="d-flex justify-content-end">
-            <div class="btn-group" role="group" area-label="Basic example">
-                <form th:action="@{/plan}" method="post">
-                    <input type="hidden" name="planId" th:value="${plan.id}">
-                    <input type="hidden" name="_method" value="DELETE"/>
-                    <button type="submit" class="btn btn-primary">DELETE</button>
-                </form>
-                <div th:if="${!plan.planStatus.toString().equals('PAST')}" class="btn-group" role="group" area-label="Basic example">
-                    <form th:action="@{/plan/switching}" method="post">
+        <div class="row mx-2 my-2">
+            <div class="d-flex justify-content-center">
+                <div class="btn-group" role="group" area-label="Basic example">
+                    <form th:action="@{/plan}" method="post">
                         <input type="hidden" name="planId" th:value="${plan.id}">
-                        <input type="hidden" name="_method" value="PUT"/>
-                        <button type="submit" class="btn btn-primary">SWITCH</button>
+                        <input type="hidden" name="_method" value="DELETE"/>
+                        <button type="submit" class="btn btn-sm btn-outline-light">DELETE</button>
                     </form>
-                    <form th:action="@{/plan/type/{planId}(planId=${plan.id})}" method="get">
-                        <button type="submit" class="btn btn-primary">UPDATE</button>
-                    </form>
+                    <div th:if="${!plan.planStatus.toString().equals('PAST')}" class="btn-group" role="group" area-label="Basic example">
+                        <form th:action="@{/plan/switching}" method="post">
+                            <input type="hidden" name="planId" th:value="${plan.id}">
+                            <input type="hidden" name="_method" value="PUT"/>
+                            <button type="submit" class="btn btn-sm btn-outline-light">SWITCH</button>
+                        </form>
+                        <form th:action="@{/plan/type/{planId}(planId=${plan.id})}" method="get">
+                            <button type="submit" class="btn btn-sm btn-outline-light">UPDATE</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+    <!--to-do 목록 출력-->
+    <div class="container">
+        <p>반복 할 일 목록</p>
+        <div th:each="todo : ${todosByPlanId}" class="row mx-2 my-2 rounded-pill border border-dark">
+            <div class="col">
+                <a th:attr="onclick=|getTodoButtonBlock('${plan.id}','${todo.id}')|" th:text="${todo.title}"></a>
+            </div>
+            <div class="col">
+                <!--매일반복-->
+                <span th:if="${todo.repOption==0}" th:text="'매일반복'"></span>
+                <!--요일반복-->
+                <span th:if="${todo.repOption==1}" th:text="'요일반복'"></span>
+                <span th:if="${todo.repOption==1}" th:each="repVal : ${todo.repValue}">
+                    <span th:text="${repVal}"></span>
+            </span>
+                <span th:if="${todo.repOption==1}">요일마다</span>
+                <!--기간반복-->
+                <span th:if="${todo.repOption==2}" th:text="'기간반복'"></span>
+                <span th:if="${todo.repOption==2}" th:text="${todo.repValue.get(0)+'일마다'}"></span>
+            </div>
+            <!--삭제 / 수정 버튼-->
+            <div th:id="${todo.id + 'ButtonBlock'}" state="un-clicked" class="col"></div>
+        </div>
+    </div>
+
     <!--날짜로 검색-->
     <div class="container">
+        <p>일자별 검색</p>
         <div class="m-3">
             <form th:action="@{/plan/filtering}" th:object="${dateSearchForm}" method="post">
                 <input type="hidden" name="planId" th:value="${plan.id}">
@@ -69,25 +99,6 @@
         </div>
     </div>
 
-    <!--to-do 목록 출력-->
-    <div class="container">
-        <div th:each="todo : ${todosByPlanId}" class="row mx-1 my-1 bg-danger">
-            <a th:attr="onclick=|getButtonBlock('${plan.id}','${todo.id}')|" th:text="${todo.title}"></a>
-            <!--매일반복-->
-                <span th:if="${todo.repOption==0}" th:text="'매일반복'"></span>
-            <!--요일반복-->
-                <span th:if="${todo.repOption==1}" th:text="'요일반복'"></span>
-                <span th:if="${todo.repOption==1}" th:each="repVal : ${todo.repValue}">
-                        <span th:text="${repVal}"></span>
-                </span>
-                <span th:if="${todo.repOption==1}">요일마다</span>
-            <!--기간반복-->
-                <span th:if="${todo.repOption==2}" th:text="'기간반복'"></span>
-                <span th:if="${todo.repOption==2}" th:text="${todo.repValue.get(0)+'일마다'}"></span>
-            <!--삭제 / 수정 버튼-->
-            <div id="ButtonBlock"></div>
-        </div>
-    </div>
     <!--일자별 to-do-Date 출력-->
     <div class="container">
         <div th:each="entry : ${allToDatesByDate}" class="row mx-2 my-2">
@@ -110,7 +121,7 @@
                                     <input type="hidden" name="_method" value="DELETE">
                                     <button type="button" th:attr="onclick=|deleteTodoDate(${todoDate.id})|" class="btn btn-primary btn-sm">DEL</button>
                                 </form>
-                                <button th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" type="button" th:attr="onclick=|getTodoDateEditForm('home', '${entry.key}', '${plan.id}', '${todoDate.id}')|" class="btn btn-primary btn-sm">EDT</button>
+                                <button th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" type="button" th:attr="onclick=|getTodoDateEditForm('detail', '${entry.key}', '${plan.id}', '${todoDate.id}', '${todoDate.title}')|" class="btn btn-primary btn-sm">EDT</button>
                             </div>
                         </div>
                     </div>

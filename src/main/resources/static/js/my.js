@@ -18,14 +18,23 @@ function switchTodoDateStatus(todoDateId) {
     })
 }
 
-function getButtonBlock(planId, todoId) {
+function getTodoButtonBlock(planId, todoId) {
     let uri = "/todo/block?planId=" + planId + "&todoId=" + todoId;
-    $.ajax({
-        url: uri,
-        type: "GET"
-    }).done(function(fragment) {
-        $('#ButtonBlock').replaceWith(fragment);
-    })
+
+    let state = $('#' + todoId + 'ButtonBlock').data('state');
+    if (state === undefined) {
+        $.ajax({
+            url: uri,
+            type: "GET"
+        }).done(function(fragment) {
+            $('#' + todoId + 'ButtonBlock').data("state", "clicked");
+            $('#'+todoId+'ButtonBlock').empty().append(fragment);
+        })
+    } else {
+        $('#' + todoId + 'ButtonBlock').empty();
+        $('#' + todoId + 'ButtonBlock').removeData("state");
+    }
+
 }
 
 function getTodoDateRegisterForm(planId) {
@@ -90,8 +99,13 @@ function getTodoUpdateForm(planId, todoId) {
 }
 
 
-function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
-    let div = document.createElement("div");
+function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId, todoDateTitle) {
+    let div_row = document.createElement("div");
+    div_row.className = "row mx-1 my-1"
+
+    // edit input
+    let div_col1 = document.createElement("div");
+    div_col1.className = "col"
 
     let input = document.createElement("input");
     input.id = "editTitle";
@@ -100,12 +114,21 @@ function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
     input.setAttribute("selectedDate", selectedDate);
     input.setAttribute("planId", planId);
     input.setAttribute("todoDateId", todoDateId);
+    input.className = "form-control";
+    input.value = todoDateTitle;
+
+    div_col1.appendChild(input);
+
+    // edit button
+    let div_col2 = document.createElement("div");
+    div_col2.className = "col"
 
     let btn = document.createElement("input");
     btn.type = "button"
     btn.id = "editBtn"
     btn.name = "editBtn"
-    btn.value = "update"
+    btn.value = "EDT"
+    btn.className = "btn btn-sm btn-primary"
     btn.onclick = function() {
         let pageInfo = $('#editTitle').attr("pageInfo");
         let selectedDate = $('#editTitle').attr("selectedDate");
@@ -126,20 +149,22 @@ function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
             data: data,
             success: function (res) {
                 setTimeout(function () {
+                    console.log(res.pageInfo);
                     if (res.pageInfo == "home") {
                         loadDateBlockData(res.searchDate);
                     } else {
-                        planDetailAjax(res.planId);
+                        planDetailAjax(planId);
                     }
                 }, 100);
             }
         })
     }
+    div_col2.appendChild(btn);
 
-    div.appendChild(input);
-    div.appendChild(btn);
+    div_row.appendChild(input);
+    div_row.appendChild(btn);
 
-    $("#" + todoDateId).empty().html(div);
+    $("#" + todoDateId).empty().html(div_row);
 }
 
 // comment
