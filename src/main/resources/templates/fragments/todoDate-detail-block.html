@@ -8,14 +8,14 @@
 <body>
     <div id="todoDateDetailList" th:fragment="todoDateDetailList">
         <div class="container border border-light shadow-soft bg-white rounded-2 p-3">
-            <div th:each="comment : ${comments}" class="row mx-1 my-1 mb-2 align-items-center">
-                <div class="col-10">
+            <div th:each="comment : ${comments}" class="row mx-1 my-1 mb-2 align-items-center justify-content-end">
+                <div class="col-sm-auto col-md-auto col-lg-10">
                     <div class="card p-2 mt-2 mb-2">
                         <div th:id="${comment.id+'title'}" th:text="${comment.comment}" th:value="${comment.id}"></div>
                     </div>
                 </div>
 
-                <div class="col-2">
+                <div class="col-sm-auto col-md-auto col-lg-2">
                     <div class="btn-group" role="group" area-level="Basic example">
                         <button th:id="${comment.id+'delbtn'}" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|deleteComment('${selectedDate}', '${comment.id}', '${todoDate.id}')|" class="btn btn-light btn-sm">DEL</button>
                         <button th:id="${comment.id+'edtAfter'}" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|editComment()|" class="btn btn-light btn-sm" style="display: none">EDT</button>
