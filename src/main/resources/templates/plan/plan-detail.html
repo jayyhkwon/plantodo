@@ -18,8 +18,8 @@
     <header th:replace="fragments/common :: fragment-header"></header>
 
     <main>
-        <section class="section-header bg-primary text-white pb-7 pb-lg-11">
-            <div class="container">
+        <section class="section-header bg-primary text-white pb-7 pb-lg-15">
+            <div class="container mb-5 mb-lg-10">
                 <div class="row mx-2 my-2">
                     <span th:if="${plan.dtype.equals('Term')}" class="col d-flex justify-content-start"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
                     <span th:if="${plan.dtype.equals('Regular')}" class="col d-flex justify-content-start">상시(시작일 : <span th:text="${plan.startDate}"></span> )</span>
@@ -57,7 +57,7 @@
         <section class="section">
             <!--to-do 목록 출력-->
             <div class="section section-lg pt-0">
-                <div class="container mt-n8 mt-lg-n13 z-2">
+                <div class="container mt-n10 mt-lg-n10 mb-5 mb-lg-10 z-2">
                     <div class="row justify-content-center">
                         <div class="col-12">
                             <!-- Card -->
@@ -93,7 +93,7 @@
 
                 <!--날짜로 검색-->
                 <div class="section section-lg pt-10">
-                    <div class="container mt-n8 mt-lg-n13 z-2">
+                    <div class="container mt-n10 mt-lg-n10 z-2">
                         <div class="row justify-content-center">
                             <div class="col-12">
                                 <div class="card border-light shadow-soft p-2 p-md-4 p-lg-5">
@@ -128,7 +128,7 @@
             </div>
             <section class="section section-lg pt-10">
                 <!--일자별 to-do-Date 출력-->
-                <div class="container mt-n12 mt-lg-n13 z-2">
+                <div class="container mt-n13 mt-lg-n13 z-2">
                     <div th:each="entry : ${allToDatesByDate}" class="row justify-content-center">
                         <div class="col-12">
                             <div class="card border-light shadow-soft p-2 p-md-4 p-lg-5">

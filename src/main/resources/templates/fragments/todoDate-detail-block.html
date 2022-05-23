@@ -7,27 +7,32 @@
 </head>
 <body>
     <div id="todoDateDetailList" th:fragment="todoDateDetailList">
-        <div th:each="comment : ${comments}" class="row mx-1 my-1">
-            <div th:id="${comment.id+'title'}" th:text="${comment.comment}" th:value="${comment.id}" class="col-10"></div>
-            <div class="col-2">
-                <div class="btn-group" role="group" area-level="Basic example">
-                    <button th:id="${comment.id+'delbtn'}" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|deleteComment('${selectedDate}', '${comment.id}', '${todoDate.id}')|" class="btn btn-light btn-sm">DEL</button>
-                    <button th:id="${comment.id+'edtAfter'}" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|editComment()|" class="btn btn-light btn-sm" style="display: none">EDT</button>
-                    <button th:id="${comment.id+'edtBefore'}" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|getCommentUpdateForm('${selectedDate}', '${todoDate.id}', '${comment.id}', '${comment.comment}')|" class="btn btn-light btn-sm">EDT</button>
-                </div>
-            </div>
-        </div>
-        <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" class = "row mx-2 my-2">
-            <form th:id="${'comment-form'}">
-                <div class="col">
-                    <input type="text" th:id="${'comment-input'}" class="form-control">
-                </div>
-                <div class="col">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button th:id="${'comment-write'}" type="button" class="btn btn-dark btn-sm" th:attr="onclick=|registerComment('${selectedDate}', '${todoDate.id}')|">전송</button>
+        <div class="container border border-light shadow-soft bg-white rounded-2 p-3">
+            <div th:each="comment : ${comments}" class="row mx-1 my-1 mb-2 align-items-center">
+                <div class="col-10">
+                    <div class="card p-2 mt-2 mb-2">
+                        <div th:id="${comment.id+'title'}" th:text="${comment.comment}" th:value="${comment.id}"></div>
                     </div>
                 </div>
-            </form>
+
+                <div class="col-2">
+                    <div class="btn-group" role="group" area-level="Basic example">
+                        <button th:id="${comment.id+'delbtn'}" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|deleteComment('${selectedDate}', '${comment.id}', '${todoDate.id}')|" class="btn btn-light btn-sm">DEL</button>
+                        <button th:id="${comment.id+'edtAfter'}" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|editComment()|" class="btn btn-light btn-sm" style="display: none">EDT</button>
+                        <button th:id="${comment.id+'edtBefore'}" th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}" th:attr="onclick=|getCommentUpdateForm('${selectedDate}', '${todoDate.id}', '${comment.id}', '${comment.comment}')|" class="btn btn-light btn-sm">EDT</button>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${selectedDate.isAfter(today) || selectedDate.isEqual(today)}">
+                <form th:id="${'comment-form'}" class = "row mx-1 my-1 align-items-center">
+                    <div class="col-10">
+                        <input type="text" th:id="${'comment-input'}" class="form-control">
+                    </div>
+                    <div class="col-2 justify-content-end">
+                        <button th:id="${'comment-write'}" type="button" class="btn btn-dark btn-sm" th:attr="onclick=|registerComment('${selectedDate}', '${todoDate.id}')|">전송</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </body>
