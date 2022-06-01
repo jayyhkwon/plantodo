@@ -41,11 +41,14 @@ public class Plan {
     @Column(name = "unchecked_tododate_cnt")
     private int unchecked_TodoDate_cnt;
 
+    private boolean emphasis;
+
     public Plan(Member member, PlanStatus planStatus, LocalDate startDate, String title) {
         this.member = member;
         this.planStatus = planStatus;
         this.startDate = startDate;
         this.title = title;
+        this.emphasis = false;
         this.checked_TodoDate_cnt = 0;
         this.unchecked_TodoDate_cnt = 0;
     }
@@ -93,6 +96,14 @@ public class Plan {
             this.planStatus = PlanStatus.COMPLETED;
         } else {
             throw new IllegalStateException();
+        }
+    }
+
+    public void switchEmphasis() {
+        if (this.emphasis == false) {
+            this.emphasis = true;
+        } else {
+            this.emphasis = false;
         }
     }
 

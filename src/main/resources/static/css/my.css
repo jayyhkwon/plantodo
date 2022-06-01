@@ -1,0 +1,28 @@
+
+/* plan-list.html / plan-detail.html emphasis */
+#emphasis fieldset {
+    display: inline-block;
+    border: 0;
+}
+
+#emphasis input[type=checkbox] {
+    display: none;
+}
+
+#emphasis input[type=checkbox]:checked ~ label {
+    text-shadow: 0 0 0 #feb950;
+}
+
+#emphasis label {
+    font-size: 2em;
+    color: transparent;
+    text-shadow: 0 0 0 #f0f0f0;
+}
+
+#emphasis label:hover {
+    text-shadow: 0 0 0 #feb950;
+}
+
+#emphasis label:hover ~ label {
+    text-shadow: 0 0 0 #feb950;
+}

@@ -80,4 +80,24 @@ class PlanServiceTest {
         // Then
         Assertions.assertThat(planService.findOne(plan.getId()).calculate_plan_compPercent()).isEqualTo(50.0f);
     }
+
+    @Test
+    public void switchPlanEmphasis_Test() throws Exception {
+        //given
+        /*member 저장*/
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        memberService.save(member);
+
+        /*plan 저장*/
+        LocalDate start = LocalDate.now();
+        LocalDate end = start.plusDays(3);
+        PlanTerm plan = new PlanTerm(member, PlanStatus.NOW, start, "plan1", end);
+        planService.saveTerm(plan);
+
+        //when
+        planService.switchPlanEmphasis(plan.getId());
+
+        //then
+        Assertions.assertThat(planService.findOne(plan.getId()).isEmphasis()).isTrue();
+    }
 }

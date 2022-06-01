@@ -9,6 +9,24 @@ function loadDateBlockData(searchDate) {
     });
 }
 
+/*plan*/
+function planDetailAjax(planId) {
+    $.ajax({
+        url: "/plan/" + planId,
+        type: "GET"
+    }).done( function (fragment) {
+        $('body').empty().html(fragment);
+    })
+}
+
+function switchPlanEmphasis(planId, pageInfo) {
+    let uri = "/plan/emphasizing?planId="+planId+"&pageInfo="+pageInfo ;
+    $.ajax({
+        url: uri,
+        type: "POST"
+    })
+}
+
 /*to-do 상태 바꾸기*/
 function switchTodoDateStatus_home(todoDateId) {
     let uri = "/todoDate/switching?todoDateId="+todoDateId;
@@ -73,15 +91,6 @@ function deleteTodoDate(todoDateId) {
                 planDetailAjax(res.planId)
             }
         }
-    })
-}
-
-function planDetailAjax(planId) {
-    $.ajax({
-        url: "/plan/" + planId,
-        type: "GET"
-    }).done( function (fragment) {
-        $('body').empty().html(fragment);
     })
 }
 

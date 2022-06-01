@@ -74,6 +74,10 @@ public class PlanService {
         planRepository.updateTerm(planTermUpdateForm, planId);
     }
 
+    public void switchPlanEmphasis(Long planId) {
+        planRepository.switchPlanEmphasis(planId);
+    }
+
     /*삭제*/
     public void delete(Plan plan) {
         List<Todo> todo_list = todoService.getTodoByPlanId(plan.getId());

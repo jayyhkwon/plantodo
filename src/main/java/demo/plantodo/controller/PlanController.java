@@ -223,12 +223,25 @@ public class PlanController {
         return "redirect:/plan/" + planId.toString();
     }
 
-
     @PostMapping("/term/{planId}")
     public String planTermUpdate(@ModelAttribute PlanTermUpdateForm planTermUpdateForm,
                                  @PathVariable Long planId) {
         planService.updateTerm(planTermUpdateForm, planId);
         return "redirect:/plan/" + planId.toString();
+    }
+
+
+    /*플랜 변경 - 강조*/
+    @PostMapping("/emphasizing")
+    public String switchPlanEmphasis(@RequestParam Long planId,
+                                     @RequestParam String pageInfo) {
+        planService.switchPlanEmphasis(planId);
+        if (pageInfo.equals("detail")) {
+            return "redirect:/plan/" + planId.toString();
+        } else {
+            return "redirect:/plan/plan-list";
+        }
+
     }
 
 }
