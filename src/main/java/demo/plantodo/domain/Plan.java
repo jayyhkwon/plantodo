@@ -35,15 +35,41 @@ public class Plan {
     @Column(insertable=false, updatable=false)
     private String dtype;
 
+    @Column(name = "checked_tododate_cnt")
+    private int checked_TodoDate_cnt;
+
+    @Column(name = "unchecked_tododate_cnt")
+    private int unchecked_TodoDate_cnt;
 
     public Plan(Member member, PlanStatus planStatus, LocalDate startDate, String title) {
         this.member = member;
         this.planStatus = planStatus;
         this.startDate = startDate;
         this.title = title;
+        this.checked_TodoDate_cnt = 0;
+        this.unchecked_TodoDate_cnt = 0;
     }
 
     /*비즈니스 로직*/
+
+    /*unchecked (todoDate 등록)*/
+    public void addUnchecked(int uncheckedCnt) {
+        this.unchecked_TodoDate_cnt += uncheckedCnt;
+    }
+
+    /*checked- unchecked- (to-do 삭제)*/
+    public void deleteCheckedAndUnchecked(int uncheckedCnt, int checkedCnt) {
+        this.unchecked_TodoDate_cnt -= uncheckedCnt;
+        this.checked_TodoDate_cnt -= checkedCnt;
+    }
+
+    /*checked-1 unchecked+1 (todoDate 상태 변경)*/
+    public void exchangeCheckedToUnchecked(int uncheckedCnt, int checkedCnt) {
+        this.checked_TodoDate_cnt += uncheckedCnt;
+        this.unchecked_TodoDate_cnt += checkedCnt;
+
+    }
+
     public void changeToDeleted() {
         if (this.planStatus.equals(PlanStatus.NOW) || this.planStatus.equals(PlanStatus.COMPLETED)) {
             this.planStatus = PlanStatus.DELETED;
@@ -70,4 +96,12 @@ public class Plan {
         }
     }
 
+    // 달성도 계산 로직
+    public int calculate_plan_compPercent() {
+        float checkedCnt = this.getChecked_TodoDate_cnt();
+        float uncheckedCnt = this.getUnchecked_TodoDate_cnt();
+        float tmp = (checkedCnt / (uncheckedCnt + checkedCnt)) * 100;
+        int compPercent = Math.round(tmp*100)/100;
+        return compPercent;
+    }
 }

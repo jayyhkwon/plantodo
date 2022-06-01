@@ -66,19 +66,8 @@ public class TodoController {
         Plan plan = planService.findOne(todoRegisterForm.getPlanId());
 
         Todo todo = new Todo(member, plan, todoRegisterForm.getTitle(), repOption, repValue);
-        todoService.save(todo);
+        todoService.save(plan, todo);
 
-        /*TodoDate 만들기*/
-        /*startDate, endDate 정의*/
-        LocalDate startDate = plan.getStartDate();
-        LocalDate endDate = LocalDate.now();
-        if (plan instanceof PlanTerm) {
-            PlanTerm planTerm = (PlanTerm) plan;
-            endDate = planTerm.getEndDate();
-        }
-
-        /*todoDate 만들기*/
-        todoDateService.todoDateInitiate(startDate, endDate, todo);
         return "redirect:/home";
     }
 

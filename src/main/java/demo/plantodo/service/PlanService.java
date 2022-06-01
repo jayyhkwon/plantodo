@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -38,6 +39,18 @@ public class PlanService {
 
     public List<Plan> findAllPlan(Long memberId) {
         return planRepository.findAllPlan(memberId);
+    }
+
+    public HashMap<Plan, Integer> findAllPlan_withCompPercent(Long memberId) {
+        /*HashMap -> plan:달성도 계산*/
+        HashMap<Plan, Integer> resultMap = new HashMap<>();
+        List<Plan> plans = planRepository.findAllPlan(memberId);
+        for (Plan plan : plans) {
+            /*달성도 계산*/
+            int compPercent = plan.calculate_plan_compPercent();
+            resultMap.put(plan, compPercent);
+        }
+        return resultMap;
     }
 
     public List<PlanTerm> findAllPlanTerm(Long memberId) {
@@ -102,4 +115,9 @@ public class PlanService {
         }
         return result;
     }
+
+    public void addUnchecked(Plan plan, int uncheckedTodoDateCnt) {
+        planRepository.addUnchecked(plan, uncheckedTodoDateCnt);
+    }
+
 }

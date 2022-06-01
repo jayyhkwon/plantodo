@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @RunWith(SpringRunner.class)
 class TodoServiceTest {
+
+    @Autowired
+    EntityManager em;
+
     @Autowired TodoService todoService;
     @Autowired MemberRepository memberRepository;
     @Autowired PlanRepository planRepository;
@@ -93,5 +98,57 @@ class TodoServiceTest {
 //
 //        //then
 //        Assertions.assertThat(result.isEmpty());
+    }
+
+    @Test
+    public void saveTodoTest_planCount() throws Exception {
+        //given
+        /*member 저장*/
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        memberRepository.save(member);
+
+        /*plan 저장*/
+        LocalDate start = LocalDate.now();
+        LocalDate end = start.plusDays(3);
+        PlanTerm plan = new PlanTerm(member, PlanStatus.NOW, start, "plan1", end);
+        planRepository.saveTerm(plan);
+
+        //when
+        /*to-do 저장 (todoDate 자동 생성)*/
+        Todo todo = new Todo(member, plan, "todo1", 0, null);
+        todoService.save(plan, todo);
+
+        //then
+        Assertions.assertThat(todo.getPlan().getUnchecked_TodoDate_cnt()).isEqualTo(4);
+    }
+
+    @Test
+    public void deleteTodoTest_planCount() throws Exception {
+        //given
+        /*member 저장*/
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        memberRepository.save(member);
+
+        /*plan 저장*/
+        LocalDate start = LocalDate.now();
+        LocalDate end = start.plusDays(3);
+        PlanTerm plan = new PlanTerm(member, PlanStatus.NOW, start, "plan1", end);
+        planRepository.saveTerm(plan);
+
+        /*to-do 저장 (todoDate 자동 생성)*/
+        Todo todo = new Todo(member, plan, "todo1", 0, null);
+        todoService.save(plan, todo);
+
+        System.out.println("[삭제 전 uncheckedCnt] " + planRepository.findOne(plan.getId()).getUnchecked_TodoDate_cnt());
+
+        em.flush();
+        em.clear();
+
+        //when
+        todoService.delete(todo.getId());
+
+        //then
+        Assertions.assertThat(planRepository.findOne(plan.getId()).getUnchecked_TodoDate_cnt()).isEqualTo(0);
+
     }
 }

@@ -12,7 +12,7 @@
     <script src="/js/my.js"></script>
 </head>
 <body>
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column bg">
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto fle x-column bg">
     <header th:replace="fragments/common :: fragment-header"></header>
     <div class="section section-md pt-0">
         <div class="container">
@@ -22,24 +22,27 @@
                     <div th:each="plan : ${plans}">
                         <div class="card bg-white border-light shadow-soft p-2 p-md-4 p-lg-5">
                             <div class="card-body">
-                                <div th:if="${!plan.planStatus.toString().equals('DELETED')}" class="row mx-auto my-auto">
-                                    <th:block th:if="${plan.dtype.equals('Term')}">
+                                <div th:if="${!plan.key.planStatus.toString().equals('DELETED')}" class="row mx-auto my-auto">
+                                    <th:block th:if="${plan.key.dtype.equals('Term')}">
                                         <div class="col">
-                                            <div class="position-relative"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></div>
+                                            <div class="position-relative"><span th:text="${plan.key.startDate}"></span>~<span th:text="${plan.key.endDate}"></span></div>
                                         </div>
                                     </th:block>
-                                    <th:block th:if="${plan.dtype.equals('Regular')}">
+                                    <th:block th:if="${plan.key.dtype.equals('Regular')}">
                                         <div class="col">
                                             <div class="position-relative">상시</div>
                                         </div>
                                     </th:block>
                                     <div class="col">
-                                        <a th:href="@{/plan/{planId}(planId=${plan.id})}" th:text="${plan.title}"></a>
+                                        <a th:href="@{/plan/{planId}(planId=${plan.key.id})}" th:text="${plan.key.title}"></a>
                                     </div>
                                     <div class="col">
-                                        <span th:if="${plan.planStatus.toString().equals('PAST')}" th:text="${plan.planStatus}" class="badge bg-dark position-relative"></span>
-                                        <span th:if="${plan.planStatus.toString().equals('COMPLETED')}" th:text="${plan.planStatus}" class="badge bg-secondary position-relative"></span>
-                                        <span th:if="${plan.planStatus.toString().equals('NOW')}" th:text="${plan.planStatus}" class="badge bg-primary position-relative"></span>
+                                        <span th:if="${plan.key.planStatus.toString().equals('PAST')}" th:text="${plan.key.planStatus}" class="badge bg-dark position-relative"></span>
+                                        <span th:if="${plan.key.planStatus.toString().equals('COMPLETED')}" th:text="${plan.key.planStatus}" class="badge bg-secondary position-relative"></span>
+                                        <span th:if="${plan.key.planStatus.toString().equals('NOW')}" th:text="${plan.key.planStatus}" class="badge bg-primary position-relative"></span>
+                                    </div>
+                                    <div class="col">
+                                        <span th:text="${plan.value + '% 달성'}"></span>
                                     </div>
                                 </div>
                             </div>

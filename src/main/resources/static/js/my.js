@@ -10,12 +10,26 @@ function loadDateBlockData(searchDate) {
 }
 
 /*to-do 상태 바꾸기*/
-function switchTodoDateStatus(todoDateId) {
+function switchTodoDateStatus_home(todoDateId) {
     let uri = "/todoDate/switching?todoDateId="+todoDateId;
     $.ajax({
         url: uri,
         type: "POST"
     })
+}
+
+function switchTodoDateStatus_detail(todoDateId) {
+    let uri = "/todoDate/switching?todoDateId="+todoDateId;
+    $.ajax({
+        url: uri,
+        type: "POST"
+    }).done(function (data) {
+        console.log(data);
+        $("#progress_bar").css("width", data+"%");
+        $("#progress_bar").data("aria-valuenow", data);
+        $("#progress_bar").text(data + "%");
+    })
+
 }
 
 function getTodoButtonBlock(planId, todoId) {

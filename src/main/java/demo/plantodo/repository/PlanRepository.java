@@ -118,4 +118,23 @@ public class PlanRepository {
                 .setParameter("now", PlanStatus.NOW)
                 .getResultList();
     }
+
+    /*checkedCnt / uncheckedCnt 변경 메서드*/
+    public void addUnchecked(Plan plan, int uncheckedTodoDateCnt) {
+        plan.addUnchecked(uncheckedTodoDateCnt);
+    }
+    public void addUnchecked(Long planId, int uncheckedTodoDateCnt) {
+        Plan plan = findOne(planId);
+        plan.addUnchecked(uncheckedTodoDateCnt);
+    }
+
+    public void deleteCheckedAndUnchecked(Long planId, int checkedCnt, int uncheckedCnt) {
+        Plan plan = findOne(planId);
+        plan.deleteCheckedAndUnchecked(uncheckedCnt, checkedCnt);
+    }
+
+    public void exchangeCheckedToUnchecked(Long planId, int uncheckedCnt, int checkedCnt) {
+        Plan plan = findOne(planId);
+        plan.exchangeCheckedToUnchecked(uncheckedCnt, checkedCnt);
+    }
 }

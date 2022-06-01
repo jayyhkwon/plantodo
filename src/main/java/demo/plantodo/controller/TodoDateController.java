@@ -49,6 +49,7 @@ public class TodoDateController {
         } else {
             todoDateService.deleteDaily(todoDateId);
         }
+
         if (todoDateDeleteDataVO.getPageInfo().equals("home")) {
             TodoDateResHomeVO home = new TodoDateResHomeVO();
             home.setSearchDate(todoDateDeleteDataVO.getSelectedDate());
@@ -65,14 +66,17 @@ public class TodoDateController {
     /*todoDate 상태변경*/
     @ResponseBody
     @PostMapping("/switching")
-    public boolean switchStatus(@RequestParam Long todoDateId) {
-        TodoDate one = todoDateService.findOne(todoDateId);
-        if (one instanceof TodoDateRep) {
+    public int switchStatus(@RequestParam Long todoDateId) {
+        TodoDate todoDate = todoDateService.findOne(todoDateId);
+        if (todoDate instanceof TodoDateRep) {
             todoDateService.switchStatusRep(todoDateId);
+            Plan plan = ((TodoDateRep) todoDate).getTodo().getPlan();
+            return plan.calculate_plan_compPercent();
         } else {
             todoDateService.switchStatusDaily(todoDateId);
+            Plan plan = ((TodoDateDaily) todoDate).getPlan();
+            return plan.calculate_plan_compPercent();
         }
-        return true;
     }
 
     @PostMapping("/daily")
@@ -81,10 +85,12 @@ public class TodoDateController {
         Plan plan = planService.findOne(todoDateDailyInputVO.getPlanId());
         TodoDate todoDate = new TodoDateDaily(TodoStatus.UNCHECKED, todoDateDailyInputVO.getSelectedDailyDate(), todoDateDailyInputVO.getTitle(), plan);
         todoDateService.save(todoDate);
+
         Long todoDateId = todoDate.getId();
         TodoDateDailyOutputVO outputVO = new TodoDateDailyOutputVO();
         outputVO.setTodoDateId(todoDateId);
         outputVO.setSearchDate(todoDateDailyInputVO.getSelectedDailyDate());
+
         return outputVO;
     }
 

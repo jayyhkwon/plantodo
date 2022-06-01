@@ -17,6 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -87,7 +88,7 @@ public class PlanController {
     @GetMapping("/plans")
     public String plans(Model model, HttpServletRequest request) {
         Long memberId = memberService.getMemberId(request);
-        List<Plan> plans = planService.findAllPlan(memberId);
+        HashMap<Plan, Integer> plans = planService.findAllPlan_withCompPercent(memberId);
         model.addAttribute("plans", plans);
         return "plan/plan-list";
     }

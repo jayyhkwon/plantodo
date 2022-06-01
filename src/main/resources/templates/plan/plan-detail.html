@@ -14,24 +14,31 @@
 <body>
 <!--제목-->
 
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+<div class="cover-container w-100 h-100 p-3 mx-auto flex-column">
     <header th:replace="fragments/common :: fragment-header"></header>
 
     <main>
         <section class="section-header bg-primary text-white pb-7 pb-lg-15">
             <div class="container mb-5 mb-lg-10">
                 <div class="row mx-2 my-2">
-                    <span th:if="${plan.dtype.equals('Term')}" class="col d-flex justify-content-start"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
-                    <span th:if="${plan.dtype.equals('Regular')}" class="col d-flex justify-content-start">상시(시작일 : <span th:text="${plan.startDate}"></span> )</span>
-                    <span th:text="${plan.planStatus}" class="col d-flex justify-content-end"></span>
+                    <span th:if="${plan.dtype.equals('Term')}" class="col justify-content-start"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
+                    <span th:if="${plan.dtype.equals('Regular')}" class="col justify-content-start">상시(시작일 : <span th:text="${plan.startDate}"></span> )</span>
+                    <span th:text="${plan.planStatus}" class="col justify-content-end"></span>
                 </div>
                 <div class="row mx-2 my-2">
-                    <div class="d-flex justify-content-center">
+                    <div class="justify-content-center">
                         <p th:text="${plan.title}" class="fs-3"></p>
                     </div>
                 </div>
                 <div class="row mx-2 my-2">
-                    <div class="d-flex justify-content-center">
+                    <div class="col">
+                        <div class="progress">
+                            <div id="progress_bar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" th:aria-valuenow="${plan.calculate_plan_compPercent()}" th:style="'width: ' + ${plan.calculate_plan_compPercent()} + '%;'" aria-valuemin="0" aria-valuemax="100" th:text="${plan.calculate_plan_compPercent() + '%'}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mx-2 my-2">
+                    <div class="justify-content-center">
                         <div class="btn-group" role="group" area-label="Basic example">
                             <form th:action="@{/plan}" method="post">
                                 <input type="hidden" name="planId" th:value="${plan.id}">
@@ -139,8 +146,8 @@
                                             <div th:id="${todoDate.id}" class="container">
                                                 <div class="row mx-1 my-1">
                                                     <div th:id="${'titleBox'+todoDate.id}" class="col-10">
-                                                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${entry.key.isBefore(today)}" class="form-check-input">
-                                                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${entry.key.isBefore(today)}" class="form-check-input">
+                                                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Rep")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_detail(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${entry.key.isBefore(today)}" class="form-check-input">
+                                                        <input type="checkbox" th:if=${todoDate.getDtype.toString().equals("Daily")} th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_detail(${todoDate.id})|" th:checked="${todoDate.todoStatus.toString().equals('CHECKED')}" th:disabled="${entry.key.isBefore(today)}" class="form-check-input">
                                                         <span><input id="blockTrigger" type="button" th:selectedDate="${entry.key}" th:todoDateId="${todoDate.id}" th:value="${todoDate.title}" class="btn btn-sm btn-link"></span>
                                                     </div>
                                                     <div class="col-2">

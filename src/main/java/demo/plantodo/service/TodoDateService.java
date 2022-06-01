@@ -1,6 +1,7 @@
 package demo.plantodo.service;
 
 import demo.plantodo.domain.*;
+import demo.plantodo.repository.PlanRepository;
 import demo.plantodo.repository.TodoDateRepository;
 import demo.plantodo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +17,19 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TodoDateService {
+
+    private final PlanRepository planRepository;
     private final TodoDateRepository todoDateRepository;
     private final TodoRepository todoRepository;
     private final CommonService commonService;
 
+    /*등록*/
     public void save(TodoDate todoDate) {
+        planRepository.addUnchecked(getPlanId(todoDate), 1);
         todoDateRepository.save(todoDate);
     }
 
+    /*조회*/
     public TodoDate findOne(Long todoDateId) {
         return todoDateRepository.findOne(todoDateId);
     }
@@ -34,43 +40,6 @@ public class TodoDateService {
 
     public TodoDate findOneDaily(Long todoDateId) {
         return todoDateRepository.findOneDaily(todoDateId);
-    }
-
-
-    public boolean canMakeTodoDate(Todo todo, LocalDate date) {
-        int repOption = todo.getRepOption();
-        switch (repOption) {
-            case 1:
-                String dayOfWeek = commonService.turnDayOfWeekToString(date.getDayOfWeek());
-                List<String> repValue_case1 = todo.getRepValue();
-                if (repValue_case1.contains(dayOfWeek)) {
-                    return true;
-                }
-                return false;
-            case 2:
-                int repValue_case2 = Integer.parseInt(todo.getRepValue().get(0));
-                LocalDate startDate = todo.getPlan().getStartDate();
-                int diffDays = Period.between(startDate, date).getDays();
-                if ((diffDays % repValue_case2) == 0) {
-                    return true;
-                }
-                return false;
-            default:
-                return true;
-        }
-    }
-
-
-    public void todoDateInitiate(LocalDate startDate, LocalDate endDate, Todo todo) {
-        int days = Period.between(startDate, endDate).getDays();
-        for (int i = 0; i < days+1; i++) {
-            LocalDate date = startDate.plusDays(i);
-            if (canMakeTodoDate(todo, date)) {
-                TodoDateRep todoDateRep = new TodoDateRep(TodoStatus.UNCHECKED, date, todo);
-                todoDateRepository.save(todoDateRep);
-            }
-
-        }
     }
 
     public LinkedHashMap<LocalDate, List<TodoDate>> allTodoDatesInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
@@ -139,12 +108,13 @@ public class TodoDateService {
                     if (needUpdate) {
                         /*PlanRegular이면서 해당 날짜에 todoDate를 만들 수 있는데 없는 경우 새로 만들어서 저장*/
                         TodoDateRep todoDateRep = new TodoDateRep(TodoStatus.UNCHECKED, searchDate, todo);
-                        todoDateRepository.save(todoDateRep);
+                        save(todoDateRep);
                         todoDateList.add(todoDateRep);
                     }
                 }
             }
         }
+
         List<TodoDate> notBindingTodo = todoDateRepository.getTodoDateByPlanAndDate(plan, searchDate);
         for (TodoDate todoDate : notBindingTodo) {
             todoDateList.add(todoDate);
@@ -152,20 +122,107 @@ public class TodoDateService {
         return todoDateList;
     }
 
+    public List<TodoDate> getTodoDateRep_ByTodoAndDate(Todo todo, LocalDate searchDate) {
+        return todoDateRepository.getTodoDateRep_ByTodoAndDate(todo, searchDate);
+    }
+
+    public boolean canMakeTodoDate(Todo todo, LocalDate date) {
+        int repOption = todo.getRepOption();
+        switch (repOption) {
+            case 1:
+                String dayOfWeek = commonService.turnDayOfWeekToString(date.getDayOfWeek());
+                List<String> repValue_case1 = todo.getRepValue();
+                if (repValue_case1.contains(dayOfWeek)) {
+                    return true;
+                }
+                return false;
+            case 2:
+                int repValue_case2 = Integer.parseInt(todo.getRepValue().get(0));
+                LocalDate startDate = todo.getPlan().getStartDate();
+                int diffDays = Period.between(startDate, date).getDays();
+                if ((diffDays % repValue_case2) == 0) {
+                    return true;
+                }
+                return false;
+            default:
+                return true;
+        }
+    }
+
+
+    public int todoDateInitiate(LocalDate startDate, LocalDate endDate, Todo todo) {
+        int days = Period.between(startDate, endDate).getDays();
+        int cnt = 0;
+        for (int i = 0; i < days+1; i++) {
+            LocalDate date = startDate.plusDays(i);
+            if (canMakeTodoDate(todo, date)) {
+                cnt ++;
+                TodoDateRep todoDateRep = new TodoDateRep(TodoStatus.UNCHECKED, date, todo);
+                save(todoDateRep);
+            }
+        }
+        return cnt;
+    }
+
+    /*상태 변경 메서드*/
     public void switchStatusRep(Long todoDateId) {
-        todoDateRepository.switchStatusRep(todoDateId);
+        TodoDateRep todoDateRep = todoDateRepository.switchStatusRep(todoDateId);
+        /* checked -> unchecked (plan에 반영) */
+        checkStatAndReviseCnt(todoDateRep);
     }
 
     public void switchStatusDaily(Long todoDateId) {
-        todoDateRepository.switchStatusDaily(todoDateId);
+        TodoDateDaily todoDateDaily = todoDateRepository.switchStatusDaily(todoDateId);
+        /* unchecked -> checked (plan에 반영) */
+        checkStatAndReviseCnt(todoDateDaily);
     }
 
+    private void checkStatAndReviseCnt(TodoDate todoDate) {
+
+        Long planId = getPlanId(todoDate);
+
+        if (todoDate.getTodoStatus().equals(TodoStatus.CHECKED)) {
+            planRepository.exchangeCheckedToUnchecked(planId, 1, -1);
+        }
+        if (todoDate.getTodoStatus().equals(TodoStatus.UNCHECKED)) {
+            planRepository.exchangeCheckedToUnchecked(planId, -1, 1);
+        }
+    }
+
+    private Long getPlanId(TodoDate todoDate) {
+        return todoDate instanceof TodoDateRep ? ((TodoDateRep) todoDate).getTodo().getPlan().getId() : ((TodoDateDaily) todoDate).getPlan().getId();
+    }
+
+    /*삭제 메서드*/
     public void deleteRep(Long todoDateId) {
-        todoDateRepository.deleteRep(todoDateId);
+        TodoDateRep todoDateRep = todoDateRepository.findOneRep(todoDateId);
+        Long planId = todoDateRep.getTodo().getPlan().getId();
+        int[] counts = countCounts(todoDateRep);
+        planRepository.deleteCheckedAndUnchecked(planId, counts[0], counts[1]);
+        todoDateRepository.deleteRep(todoDateRep);
     }
 
     public void deleteDaily(Long todoDateId) {
-        todoDateRepository.deleteDaily(todoDateId);
+        TodoDateDaily todoDateDaily = todoDateRepository.findOneDaily(todoDateId);
+        Long planId = todoDateDaily.getPlan().getId();
+        int[] counts = countCounts(todoDateDaily);
+        planRepository.deleteCheckedAndUnchecked(planId, counts[0], counts[1]);
+        todoDateRepository.deleteDaily(todoDateDaily);
+    }
+
+    private int[] countCounts(TodoDate todoDate) {
+        int checked = 0;
+        int unchecked = 0;
+
+        if (todoDate.getTodoStatus().equals(TodoStatus.CHECKED)) {
+            checked += 1;
+        } else {
+            unchecked += 1;
+        }
+
+        int[] res = {checked, unchecked};
+
+        return res;
     }
 
     public int deleteDailyByPlan(LocalDate today, Long planId) {
@@ -183,5 +240,9 @@ public class TodoDateService {
 
     public void updateTitle(Long todoDateId, String updateTitle) {
         todoDateRepository.updateTitle(todoDateId, updateTitle);
+    }
+
+    public List<TodoDate> getTodoDateByTodo(Todo todo) {
+        return todoDateRepository.getTodoDateByTodo(todo);
     }
 }
