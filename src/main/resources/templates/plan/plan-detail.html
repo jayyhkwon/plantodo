@@ -13,8 +13,7 @@
     <script src="/js/my.js"></script>
 </head>
 <body>
-<!--제목-->
-
+<!--제목-->0
 <div class="cover-container w-100 h-100 p-3 mx-auto flex-column">
     <header th:replace="fragments/common :: fragment-header"></header>
 
@@ -22,7 +21,7 @@
         <section class="section-header bg-primary text-white pb-7 pb-lg-15">
             <div class="container mb-5 mb-lg-10">
                 <div class="row mx-2 my-2">
-                    <span th:if="${plan.dtype.equals('Term')}" class="col justify-content-start"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span></span>
+                    <span th:if="${plan.dtype.equals('Term')}" class="col justify-content-start"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span> <span th:text="${plan.endTime}"></span></span>
                     <span th:if="${plan.dtype.equals('Regular')}" class="col justify-content-start">상시(시작일 : <span th:text="${plan.startDate}"></span> )</span>
                     <span th:text="${plan.planStatus}" class="col justify-content-end"></span>
                 </div>

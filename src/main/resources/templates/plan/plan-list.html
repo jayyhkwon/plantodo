@@ -26,7 +26,7 @@
                                 <div th:if="${!plan.key.planStatus.toString().equals('DELETED')}" class="row mx-auto my-auto">
                                     <th:block th:if="${plan.key.dtype.equals('Term')}">
                                         <div class="col">
-                                            <div class="position-relative"><span th:text="${plan.key.startDate}"></span>~<span th:text="${plan.key.endDate}"></span></div>
+                                            <div class="position-relative"><span th:text="${plan.key.startDate}"></span>~<span th:text="${plan.key.endDate}"></span> <span th:text="${plan.key.endTime}"></span></div>
                                         </div>
                                     </th:block>
                                     <th:block th:if="${plan.key.dtype.equals('Regular')}">

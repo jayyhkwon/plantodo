@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -79,12 +80,21 @@ public class PlanRepository {
 
     public boolean checkPlanTermCompleted(Plan plan) {
         LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
         if (plan instanceof PlanTerm) {
             PlanTerm planTerm = (PlanTerm) plan;
-            if (today.isAfter(planTerm.getEndDate())) {
-                return true;
+            LocalDate endDate = planTerm.getEndDate();
+            LocalTime endTime = planTerm.getEndTime();
+
+            if (plan.getPlanStatus().equals(PlanStatus.NOW)) {
+                if (today.isAfter(endDate)) {
+                    return true;
+                }
+
+                if (today.isEqual(endDate) && now.isAfter(endTime)) {
+                    return true;
+                }
             }
-            return false;
         }
         return false;
     }
@@ -105,6 +115,7 @@ public class PlanRepository {
         planTerm.setTitle(planTermUpdateForm.getTitle());
         planTerm.setStartDate(planTermUpdateForm.getStartDate());
         planTerm.setEndDate(planTermUpdateForm.getEndDate());
+        planTerm.setEndTime(LocalTime.parse(planTermUpdateForm.getEndTime()));
     }
 
     public void updateStatusDeleted(Long planId) {

@@ -17,9 +17,11 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 @Controller
@@ -79,8 +81,8 @@ public class PlanController {
 
         Long memberId = memberService.getMemberId(request);
         Member findMember = memberService.findOne(memberId);
-        PlanTerm planTerm = new PlanTerm(findMember, PlanStatus.NOW, planTermRegisterForm.getStartDate(), planTermRegisterForm.getTitle(), planTermRegisterForm.getEndDate());
-        planService.saveTerm(planTerm);
+
+        planService.saveTerm(findMember, planTermRegisterForm);
         return "redirect:/home";
     }
 
@@ -210,6 +212,7 @@ public class PlanController {
         planTermUpdateForm.setTitle(plan.getTitle());
         planTermUpdateForm.setStartDate(plan.getStartDate());
         planTermUpdateForm.setEndDate(plan.getEndDate());
+        planTermUpdateForm.setEndTime(plan.getEndTime().toString());
         model.addAttribute("planId", planId);
         model.addAttribute("planTermUpdateForm", planTermUpdateForm);
         return "plan/update-term";
