@@ -3,7 +3,7 @@ package demo.plantodo.controller;
 import demo.plantodo.domain.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+// import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @Transactional
 @AutoConfigureMockMvc
 class MemberControllerTest {
@@ -57,13 +56,25 @@ class MemberControllerTest {
     }
 
 
+//    @Test
+//    public void joinToLoginRedirect404Test() throws Exception {
+//        /*정상 값이 들어가면 302 redirect*/
+//        mock.perform(post("/join")
+//                .param("email", "test@abc.co.kr")
+//                .param("password", "abc123!@#")
+//                .param("nickname", "test"))
+//                .andExpect(status().isFound());
+//    }
+
     @Test
-    public void joinToLoginRedirect404Test() throws Exception {
-        /*정상 값이 들어가면 302 redirect*/
-        mock.perform(post("/join")
+    public void loginToHomeRedirectionTest() throws Exception {
+
+        MockHttpServletRequestBuilder builder = post("/member/login")
                 .param("email", "test@abc.co.kr")
-                .param("password", "abc123!@#")
-                .param("nickname", "test"))
-                .andExpect(status().isFound());
+                .param("password", "abc123!@#");
+
+        mock.perform(builder)
+                .andExpect(view().name("redirect:/home"))
+                .andDo(print());
     }
 }

@@ -26,6 +26,11 @@ public class CommentService {
         commentRepository.save(todoDateComment);
     }
 
+    public void deleteCommentByTodoDateId(Long todoDateId) {
+        List<TodoDateComment> comments = commentRepository.getCommentsByTodoDateId(todoDateId);
+        comments.forEach(comment -> commentRepository.delete(comment.getId()));
+    }
+
     public void delete(Long commentId) {
         commentRepository.delete(commentId);
     }
@@ -36,5 +41,10 @@ public class CommentService {
 
     public TodoDateComment findOne(Long commentId) {
         return commentRepository.findOne(commentId);
+    }
+
+    public List<TodoDateComment> findAllCommentsByTodoDateId(Long todoDateId) {
+        // 테스트용
+        return commentRepository.getCommentsByTodoDateId(todoDateId);
     }
 }

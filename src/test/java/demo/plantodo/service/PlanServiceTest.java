@@ -1,22 +1,25 @@
 package demo.plantodo.service;
 
+import demo.plantodo.PlantodoApplication;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.PlanTermRegisterForm;
 import demo.plantodo.form.PlanTermUpdateForm;
+import demo.plantodo.form.TodoRegisterForm;
 import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.repository.PlanRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +27,14 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.*;
 
 @Transactional
-@SpringBootTest
-@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {PlantodoApplication.class})
 class PlanServiceTest {
     @Autowired private PlanService planService;
     @Autowired private MemberService memberService;
     @Autowired private TodoDateService todoDateService;
     @Autowired private TodoService todoService;
+
+    @Autowired private CommentService commentService;
 
     @Test
     /*오늘 날짜가 endDate 이후이면 True를 리턴해야 함*/
@@ -270,4 +274,150 @@ class PlanServiceTest {
     }
 
 
+    @Test
+    @DisplayName("(endDate = Today), (isEmphasis = false)")
+    public void findUrgentPlansWithEmphasis_Test_1() throws Exception {
+        //given
+        /*member 저장*/
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        memberService.save(member);
+
+        /*PlanTerm 저장*/
+        LocalDate start = LocalDate.now().minusDays(3);
+        LocalDate end = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String endTime = LocalTime.now().plusHours(1).format(formatter);
+        PlanTermRegisterForm form = new PlanTermRegisterForm("plan1", start, end, endTime);
+        planService.saveTerm(member, form);
+
+        //then
+        Assertions.assertThat(planService.findUrgentPlans(member.getId()).size()).isEqualTo(0);
+
+    }
+
+    @Test
+    @DisplayName("(endDate = Today), (isEmphasis = true)")
+    public void findUrgentPlansWithEmphasis_Test_2() throws Exception {
+        //given
+        /*member 저장*/
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        memberService.save(member);
+
+        /*PlanTerm 저장*/
+        LocalDate start = LocalDate.now().minusDays(3);
+        LocalDate end = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String endTime = LocalTime.now().plusHours(1).format(formatter);
+        PlanTermRegisterForm form = new PlanTermRegisterForm("plan1", start, end, endTime);
+        planService.saveTerm(member, form);
+
+        Plan plan = planService.findAllPlan(member.getId()).get(0);
+        plan.switchEmphasis();
+
+        //then
+        Assertions.assertThat(planService.findUrgentPlans(member.getId()).size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("term1 [(endDate = Today), (isEmphasis = true)], regular1")
+    public void findUrgentPlansWithEmphasis_Test_3() throws Exception {
+        //given
+        /*member 저장*/
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        memberService.save(member);
+
+        /*PlanTerm 저장*/
+        LocalDate start = LocalDate.now().minusDays(3);
+        LocalDate end = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String endTime = LocalTime.now().plusHours(1).format(formatter);
+        PlanTermRegisterForm form = new PlanTermRegisterForm("planTerm", start, end, endTime);
+        planService.saveTerm(member, form);
+
+        /*planRegular 저장*/
+        PlanRegular regular = new PlanRegular(member, PlanStatus.NOW, start, "planRegular");
+        planService.saveRegular(regular);
+
+        Plan plan = planService.findAllPlan(member.getId()).get(0);
+        plan.switchEmphasis();
+
+        //then
+        Assertions.assertThat(planService.findUrgentPlans(member.getId()).size()).isEqualTo(1);
+    }
+
+    @Test
+    public void planTermDeleteTest_AfterRevision230204() throws Exception {
+        /*member 저장*/
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        memberService.save(member);
+
+        /*PlanTerm 저장*/
+        LocalDate start = LocalDate.now();
+        LocalDate end = LocalDate.now().plusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String endTime = LocalTime.now().plusHours(1).format(formatter);
+        PlanTermRegisterForm form1 = new PlanTermRegisterForm("planTerm", start, end, endTime);
+        planService.saveTerm(member, form1);
+
+        /*plan 조회*/
+        Plan plan = planService.findAllPlan(member.getId()).get(0);
+
+        /*To-do (TodoDateRep 자동 생성)*/
+        Todo todo = new Todo(member, plan, "test-to-do", 0, null);
+        todoService.save(plan, todo);
+
+        /*TodoDate(Daily)*/
+        TodoDateDaily todoDate = new TodoDateDaily(TodoStatus.UNCHECKED, LocalDate.now(), "todoDate-test", plan);
+        todoDateService.save(todoDate);
+
+        /*Comment(Daily)*/
+        commentService.save(todoDate.getId(), "test comment");
+
+        /*planTerm 삭제*/
+        planService.delete(plan.getId());
+
+        /*plan, to-do, todoDate, comment 삭제되었는지 확인*/
+        Assertions.assertThat(planService.findAllPlan(member.getId())).isEmpty();
+        Assertions.assertThat(todoService.findAllTodoByMemberId(member.getId())).isEmpty();
+
+        // plan으로 Daily 조회해서 삭제되었는지 확인
+        Assertions.assertThat(todoDateService.getTodoDateDailyByPlanId(plan.getId())).isEmpty();
+
+        // todo로 Rep 조회해서 삭제되었는지 확인
+        Assertions.assertThat(todoDateService.getTodoDateByTodo(todo)).isEmpty();
+
+        // todoDate로 Comment 조회해서 삭제되었는지 확인
+        Assertions.assertThat(commentService.findAllCommentsByTodoDateId(todoDate.getId())).isEmpty();
+    }
+
+    @Test
+    public void planRegularDeleteTest_AfterRevision230204() throws Exception {
+        /*member 저장*/
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        memberService.save(member);
+
+        /*planRegular 저장*/
+        PlanRegular plan = new PlanRegular(member, PlanStatus.NOW, LocalDate.now(), "planRegular");
+        planService.saveRegular(plan);
+
+        /*To-do, Comment 저장*/
+        Todo todo = new Todo(member, plan, "test-to-do", 0, null);
+        todoService.save(plan, todo);
+
+        List<TodoDate> todoDates = todoDateService.getTodoDateByTodo(todo);
+        Assertions.assertThat(todoDates.size()).isEqualTo(1);
+
+        TodoDate todoDate = todoDates.get(0);
+        commentService.save(todoDate.getId(), "test comment");
+
+        /*plan 삭제*/
+        planService.delete(plan.getId());
+
+        /*assert*/
+        Assertions.assertThat(planService.findAllPlan(member.getId())).isEmpty();
+        Assertions.assertThat(todoService.getTodoByPlanId(plan.getId())).isEmpty();
+        Assertions.assertThat(todoDateService.getTodoDateByTodo(todo)).isEmpty();
+        Assertions.assertThat(commentService.findAllCommentsByTodoDateId(todoDate.getId())).isEmpty();
+
+    }
 }

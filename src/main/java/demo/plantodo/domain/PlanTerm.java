@@ -1,5 +1,6 @@
 package demo.plantodo.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,7 +17,10 @@ import static javax.persistence.FetchType.LAZY;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlanTerm extends Plan{
 
+    @JsonFormat
     private LocalDate endDate;
+
+    @JsonFormat
     private LocalTime endTime;
 
     @Builder

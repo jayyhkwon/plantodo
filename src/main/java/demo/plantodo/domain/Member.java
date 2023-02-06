@@ -22,6 +22,10 @@ public class Member {
     @NotBlank
     private String nickname;
 
+    @OneToOne
+    @JoinColumn(name = "settings_id")
+    private Settings settings;
+
     public Member() {
     }
 
@@ -29,6 +33,13 @@ public class Member {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+    }
+
+    public Member(String email, String password, String nickname, Settings settings) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.settings = settings;
     }
 
 }

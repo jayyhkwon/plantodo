@@ -23,6 +23,8 @@ public class TodoDateService {
     private final TodoRepository todoRepository;
     private final CommonService commonService;
 
+    private final CommentService commentService;
+
     /*등록*/
     public void save(TodoDate todoDate) {
         planRepository.addUnchecked(getPlanId(todoDate), 1);
@@ -122,6 +124,7 @@ public class TodoDateService {
         return todoDateList;
     }
 
+    // 삭제해도 되나?
     public List<TodoDate> getTodoDateRep_ByTodoAndDate(Todo todo, LocalDate searchDate) {
         return todoDateRepository.getTodoDateRep_ByTodoAndDate(todo, searchDate);
     }
@@ -164,7 +167,20 @@ public class TodoDateService {
         return cnt;
     }
 
-    /*상태 변경 메서드*/
+    private Long getPlanId(TodoDate todoDate) {
+        return todoDate instanceof TodoDateRep ? ((TodoDateRep) todoDate).getTodo().getPlan().getId() : ((TodoDateDaily) todoDate).getPlan().getId();
+    }
+
+    public List<TodoDate> getTodoDateByTodo(Todo todo) {
+        return todoDateRepository.getTodoDateByTodo(todo);
+    }
+
+
+    /*변경*/
+    public void updateTitle(Long todoDateId, String updateTitle) {
+        todoDateRepository.updateTitle(todoDateId, updateTitle);
+    }
+
     public void switchStatusRep(Long todoDateId) {
         TodoDateRep todoDateRep = todoDateRepository.switchStatusRep(todoDateId);
         /* checked -> unchecked (plan에 반영) */
@@ -189,60 +205,29 @@ public class TodoDateService {
         }
     }
 
-    private Long getPlanId(TodoDate todoDate) {
-        return todoDate instanceof TodoDateRep ? ((TodoDateRep) todoDate).getTodo().getPlan().getId() : ((TodoDateDaily) todoDate).getPlan().getId();
+    /*삭제*/
+    public void delete(Long todoDateId) {
+        todoDateRepository.delete(todoDateId);
     }
 
-    /*삭제 메서드*/
-    public void deleteRep(Long todoDateId) {
-        TodoDateRep todoDateRep = todoDateRepository.findOneRep(todoDateId);
-        Long planId = todoDateRep.getTodo().getPlan().getId();
-        int[] counts = countCounts(todoDateRep);
-        planRepository.deleteCheckedAndUnchecked(planId, counts[0], counts[1]);
-        todoDateRepository.deleteRep(todoDateRep);
+    public void deleteDailyByPlanId(Long planId) {
+        List<TodoDateDaily> todoDateDaily_list = todoDateRepository.getTodoDateDailyByPlanId(planId);
+        todoDateDaily_list.forEach(daily -> {
+            commentService.deleteCommentByTodoDateId(daily.getId());
+            todoDateRepository.delete(daily.getId());
+        });
     }
 
-    public void deleteDaily(Long todoDateId) {
-        TodoDateDaily todoDateDaily = todoDateRepository.findOneDaily(todoDateId);
-        Long planId = todoDateDaily.getPlan().getId();
-        int[] counts = countCounts(todoDateDaily);
-        planRepository.deleteCheckedAndUnchecked(planId, counts[0], counts[1]);
-        todoDateRepository.deleteDaily(todoDateDaily);
+    public void deleteRepByTodoId(Long todoId) {
+        List<TodoDateRep> todoDateRep_list = todoDateRepository.getTodoDateRepByTodoId(todoId);
+        todoDateRep_list.forEach(rep -> {
+            commentService.deleteCommentByTodoDateId(rep.getId());
+            todoDateRepository.delete(rep.getId());
+        });
     }
 
-    private int[] countCounts(TodoDate todoDate) {
-        int checked = 0;
-        int unchecked = 0;
-
-        if (todoDate.getTodoStatus().equals(TodoStatus.CHECKED)) {
-            checked += 1;
-        } else {
-            unchecked += 1;
-        }
-
-        int[] res = {checked, unchecked};
-
-        return res;
-    }
-
-    public int deleteDailyByPlan(LocalDate today, Long planId) {
-        List<TodoDate> todoDateDailyList = todoRepository.findDailiesByPlanIdandDate(planId);
-        int pastTodoDateCnt = 0;
-        for (TodoDate todoDate : todoDateDailyList) {
-            if (todoDate.getDateKey().isBefore(today)) {
-                pastTodoDateCnt += 1;
-            } else {
-                deleteDaily(todoDate.getId());
-            }
-        }
-        return pastTodoDateCnt;
-    }
-
-    public void updateTitle(Long todoDateId, String updateTitle) {
-        todoDateRepository.updateTitle(todoDateId, updateTitle);
-    }
-
-    public List<TodoDate> getTodoDateByTodo(Todo todo) {
-        return todoDateRepository.getTodoDateByTodo(todo);
+    public List<TodoDateDaily> getTodoDateDailyByPlanId(Long planId) {
+        // 테스트용
+        return todoDateRepository.getTodoDateDailyByPlanId(planId);
     }
 }

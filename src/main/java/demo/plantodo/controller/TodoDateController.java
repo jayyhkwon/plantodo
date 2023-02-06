@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/todoDate")
 public class TodoDateController {
     private final PlanService planService;
-    private final MemberService memberService;
     private final TodoDateService todoDateService;
     private final CommentService commentService;
 
@@ -43,12 +42,8 @@ public class TodoDateController {
     @ResponseBody
     public Object deleteTodoDate(@ModelAttribute TodoDateDeleteDataVO todoDateDeleteDataVO) {
         Long todoDateId = todoDateDeleteDataVO.getTodoDateId();
-        TodoDate one = todoDateService.findOne(todoDateId);
-        if (one instanceof TodoDateRep) {
-            todoDateService.deleteRep(todoDateId);
-        } else {
-            todoDateService.deleteDaily(todoDateId);
-        }
+
+        todoDateService.delete(todoDateId);
 
         if (todoDateDeleteDataVO.getPageInfo().equals("home")) {
             TodoDateResHomeVO home = new TodoDateResHomeVO();

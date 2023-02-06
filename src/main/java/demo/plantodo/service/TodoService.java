@@ -17,7 +17,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TodoService {
-    private final PlanRepository planRepository;
     private final TodoRepository todoRepository;
     private final TodoDateRepository todoDateRepository;
     private final TodoDateService todoDateService;
@@ -39,53 +38,9 @@ public class TodoService {
         int uncheckedTodoDateCnt = todoDateService.todoDateInitiate(startDate, endDate, todo);
     }
 
+    /*조회*/
     public Todo findOne(Long todoId) {
         return todoRepository.findOne(todoId);
-    }
-
-    public int delete(Long todoId) {
-        /*todoDate 모두 불러오기*/
-        LocalDate today = LocalDate.now();
-        List<TodoDate> todoDateByTodoId = todoRepository.getTodoDateRepByTodoId(todoId);
-
-        /*오늘 날짜 이후의 todoDate에 delete함수를 호출해서 삭제하기*/
-        int checkedCnt = 0;
-        int uncheckedCnt = 0;
-        for (TodoDate todoDate : todoDateByTodoId) {
-            if (todoDate.getDateKey().equals(today) || todoDate.getDateKey().isAfter(today)) {
-                if (todoDate instanceof TodoDateRep) {
-                    todoDateRepository.deleteRep((TodoDateRep) todoDate);
-                }
-
-                if (todoDate instanceof TodoDateDaily) {
-                    todoDateRepository.deleteDaily((TodoDateDaily) todoDate);
-                }
-
-                /*todoDate가 checked상태면 checkedCnt, unchecked상태면 uncheckedCnt에 더한다.*/
-                if (todoDate.getTodoStatus().equals(TodoStatus.CHECKED)) {
-                    checkedCnt += 1;
-                }
-                if (todoDate.getTodoStatus().equals(TodoStatus.UNCHECKED)) {
-                    uncheckedCnt += 1;
-                }
-
-            }
-        }
-
-        System.out.println("[checkedCnt] : " + checkedCnt);
-        System.out.println("[uncheckedCnt] : " + uncheckedCnt);
-
-        /*연결된 plan의 checkedCnt와 uncheckedCnt를 원복한다.*/
-        Plan plan = findConnectedPlan(todoId);
-        planRepository.deleteCheckedAndUnchecked(plan.getId(), checkedCnt, uncheckedCnt);
-
-        /*todo를 삭제한다.*/
-        int deleteCnt = checkedCnt + uncheckedCnt;
-
-        if (deleteCnt == todoDateByTodoId.size()) {
-            todoRepository.delete(todoId);
-        }
-        return (todoDateByTodoId.size() - deleteCnt);
     }
 
     private Plan findConnectedPlan(Long todoId) {
@@ -93,6 +48,52 @@ public class TodoService {
         return todo.getPlan();
     }
 
+    public List<Todo> getTodoByPlanId(Long planId) {
+        return todoRepository.getTodoByPlanId(planId);
+    }
+
+    public List<Todo> getTodoByDate(Plan plan, LocalDate date) {
+        List<Todo> resultList = todoRepository.getTodoByPlanIdAndDate(plan, date);
+        return getTodoByDate_Filter(resultList, date);
+    }
+
+    public List<Todo> getTodoByDate_Filter(List<Todo> resultList, LocalDate date) {
+        if (resultList.isEmpty()) {
+            return resultList;
+        }
+        List<Todo> filteredTodo = new ArrayList<>();
+        for (Todo todo : resultList) {
+            int repOption = todo.getRepOption();
+            switch (repOption) {
+                case 1:
+                    List<String> repValue1 = todo.getRepValue();
+                    String dayOfWeek = commonService.turnDayOfWeekToString(date.getDayOfWeek());
+
+                    if (repValue1.contains(dayOfWeek)) {
+                        filteredTodo.add(todo);
+                    }
+                    break;
+                case 2:
+                    int repValue2 = Integer.parseInt(todo.getRepValue().get(0));
+                    LocalDate startDate = todo.getPlan().getStartDate();
+                    int diffDays = Period.between(startDate, date).getDays();
+                    if ((diffDays % repValue2) == 0) {
+                        filteredTodo.add(todo);
+                    }
+                    break;
+                default:
+                    filteredTodo.add(todo);
+            }
+        }
+        return filteredTodo;
+    }
+
+    public List<Todo> findAllTodoByMemberId(Long memberId) {
+        // 테스트용
+        return todoRepository.findAllTodoByMemberId(memberId);
+    }
+
+    /*변경*/
     public void update(TodoUpdateForm todoUpdateForm, Long todoId, Plan plan) {
         /*to-do 찾아오기*/
         Todo todo = todoRepository.findOne(todoId);
@@ -135,44 +136,11 @@ public class TodoService {
         }
     }
 
-    public List<Todo> getTodoByPlanId(Long planId) {
-        return todoRepository.getTodoByPlanId(planId);
-    }
-
-    public List<Todo> getTodoByDate(Plan plan, LocalDate date) {
-        List<Todo> resultList = todoRepository.getTodoByPlanIdAndDate(plan, date);
-        return getTodoByDate_Filter(resultList, date);
-    }
-
-    public List<Todo> getTodoByDate_Filter(List<Todo> resultList, LocalDate date) {
-        if (resultList.isEmpty()) {
-            return resultList;
-        }
-        List<Todo> filteredTodo = new ArrayList<>();
-        for (Todo todo : resultList) {
-            int repOption = todo.getRepOption();
-            switch (repOption) {
-                case 1:
-                    List<String> repValue1 = todo.getRepValue();
-                    String dayOfWeek = commonService.turnDayOfWeekToString(date.getDayOfWeek());
-
-                    if (repValue1.contains(dayOfWeek)) {
-                        filteredTodo.add(todo);
-                    }
-                    break;
-                case 2:
-                    int repValue2 = Integer.parseInt(todo.getRepValue().get(0));
-                    LocalDate startDate = todo.getPlan().getStartDate();
-                    int diffDays = Period.between(startDate, date).getDays();
-                    if ((diffDays % repValue2) == 0) {
-                        filteredTodo.add(todo);
-                    }
-                    break;
-                default:
-                    filteredTodo.add(todo);
-            }
-        }
-        return filteredTodo;
+    /*삭제*/
+    public void delete(Long todoId) {
+        /*todoDate(Rep) 삭제*/
+        todoDateService.deleteRepByTodoId(todoId);
+        todoRepository.delete(todoId);
     }
 
 }

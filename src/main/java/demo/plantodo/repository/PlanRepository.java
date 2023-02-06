@@ -118,11 +118,6 @@ public class PlanRepository {
         planTerm.setEndTime(LocalTime.parse(planTermUpdateForm.getEndTime()));
     }
 
-    public void updateStatusDeleted(Long planId) {
-        Plan plan = findOne(planId);
-        plan.changeToDeleted();
-    }
-
     public void switchPlanEmphasis(Long planId) {
         Plan plan = findOne(planId);
         plan.switchEmphasis();
@@ -145,14 +140,14 @@ public class PlanRepository {
         plan.addUnchecked(uncheckedTodoDateCnt);
     }
 
-    public void deleteCheckedAndUnchecked(Long planId, int checkedCnt, int uncheckedCnt) {
-        Plan plan = findOne(planId);
-        plan.deleteCheckedAndUnchecked(uncheckedCnt, checkedCnt);
-    }
-
     public void exchangeCheckedToUnchecked(Long planId, int uncheckedCnt, int checkedCnt) {
         Plan plan = findOne(planId);
         plan.exchangeCheckedToUnchecked(uncheckedCnt, checkedCnt);
     }
 
+    /*plan 삭제*/
+    public void delete(Long planId) {
+        Plan plan = findOne(planId);
+        em.remove(plan);
+    }
 }

@@ -16,6 +16,8 @@ public class MemberJoinForm {
     @NotBlank
     private String nickname;
 
+    private String permission;
+
     public MemberJoinForm() {
     }
 
@@ -23,5 +25,12 @@ public class MemberJoinForm {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+    }
+
+    public MemberJoinForm(String email, String password, String nickname, String permission) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.permission = permission;
     }
 }

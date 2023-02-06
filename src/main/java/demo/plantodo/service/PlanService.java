@@ -1,5 +1,7 @@
 package demo.plantodo.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import demo.plantodo.VO.UrgentMsgInfoVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.PlanRegularUpdateForm;
 import demo.plantodo.form.PlanTermRegisterForm;
@@ -10,15 +12,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jni.Local;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class PlanService {
     private final TodoService todoService;
     private final PlanRepository planRepository;
@@ -71,6 +77,21 @@ public class PlanService {
         return planRepository.findAllPlanRegular(memberId);
     }
 
+    public List<PlanTerm> findUrgentPlans(Long memberId) {
+        /*혹시 Past상태가 안 된 Plan이 있으면 Past 상태로 + 모든 Plan 조회*/
+        List<Plan> plans = planRepository.findAllPlan(memberId);
+        /*planTerm 필터링  / NOW 필터링 / 달성도 필터링 / emphasis로 필터링 / 타입을 PlanTerm으로 바꾸기 / endDate 필터링*/
+        return plans.stream()
+                .filter(p -> p instanceof PlanTerm)
+                .filter(p -> p.getPlanStatus().equals(PlanStatus.NOW))
+                .filter(p -> p.calculate_plan_compPercent() != 100)
+                .filter(Plan::isEmphasis).map(p -> (PlanTerm) p)
+                .filter(p -> p.getEndDate().isEqual(LocalDate.now()))
+                .sorted(Comparator.comparing(PlanTerm::getEndTime))
+                .collect(Collectors.toList());
+    }
+
+
     /*수정*/
     public void updateStatus(Long planId) {
         planRepository.updateStatus(planId);
@@ -89,19 +110,16 @@ public class PlanService {
     }
 
     /*삭제*/
-    public void delete(Plan plan) {
-        List<Todo> todo_list = todoService.getTodoByPlanId(plan.getId());
-        int canDeletePlan = 0;
-        for (Todo todo : todo_list) {
-            canDeletePlan += todoService.delete(todo.getId());
-        }
-        canDeletePlan += todoDateService.deleteDailyByPlan(LocalDate.now(), plan.getId());
-        /*과거 기록이 0개일 경우 plan 자체를 삭제. 과거 기록이 0개가 아닐 경우 plan의 status를 deleted로 변경*/
-        if (canDeletePlan != 0) {
-            planRepository.updateStatusDeleted(plan.getId());
-        } else {
-            planRepository.remove(plan);
-        }
+    public void delete(Long planId) {
+        /*To-do 삭제*/
+        List<Todo> todo_list = todoService.getTodoByPlanId(planId);
+        todo_list.forEach(todo -> todoService.delete(todo.getId()));
+
+        /*TodoDate(Daily) 삭제*/
+        todoDateService.deleteDailyByPlanId(planId);
+
+        /*plan 삭제*/
+        planRepository.delete(planId);
     }
 
     public List<Plan> findAllPlanForPlanRegister(Long memberId) {

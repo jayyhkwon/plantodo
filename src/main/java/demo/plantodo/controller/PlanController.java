@@ -166,9 +166,7 @@ public class PlanController {
     /*플랜 삭제*/
     @DeleteMapping
     public String planDelete(@RequestParam Long planId) {
-        System.out.println("planId = " + planId);
-        Plan plan = planService.findOne(planId);
-        planService.delete(plan);
+        planService.delete(planId);
         return "redirect:/plan/plans";
     }
 
@@ -242,7 +240,7 @@ public class PlanController {
         if (pageInfo.equals("detail")) {
             return "redirect:/plan/" + planId.toString();
         } else {
-            return "redirect:/plan/plan-list";
+            return "redirect:/plan/plans";
         }
 
     }

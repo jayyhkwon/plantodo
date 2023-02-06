@@ -13,7 +13,6 @@ import java.util.List;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-
     public List<Member> getMemberByEmail(String email) {
         return memberRepository.getMemberByEmail(email);
     }

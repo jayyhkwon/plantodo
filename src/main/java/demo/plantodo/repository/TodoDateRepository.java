@@ -15,10 +15,13 @@ public class TodoDateRepository {
     @PersistenceContext
     private EntityManager em;
 
+    /*등록*/
     public void save(TodoDate todoDate) {
         em.persist(todoDate);
     }
 
+
+    /*조회*/
     public TodoDate findOne(Long todoDateId) {
         return em.find(TodoDate.class, todoDateId);
     }
@@ -27,10 +30,21 @@ public class TodoDateRepository {
     }
     public TodoDateRep findOneRep(Long todoDateId) { return em.find(TodoDateRep.class, todoDateId); }
 
-
     public List<TodoDate> getTodoDateByTodo(Todo todo) {
-        return em.createQuery("select td from TodoDateRep td where td.todo.id = :todoId")
+        return em.createQuery("select td from TodoDate td where td.todo.id = :todoId", TodoDate.class)
                 .setParameter("todoId", todo.getId())
+                .getResultList();
+    }
+
+    public List<TodoDateRep> getTodoDateRepByTodoId(Long todoId) {
+        return em.createQuery("select td from TodoDateRep td where td.todo.id = :todoId", TodoDateRep.class)
+                .setParameter("todoId", todoId)
+                .getResultList();
+    }
+
+    public List<TodoDateDaily> getTodoDateDailyByPlanId(Long planId) {
+        return em.createQuery("select td from TodoDateDaily td where td.plan.id = :planId", TodoDateDaily.class)
+                .setParameter("planId", planId)
                 .getResultList();
     }
 
@@ -41,6 +55,7 @@ public class TodoDateRepository {
                 .getResultList();
     }
 
+    /*변경*/
     public TodoDateRep switchStatusRep(Long todoDateId) {
         TodoDateRep rep = findOneRep(todoDateId);
         rep.swtichStatus();
@@ -86,6 +101,11 @@ public class TodoDateRepository {
 
 
     /* 삭제 */
+
+    public void delete(Long todoDateId) {
+        TodoDate todoDate = findOne(todoDateId);
+        em.remove(todoDate);
+    }
     public void deleteRep(TodoDateRep todoDateRep) {
         em.remove(todoDateRep);
     }
@@ -93,5 +113,4 @@ public class TodoDateRepository {
     public void deleteDaily(TodoDateDaily todoDateDaily) {
         em.remove(todoDateDaily);
     }
-
 }

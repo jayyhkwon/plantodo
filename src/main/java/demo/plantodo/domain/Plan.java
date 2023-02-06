@@ -1,5 +1,6 @@
 package demo.plantodo.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,9 @@ public class Plan {
     @Enumerated(EnumType.STRING)
     private PlanStatus planStatus;
 
+    @JsonFormat
     private LocalDate startDate;
+
     private String title;
 
     @Column(insertable=false, updatable=false)
@@ -71,14 +74,6 @@ public class Plan {
         this.checked_TodoDate_cnt += uncheckedCnt;
         this.unchecked_TodoDate_cnt += checkedCnt;
 
-    }
-
-    public void changeToDeleted() {
-        if (this.planStatus.equals(PlanStatus.NOW) || this.planStatus.equals(PlanStatus.COMPLETED)) {
-            this.planStatus = PlanStatus.DELETED;
-        } else {
-            throw new IllegalStateException();
-        }
     }
 
     public void changeToPast() {

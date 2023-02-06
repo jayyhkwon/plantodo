@@ -82,4 +82,11 @@ public class TodoRepository {
                 .setParameter("planId", planId)
                 .getResultList();
     }
+
+    public List<Todo> findAllTodoByMemberId(Long memberId) {
+        // 테스트용
+        return em.createQuery("select td from Todo td where td.member.id = :memberId", Todo.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
 }
