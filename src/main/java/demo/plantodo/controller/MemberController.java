@@ -1,6 +1,7 @@
 package demo.plantodo.controller;
 
 import demo.plantodo.converter.StringToEnumConverterFactory;
+import demo.plantodo.domain.Auth;
 import demo.plantodo.domain.Member;
 import demo.plantodo.domain.PermStatus;
 import demo.plantodo.domain.Settings;
@@ -70,6 +71,10 @@ public class MemberController {
 
         Member member = new Member(memberJoinForm.getEmail(), memberJoinForm.getPassword(), memberJoinForm.getNickname(), settings);
         memberService.save(member);
+
+        // auth 생성
+        Long memberId = member.getId();
+
 
         model.addAttribute("memberLoginForm", new MemberLoginForm());
         return "redirect:/member/login";
