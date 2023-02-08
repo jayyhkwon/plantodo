@@ -7,6 +7,7 @@ import demo.plantodo.domain.PermStatus;
 import demo.plantodo.domain.Settings;
 import demo.plantodo.form.MemberJoinForm;
 import demo.plantodo.form.MemberLoginForm;
+import demo.plantodo.service.AuthService;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.SettingsService;
 import demo.plantodo.validation.MemberJoinlValidator;
@@ -30,6 +31,9 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
     private final SettingsService settingsService;
+
+    private final AuthService authService;
+
     private final MemberJoinlValidator memberJoinlValidator;
 
     private final StringToEnumConverterFactory converterFactory;
@@ -74,7 +78,7 @@ public class MemberController {
 
         // auth 생성
         Long memberId = member.getId();
-
+        authService.save(memberId);
 
         model.addAttribute("memberLoginForm", new MemberLoginForm());
         return "redirect:/member/login";
@@ -121,8 +125,11 @@ public class MemberController {
         }
 
         HttpSession session = request.getSession();
-        session.setAttribute("memberId", rightMember.getId());
         session.setAttribute("nickname", rightMember.getNickname());
+
+        /*Auth 쿠키 생성*/
+        ResponseCookie auth = makeCookie("AUTH", authService.getKeyByMemberId(rightMember.getId()), 300);
+        response.setHeader("Set-Cookie", auth.toString());
 
         /*마감 알람 on-off 여부 확인*/
         Settings settings = memberService.findOne(rightMember.getId()).getSettings();
@@ -151,9 +158,9 @@ public class MemberController {
     }
 
     @GetMapping("/logout")
-    public String logoutMember(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        session.invalidate();
+    public String logoutMember(HttpServletResponse response) {
+        ResponseCookie auth = makeCookie("AUTH", null, 0);
+        response.setHeader("Set-Cookie", auth.toString());
         return "redirect:/";
     }
 

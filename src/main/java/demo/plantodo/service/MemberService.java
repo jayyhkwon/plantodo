@@ -21,10 +21,6 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public Long getMemberId(HttpServletRequest request) {
-        return memberRepository.getMemberId(request);
-    }
-
     public Member findOne(Long memberId) {
         return memberRepository.findOne(memberId);
     }

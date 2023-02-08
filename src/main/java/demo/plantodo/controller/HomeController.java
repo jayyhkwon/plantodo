@@ -25,13 +25,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/home")
 public class HomeController {
+
+     private final CommonService commonService;
      private final MemberService memberService;
      private final PlanService planService;
      private final TodoDateService todoDateService;
 
      @GetMapping
      public String createHome(HttpServletRequest request, HttpServletResponse response) {
-
           LocalDate today = LocalDate.now();
           if (!checkCookie(request)) {
                Cookie cookie1 = regularTodoDateInitiate(request, today);
@@ -39,9 +40,6 @@ public class HomeController {
                     response.addCookie(cookie1);
                }
           }
-          HttpSession session = request.getSession();
-          Long memberId = (Long) session.getAttribute("memberId");
-          System.out.println(memberId);
           return "main-home";
      }
 
@@ -65,7 +63,7 @@ public class HomeController {
           if (eachDate.isEqual(LocalDate.now())) {
                needUpdate = false;
           }
-          Long memberId = memberService.getMemberId(request);
+          Long memberId = commonService.getMemberId(request);
           List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId);
           LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
@@ -80,7 +78,7 @@ public class HomeController {
      }
 
      public Cookie regularTodoDateInitiate(HttpServletRequest request, LocalDate today) {
-          Long memberId = memberService.getMemberId(request);
+          Long memberId = commonService.getMemberId(request);
           List<Plan> allPlan = planService.findAllPlan(memberId);
 
           /*plan이 하나라도 있으면 planRegular인지 확인*/

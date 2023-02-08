@@ -2,6 +2,8 @@ package demo.plantodo.controller;
 
 import demo.plantodo.domain.Settings;
 import demo.plantodo.form.SettingsUpdateForm;
+import demo.plantodo.service.AuthService;
+import demo.plantodo.service.CommonService;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.SettingsService;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +18,15 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 public class SettingsController {
 
+    private final CommonService commonService;
     private final MemberService memberService;
     private final SettingsService settingsService;
 
     @GetMapping
     public String createSettingsUpdateForm(Model model, HttpServletRequest request) {
-        Settings settings = settingsService.findOneByMemberId(memberService.getMemberId(request));
+        Long memberId = commonService.getMemberId(request);
+
+        Settings settings = settingsService.findOneByMemberId(memberId);
         SettingsUpdateForm form = new SettingsUpdateForm(settings.getNotification_perm(), settings.isDeadline_alarm() ? true : false, settings.getDeadline_alarm_term(), settings.getId());
         model.addAttribute("settingsUpdateForm", form);
         return "/member/settings-form";

@@ -77,4 +77,8 @@ class MemberControllerTest {
                 .andExpect(view().name("redirect:/home"))
                 .andDo(print());
     }
+
+    @Test
+    public void loginCanMakeAuthCookie() throws Exception {
+    }
 }
