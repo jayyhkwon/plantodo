@@ -127,10 +127,6 @@ public class MemberController {
         HttpSession session = request.getSession();
         session.setAttribute("nickname", rightMember.getNickname());
 
-        /*Auth 쿠키 생성*/
-        ResponseCookie auth = makeCookie("AUTH", authService.getKeyByMemberId(rightMember.getId()), 300);
-        response.setHeader("Set-Cookie", auth.toString());
-
         /*마감 알람 on-off 여부 확인*/
         Settings settings = memberService.findOne(rightMember.getId()).getSettings();
 
@@ -140,6 +136,11 @@ public class MemberController {
 
         ResponseCookie pastDAT = makeCookie("deadline_alarm_term", null, 0);
         response.setHeader("Set-Cookie", pastDAT.toString());
+
+        /*Auth 쿠키 생성*/
+        String authKey = String.valueOf(authService.getKeyByMemberId(rightMember.getId()));
+        ResponseCookie auth = makeCookie("AUTH", authKey, 1800);
+        response.setHeader("Set-Cookie", auth.toString());
 
         if (settings.getNotification_perm().toString().equals("GRANTED") && settings.isDeadline_alarm()) {
             ResponseCookie firstAccessCookie = makeCookie("firstAccess", "1", 1800);

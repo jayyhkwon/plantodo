@@ -1,6 +1,7 @@
 package demo.plantodo.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Auth {
     @Id
     private String key_sha256;

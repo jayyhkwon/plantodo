@@ -13,13 +13,17 @@ public class FirstLoginCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         boolean loggedIn = false;
         Cookie[] cookies = request.getCookies();
-        for (Cookie c : cookies) {
-            if (c.getName().equals("AUTH")) {
-                log.info("AUTH sha-256 key : {}", c.getValue());
-                loggedIn = true;
-                break;
+
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if (c.getName().equals("AUTH")) {
+                    log.info("AUTH sha-256 key : {}", c.getValue());
+                    loggedIn = true;
+                    break;
+                }
             }
         }
+
         if (loggedIn) {
             response.sendRedirect("/home?redirectURL=" + request.getRequestURI());
             return false;
