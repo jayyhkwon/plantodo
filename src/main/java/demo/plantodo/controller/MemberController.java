@@ -160,7 +160,7 @@ public class MemberController {
 
     @GetMapping("/logout")
     public String logoutMember(HttpServletResponse response) {
-        ResponseCookie auth = makeCookie("AUTH", null, 0);
+        ResponseCookie auth = makeCookie("AUTH", "", 0);
         response.setHeader("Set-Cookie", auth.toString());
         return "redirect:/";
     }

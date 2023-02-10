@@ -112,12 +112,15 @@ class MemberControllerTest {
 
         MockHttpServletRequestBuilder logoutBuilder = get("/member/logout");
 
+        MockHttpServletRequestBuilder indexBuilder = get("/");
+
         mock.perform(joinBuilder)
                 .andDo(
                         result1 ->
                                 mock.perform(loginBuilder).andDo(
-                                        result2 -> mock.perform(logoutBuilder).andExpect(cookie().doesNotExist("AUTH"))));
-
-
+                                        result2 -> mock.perform(logoutBuilder).andDo(
+                                                result3 -> mock.perform(indexBuilder)
+                                                        .andExpect(cookie().doesNotExist("AUTH"))
+                                        )));
     }
 }
