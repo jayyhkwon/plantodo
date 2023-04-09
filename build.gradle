@@ -49,6 +49,9 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+	/*lettuce (REDIS)*/
+	implementation 'io.lettuce:lettuce-core:6.2.3.RELEASE'
 }
 
 test {

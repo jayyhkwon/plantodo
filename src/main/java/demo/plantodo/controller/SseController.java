@@ -5,6 +5,10 @@ import demo.plantodo.domain.PlanTerm;
 import demo.plantodo.logger.SseTrace;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.PlanService;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +28,37 @@ public class SseController {
     private SseTrace trace = new SseTrace();
     private final MemberService memberService;
     private final PlanService planService;
-    private static final Map<Long, SseEmitter> clients = new ConcurrentHashMap<>();
-    private static final Map<Long, LocalDateTime>  lastSentTimeRec = new ConcurrentHashMap<>();
 
-    @GetMapping("/last")
-    public LocalDateTime getLastSentTime(HttpServletRequest request) {
-        Long memberId = memberService.getMemberId(request);
-        return lastSentTimeRec.get(memberId);
+    private final RedisClient redisClient;
+
+    private static final Map<Long, SseEmitter> clients = new ConcurrentHashMap<>();
+
+//    @GetMapping("/last")
+//    public LocalDateTime getLastSentTime(HttpServletRequest request) {
+//        Long memberId = memberService.getMemberId(request);
+//        return lastSentTimeRec.get(memberId);
+//    }
+
+    void setLastSentTime(Long memberId, LocalDateTime time) {
+        StatefulRedisConnection<String, String> connection = redisClient.connect();
+        RedisCommands<String, String> commands = connection.sync();
+        commands.set(String.valueOf(memberId), time.toString());
+        connection.close();
+    }
+
+    LocalDateTime getLastSentTime(Long memberId) {
+        StatefulRedisConnection<String, String> connection = redisClient.connect();
+        RedisCommands<String, String> commands = connection.sync();
+        String s = commands.get(String.valueOf(memberId));
+        connection.close();
+        return LocalDateTime.parse(s);
+    }
+
+    void updateLastSentTime(Long memberId, LocalDateTime time) {
+        StatefulRedisConnection<String, String> connection = redisClient.connect();
+        RedisCommands<String, String> commands = connection.sync();
+        commands.del(String.valueOf(memberId));
+        commands.set(String.valueOf(memberId), time.toString());
     }
 
     @GetMapping("/subscribe")
@@ -43,7 +71,8 @@ public class SseController {
                 .id(String.valueOf(memberId))
                 .name("dummy")
                 .data("EventStream Created. This is dummy data of [userId : " + memberId + "]");
-        lastSentTimeRec.put(memberId, LocalDateTime.MIN);
+
+        setLastSentTime(memberId, LocalDateTime.MIN);
         emitter.send(initEvent);
         emitter.onTimeout(() -> clients.remove(memberId));
         emitter.onCompletion(() -> clients.remove(memberId));
@@ -87,6 +116,7 @@ public class SseController {
 
         @Override
         public void run() {
+
             while (!Thread.interrupted()) {
                 List<PlanTerm> plans = planService.findUrgentPlans(memberId);
                 if (plans.size() == 0) {
@@ -100,14 +130,14 @@ public class SseController {
                 SseEmitter client = clients.get(memberId);
                 try {
                     client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
-                    LocalDateTime msgLastSentTime = lastSentTimeRec.get(memberId);
+                    LocalDateTime msgLastSentTime = getLastSentTime(memberId);
                     LocalDateTime now = LocalDateTime.now();
                     if (msgLastSentTime.isEqual(LocalDateTime.MIN)) {
                         trace.simpleLog("First Message Transfer");
                     } else {
                         trace.intervalLog("Message Transfer", msgLastSentTime, alarm_term);
                     }
-                    lastSentTimeRec.replace(memberId, now);
+                    updateLastSentTime(memberId, now);
                     Thread.sleep(alarm_term*60000);
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
