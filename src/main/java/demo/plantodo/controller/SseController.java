@@ -114,7 +114,7 @@ public class SseController {
                         trace.intervalLog("Message Transfer", msgLastSentTime, alarm_term);
                     }
                     lastSentTimeRec.replace(memberId, now);
-                    Thread.sleep(alarm_term*60000);
+                    Thread.sleep(alarm_term* 60000L);
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
                     break;
