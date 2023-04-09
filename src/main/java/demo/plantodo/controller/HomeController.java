@@ -25,9 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/home")
 public class HomeController {
-
      private final CommonService commonService;
-     private final MemberService memberService;
      private final PlanService planService;
      private final TodoDateService todoDateService;
 
@@ -109,7 +107,6 @@ public class HomeController {
      public boolean checkCookie(HttpServletRequest request) {
           Cookie[] cookies = request.getCookies();
           for (Cookie cookie : cookies) {
-               System.out.println("cookie.getName() = " + cookie.getName());
                if (cookie.getName().equals("RegularTodoDateInitiatedToday")) {
                     return true;
                }
