@@ -6,16 +6,15 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 @Slf4j
-public class LoginCheckInterceptor implements HandlerInterceptor {
+public class FirstLoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         boolean loggedIn = false;
         Cookie[] cookies = request.getCookies();
+
         if (cookies != null) {
-            log.info(cookies.toString());
             for (Cookie c : cookies) {
                 if (c.getName().equals("AUTH")) {
                     log.info("AUTH sha-256 key : {}", c.getValue());
@@ -25,9 +24,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             }
         }
 
-        String requestURI = request.getRequestURI();
-        if (!loggedIn) {
-            response.sendRedirect("/member/login?redirectURL="+requestURI);
+        if (loggedIn) {
+            response.sendRedirect("/home?redirectURL=" + request.getRequestURI());
             return false;
         }
         return true;

@@ -28,6 +28,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/plan")
 public class PlanController {
+
+    private final CommonService commonService;
     private final PlanService planService;
     private final TodoDateService todoDateService;
     private final MemberService memberService;
@@ -50,7 +52,7 @@ public class PlanController {
     @PostMapping("/regular")
     public String planRegisterRegular(@ModelAttribute("planRegularRegisterForm") PlanRegularRegisterForm planRegularRegisterForm,
                                       HttpServletRequest request) {
-        Long memberId = memberService.getMemberId(request);
+        Long memberId = commonService.getMemberId(request);
         Member findMember = memberService.findOne(memberId);
         LocalDate startDate = LocalDate.now();
         PlanRegular planRegular = new PlanRegular(findMember, PlanStatus.NOW, startDate, planRegularRegisterForm.getTitle());
@@ -79,7 +81,7 @@ public class PlanController {
             return "plan/register-term";
         }
 
-        Long memberId = memberService.getMemberId(request);
+        Long memberId = commonService.getMemberId(request);
         Member findMember = memberService.findOne(memberId);
 
         planService.saveTerm(findMember, planTermRegisterForm);
@@ -89,7 +91,7 @@ public class PlanController {
     /*목록 조회*/
     @GetMapping("/plans")
     public String plans(Model model, HttpServletRequest request) {
-        Long memberId = memberService.getMemberId(request);
+        Long memberId = commonService.getMemberId(request);
         HashMap<Plan, Integer> plans = planService.findAllPlan_withCompPercent(memberId);
         model.addAttribute("plans", plans);
         return "plan/plan-list";

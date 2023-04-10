@@ -3,6 +3,8 @@ import demo.plantodo.VO.UrgentMsgInfoVO;
 import demo.plantodo.converter.ObjToJsonConverter;
 import demo.plantodo.domain.PlanTerm;
 import demo.plantodo.logger.SseTrace;
+import demo.plantodo.service.AuthService;
+import demo.plantodo.service.CommonService;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.PlanService;
 import io.lettuce.core.RedisClient;
@@ -26,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class SseController {
     private SseTrace trace = new SseTrace();
+
+    private final CommonService commonService;
     private final MemberService memberService;
     private final PlanService planService;
 
@@ -57,7 +61,7 @@ public class SseController {
 
     @GetMapping("/subscribe")
     public SseEmitter subscribe(HttpServletRequest request) throws IOException {
-        Long memberId = memberService.getMemberId(request);
+        Long memberId = commonService.getMemberId(request);
 
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         clients.put(memberId, emitter);
@@ -75,7 +79,8 @@ public class SseController {
 
     @GetMapping("/sendAlarm")
     public void sendAlarm(HttpServletRequest request) {
-        Long memberId = memberService.getMemberId(request);
+        Long memberId = commonService.getMemberId(request);
+
         int deadline_alarm_term = memberService.findOne(memberId).getSettings().getDeadline_alarm_term();
         /*실험용 (나중에 new ArrayList<>() 차이에 Plan 리스트를 조회해서 넣어야 함*/
         Thread loginThread = new Thread(new SendAlarmRunnable(planService, memberId, deadline_alarm_term));
@@ -85,7 +90,8 @@ public class SseController {
 
     @GetMapping("/quitAlarm")
     public void quitAlarm(HttpServletRequest request) {
-        Long memberId = memberService.getMemberId(request);
+        Long memberId = commonService.getMemberId(request);
+
         Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
         for (Thread thread : traces.keySet()) {
             if (thread.getName().equals("loginThread"+memberId)) {

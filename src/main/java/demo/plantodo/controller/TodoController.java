@@ -4,10 +4,7 @@ import demo.plantodo.DTO.TodoButtonDTO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoRegisterForm;
 import demo.plantodo.form.TodoUpdateForm;
-import demo.plantodo.service.MemberService;
-import demo.plantodo.service.PlanService;
-import demo.plantodo.service.TodoDateService;
-import demo.plantodo.service.TodoService;
+import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -25,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/todo")
 public class TodoController {
+
+    private final CommonService commonService;
     private final PlanService planService;
     private final MemberService memberService;
     private final TodoDateService todoDateService;
@@ -33,8 +32,7 @@ public class TodoController {
 
     @GetMapping("/register")
     public String createRegisterForm(HttpServletRequest request, Model model) {
-        Long memberId = memberService.getMemberId(request);
-
+        Long memberId = commonService.getMemberId(request);
         List<Plan> plans = planService.findAllPlanForPlanRegister(memberId);
 
         model.addAttribute("plans", plans);
@@ -51,7 +49,7 @@ public class TodoController {
         int repOption = todoRegisterForm.getRepOption();
         List<String> repValue = todoRegisterForm.getRepValue();
         if ((repOption == 1 && repValue == null) || (repOption == 2 && repValue == null)) {
-            Long memberId = memberService.getMemberId(request);
+            Long memberId = commonService.getMemberId(request);
             List<Plan> plans = planService.findAllPlan(memberId);
             model.addAttribute("plans", plans);
             bindingResult.addError(new FieldError("todoRegisterForm", "repValue", "옵션을 추가해야 합니다."));
@@ -60,7 +58,7 @@ public class TodoController {
             return "todo/register-form";
         }
 
-        Long memberId = memberService.getMemberId(request);
+        Long memberId = commonService.getMemberId(request);
         Member member = memberService.findOne(memberId);
 
         Plan plan = planService.findOne(todoRegisterForm.getPlanId());

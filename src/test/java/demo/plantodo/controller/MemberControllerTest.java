@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -76,5 +77,50 @@ class MemberControllerTest {
         mock.perform(builder)
                 .andExpect(view().name("redirect:/home"))
                 .andDo(print());
+    }
+
+    @Test
+    public void loginCanMakeAuthCookie() throws Exception {
+        MockHttpServletRequestBuilder joinBuilder = post("/member/join")
+                .param("email", "test@abc.co.kr")
+                .param("password", "abc123!@#")
+                .param("nickname", "TEST")
+                .param("permission", "granted");
+
+        MockHttpServletRequestBuilder loginBuilder = post("/member/login")
+                .param("email", "test@abc.co.kr")
+                .param("password", "abc123!@#");
+
+        mock.perform(joinBuilder)
+                .andDo(result -> mock.perform(loginBuilder)
+                        .andExpect(cookie().exists("AUTH")))
+                .andExpect(status().is3xxRedirection());
+
+    }
+
+    @Test
+    public void logoutCanDeleteCookie() throws Exception {
+        MockHttpServletRequestBuilder joinBuilder = post("/member/join")
+                .param("email", "test@abc.co.kr")
+                .param("password", "abc123!@#")
+                .param("nickname", "TEST")
+                .param("permission", "granted");
+
+        MockHttpServletRequestBuilder loginBuilder = post("/member/login")
+                .param("email", "test@abc.co.kr")
+                .param("password", "abc123!@#");
+
+        MockHttpServletRequestBuilder logoutBuilder = get("/member/logout");
+
+        MockHttpServletRequestBuilder indexBuilder = get("/");
+
+        mock.perform(joinBuilder)
+                .andDo(
+                        result1 ->
+                                mock.perform(loginBuilder).andDo(
+                                        result2 -> mock.perform(logoutBuilder).andDo(
+                                                result3 -> mock.perform(indexBuilder)
+                                                        .andExpect(cookie().doesNotExist("AUTH"))
+                                        )));
     }
 }

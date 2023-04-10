@@ -1,6 +1,7 @@
 package demo.plantodo;
 
 import demo.plantodo.converter.StringToEnumConverterFactory;
+import demo.plantodo.interceptor.FirstLoginCheckInterceptor;
 import demo.plantodo.interceptor.HomeRenderInterceptor;
 import demo.plantodo.interceptor.LoginCheckInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -14,16 +15,19 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginCheckInterceptor())
+        registry.addInterceptor(new FirstLoginCheckInterceptor())
                 .order(1)
+                .addPathPatterns("/");
+
+        registry.addInterceptor(new LoginCheckInterceptor())
+                .order(2)
                 .addPathPatterns("/home/**", "/plan/**", "/comment/**", "/settings/**", "/sse/**", "/todo/**", "/todoDate/**")
                         .excludePathPatterns("/member/**");
 
         registry.addInterceptor(new HomeRenderInterceptor())
-                .order(2)
+                .order(3)
                 .addPathPatterns("/home", "/home/*", "/member/login", "/todo/register", "/plan/register/*")
                 .excludePathPatterns("/", "/member/join");
-
     }
 
     @Override
