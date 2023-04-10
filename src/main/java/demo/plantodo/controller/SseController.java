@@ -33,20 +33,14 @@ public class SseController {
 
     private static final Map<Long, SseEmitter> clients = new ConcurrentHashMap<>();
 
-//    @GetMapping("/last")
-//    public LocalDateTime getLastSentTime(HttpServletRequest request) {
-//        Long memberId = memberService.getMemberId(request);
-//        return lastSentTimeRec.get(memberId);
-//    }
-
-    void setLastSentTime(Long memberId, LocalDateTime time) {
+    private void setLastSentTime(Long memberId, LocalDateTime time) {
         StatefulRedisConnection<String, String> connection = redisClient.connect();
         RedisCommands<String, String> commands = connection.sync();
         commands.set(String.valueOf(memberId), time.toString());
         connection.close();
     }
 
-    LocalDateTime getLastSentTime(Long memberId) {
+    private LocalDateTime getLastSentTime(Long memberId) {
         StatefulRedisConnection<String, String> connection = redisClient.connect();
         RedisCommands<String, String> commands = connection.sync();
         String s = commands.get(String.valueOf(memberId));
@@ -54,7 +48,7 @@ public class SseController {
         return LocalDateTime.parse(s);
     }
 
-    void updateLastSentTime(Long memberId, LocalDateTime time) {
+    private void updateLastSentTime(Long memberId, LocalDateTime time) {
         StatefulRedisConnection<String, String> connection = redisClient.connect();
         RedisCommands<String, String> commands = connection.sync();
         commands.del(String.valueOf(memberId));
