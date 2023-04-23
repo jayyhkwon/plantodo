@@ -40,7 +40,7 @@ function initMsgLogic() {
     }
 
     eventSource_start.onmessage = (e) => {
-
+        console.log("initMsgLogic");
         /*첫 로그인 쿠키 삭제*/
         commonService.deleteCookie("firstAccess");
 
@@ -67,6 +67,7 @@ function succeededMsgLogic() {
         if (msgLastSentTime != null) {
             let deadline_alarm_term = commonService.getCookieVal("deadline_alarm_term");
             let waitTime = getWaitTime(msgLastSentTime, deadline_alarm_term);
+            console.log(waitTime);
 
             /*waitTime만큼 기다리기*/
             setTimeout(function () {
@@ -90,6 +91,7 @@ function succeededMsgLogic() {
                 }
 
                 eventSource_dur.onmessage = (e) => {
+                    console.log("succeededMsgLogic");
                     let data = JSON.parse(e.data);
                     let msg = "아직 완료되지 않은 일정이 " + data.count + "개 있습니다. 가장 마감이 임박한 일정으로 이동하시겠습니까?";
                     let notification = new Notification('현재 메세지', {title: "마감 알림", body: msg});

@@ -4,17 +4,14 @@ import demo.plantodo.converter.ObjToJsonConverter;
 import demo.plantodo.domain.PlanTerm;
 import demo.plantodo.logger.SseTrace;
 import demo.plantodo.service.AuthService;
-import demo.plantodo.service.CommonService;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.PlanService;
 import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -72,7 +69,7 @@ public class SseController {
     @GetMapping("/subscribe")
     public SseEmitter subscribe(@CookieValue(name = "AUTH") String key) throws IOException {
         Long memberId = authService.getMemberIdByKey(key);
-
+        System.out.println("put sseEmitter instance in clients");
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         clients.put(memberId, emitter);
         SseEmitter.SseEventBuilder initEvent = SseEmitter.event()
@@ -126,7 +123,7 @@ public class SseController {
 
         @Override
         public void run() {
-
+            System.out.println("run!");
             while (!Thread.interrupted()) {
                 List<PlanTerm> plans = planService.findUrgentPlans(memberId);
                 if (plans.size() == 0) {
@@ -135,7 +132,7 @@ public class SseController {
                 }
                 if (!clients.containsKey(memberId)) {
                     trace.simpleLog("Cannot Find Client ID - Waiting");
-                    break;
+                    continue;
                 }
                 SseEmitter client = clients.get(memberId);
                 try {
