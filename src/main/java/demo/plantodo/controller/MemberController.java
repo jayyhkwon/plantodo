@@ -162,6 +162,12 @@ public class MemberController {
     public String logoutMember(HttpServletResponse response) {
         ResponseCookie auth = makeCookie("AUTH", "", 0);
         response.setHeader("Set-Cookie", auth.toString());
+
+        ResponseCookie dat = makeCookie("deadline_alarm_term", "", 0);
+        response.setHeader("Set-Cookie", dat.toString());
+
+        ResponseCookie firstAccess = makeCookie("firstAccess", "", 0);
+        response.setHeader("Set-Cookie", firstAccess.toString());
         return "redirect:/";
     }
 

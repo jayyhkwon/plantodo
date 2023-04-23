@@ -15,10 +15,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         boolean loggedIn = false;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            log.info(cookies.toString());
             for (Cookie c : cookies) {
                 if (c.getName().equals("AUTH")) {
-                    log.info("AUTH sha-256 key : {}", c.getValue());
                     loggedIn = true;
                     break;
                 }

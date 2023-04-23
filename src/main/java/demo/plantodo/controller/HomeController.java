@@ -25,15 +25,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/home")
 public class HomeController {
-     private final CommonService commonService;
+     private final AuthService authService;
      private final PlanService planService;
      private final TodoDateService todoDateService;
 
      @GetMapping
-     public String createHome(HttpServletRequest request, HttpServletResponse response) {
+     public String createHome(HttpServletRequest request, @CookieValue(name = "AUTH") String authKey, HttpServletResponse response) {
           LocalDate today = LocalDate.now();
           if (!checkCookie(request)) {
-               Cookie cookie1 = regularTodoDateInitiate(request, today);
+               Cookie cookie1 = regularTodoDateInitiate(authKey, today);
                if (cookie1.getName().equals("RegularTodoDateInitiatedToday")) {
                     response.addCookie(cookie1);
                }
@@ -56,12 +56,12 @@ public class HomeController {
      }
 
      @GetMapping("/calendar/{eachDate}")
-     public String getDateBlock(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate eachDate, HttpServletRequest request, Model model) {
+     public String getDateBlock(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate eachDate, @CookieValue(name = "AUTH") String authKey, Model model) {
           boolean needUpdate = true;
           if (eachDate.isEqual(LocalDate.now())) {
                needUpdate = false;
           }
-          Long memberId = commonService.getMemberId(request);
+          Long memberId = authService.getMemberIdByKey(authKey);
           List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId);
           LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
@@ -75,8 +75,8 @@ public class HomeController {
           return "main-home :: #dateBlock";
      }
 
-     public Cookie regularTodoDateInitiate(HttpServletRequest request, LocalDate today) {
-          Long memberId = commonService.getMemberId(request);
+     public Cookie regularTodoDateInitiate(String authKey, LocalDate today) {
+          Long memberId = authService.getMemberIdByKey(authKey);
           List<Plan> allPlan = planService.findAllPlan(memberId);
 
           /*plan이 하나라도 있으면 planRegular인지 확인*/

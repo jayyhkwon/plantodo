@@ -1,8 +1,5 @@
 import * as commonService from "./common.js";
 
-console.log("deadline_alarm_term : " + commonService.getCookieVal("deadline_alarm_term"));
-console.log("firstAccess : " + commonService.getCookieVal("firstAccess"));
-
 /*Main Logic*/
 if (commonService.getCookieVal("deadline_alarm_term") !== "-1") {
     if (commonService.getCookieVal("firstAccess") === "1") {
@@ -100,9 +97,8 @@ function succeededMsgLogic() {
                         e.preventDefault();
                         window.open("/plan/" + data.planId, '_blank');
                     }
-                    let now = new Date().getTime();
                     setTimeout(notification.close.bind(notification), deadline_alarm_term * 60000);
-                    commonService.setCookie("msgLastSentTime", now);
+                    $.post("/sse/last");
                 }
             }, waitTime);
         } else {

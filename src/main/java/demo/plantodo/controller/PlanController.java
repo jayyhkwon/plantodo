@@ -36,6 +36,7 @@ public class PlanController {
     private final TodoService todoService;
     private final DateFilterValidatorIsInRange isInRangeValidator;
     private final PlanTermRegisterValidator planTermRegisterValidator;
+    private final AuthService authService;
 
     /*등록 - regular*/
     @GetMapping("/type")
@@ -69,8 +70,7 @@ public class PlanController {
 
     @PostMapping("/term")
     public String planRegisterTerm(@Validated @ModelAttribute("planTermRegisterForm") PlanTermRegisterForm planTermRegisterForm,
-                             BindingResult bindingResult,
-                             HttpServletRequest request) {
+                             BindingResult bindingResult, @CookieValue(name = "AUTH") String authKey) {
         /*null 검증*/
         if (bindingResult.hasErrors()) {
             return "plan/register-term";
@@ -81,7 +81,7 @@ public class PlanController {
             return "plan/register-term";
         }
 
-        Long memberId = commonService.getMemberId(request);
+        Long memberId = authService.getMemberIdByKey(authKey);
         Member findMember = memberService.findOne(memberId);
 
         planService.saveTerm(findMember, planTermRegisterForm);
@@ -90,8 +90,8 @@ public class PlanController {
 
     /*목록 조회*/
     @GetMapping("/plans")
-    public String plans(Model model, HttpServletRequest request) {
-        Long memberId = commonService.getMemberId(request);
+    public String plans(Model model, @CookieValue(name = "AUTH") String authKey) {
+        Long memberId = authService.getMemberIdByKey(authKey);
         HashMap<Plan, Integer> plans = planService.findAllPlan_withCompPercent(memberId);
         model.addAttribute("plans", plans);
         return "plan/plan-list";

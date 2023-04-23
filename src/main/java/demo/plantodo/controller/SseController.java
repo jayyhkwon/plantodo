@@ -12,9 +12,7 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -29,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SseController {
     private SseTrace trace = new SseTrace();
 
-    private final CommonService commonService;
+    private final AuthService authService;
     private final MemberService memberService;
     private final PlanService planService;
 
@@ -59,9 +57,21 @@ public class SseController {
         commands.set(String.valueOf(memberId), time.toString());
     }
 
+    @GetMapping("/last")
+    public LocalDateTime getLastSentTime(@CookieValue(name = "AUTH") String key) {
+        Long memberId = authService.getMemberIdByKey(key);
+        return getLastSentTime(memberId);
+    }
+
+    @PostMapping("/last")
+    public void setLastSentTime(@CookieValue(name = "AUTH") String key) {
+        Long memberId = authService.getMemberIdByKey(key);
+        setLastSentTime(memberId, LocalDateTime.now());
+    }
+
     @GetMapping("/subscribe")
-    public SseEmitter subscribe(HttpServletRequest request) throws IOException {
-        Long memberId = commonService.getMemberId(request);
+    public SseEmitter subscribe(@CookieValue(name = "AUTH") String key) throws IOException {
+        Long memberId = authService.getMemberIdByKey(key);
 
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         clients.put(memberId, emitter);
@@ -78,8 +88,8 @@ public class SseController {
     }
 
     @GetMapping("/sendAlarm")
-    public void sendAlarm(HttpServletRequest request) {
-        Long memberId = commonService.getMemberId(request);
+    public void sendAlarm(@CookieValue(name = "AUTH") String key) {
+        Long memberId = authService.getMemberIdByKey(key);
 
         int deadline_alarm_term = memberService.findOne(memberId).getSettings().getDeadline_alarm_term();
         /*실험용 (나중에 new ArrayList<>() 차이에 Plan 리스트를 조회해서 넣어야 함*/
@@ -89,8 +99,8 @@ public class SseController {
     }
 
     @GetMapping("/quitAlarm")
-    public void quitAlarm(HttpServletRequest request) {
-        Long memberId = commonService.getMemberId(request);
+    public void quitAlarm(@CookieValue(name = "AUTH") String key) {
+        Long memberId = authService.getMemberIdByKey(key);
 
         Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
         for (Thread thread : traces.keySet()) {

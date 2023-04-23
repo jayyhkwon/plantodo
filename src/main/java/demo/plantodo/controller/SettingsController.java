@@ -18,13 +18,13 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 public class SettingsController {
 
-    private final CommonService commonService;
+    private final AuthService authService;
     private final MemberService memberService;
     private final SettingsService settingsService;
 
     @GetMapping
-    public String createSettingsUpdateForm(Model model, HttpServletRequest request) {
-        Long memberId = commonService.getMemberId(request);
+    public String createSettingsUpdateForm(Model model, @CookieValue(name = "AUTH") String authKey) {
+        Long memberId = authService.getMemberIdByKey(authKey);
 
         Settings settings = settingsService.findOneByMemberId(memberId);
         SettingsUpdateForm form = new SettingsUpdateForm(settings.getNotification_perm(), settings.isDeadline_alarm() ? true : false, settings.getDeadline_alarm_term(), settings.getId());
