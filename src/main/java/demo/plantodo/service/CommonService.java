@@ -1,10 +1,13 @@
 package demo.plantodo.service;
 
+import demo.plantodo.domain.Settings;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.DayOfWeek;
 
 @Service
@@ -12,6 +15,7 @@ import java.time.DayOfWeek;
 public class CommonService {
 
     private final AuthService authService;
+    private final SettingsService settingsService;
 
     public Long getMemberId(HttpServletRequest request) {
         String authKey = getCookieVal(request, "AUTH");
@@ -28,6 +32,27 @@ public class CommonService {
             }
         }
         return res;
+    }
+
+    public void setDATCookie(String key, HttpServletResponse response) {
+        Long memberId = authService.getMemberIdByKey(key);
+        Settings settings = settingsService.findOneByMemberId(memberId);
+        ResponseCookie dat;
+        if (settings.isDeadline_alarm() && settings.getDeadline_alarm_term() != 0) {
+            dat = makeCookie("deadline_alarm_term", String.valueOf(settings.getDeadline_alarm_term()), 1800);
+        } else {
+            dat = makeCookie("deadline_alarm_term", "-1", 1800);
+        }
+        response.setHeader("Set-Cookie", dat.toString());
+    }
+
+    public ResponseCookie makeCookie(String name, String value, int max_age) {
+        return ResponseCookie.from(name, value)
+                .maxAge(max_age)
+                .path("/")
+                .sameSite("None")
+                .secure(true)
+                .build();
     }
 
     public String turnDayOfWeekToString (DayOfWeek dayOfWeek){
