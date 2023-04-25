@@ -174,10 +174,12 @@ public class SseController {
                     }
                     client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
                     updateLastSentTime(memberId, now);
-                    Thread.sleep(alarm_term*60000);
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
                     break;
+                } catch (IllegalStateException ise) {
+                    ise.printStackTrace();
+                    log.error("ResponseBodyEmitter has already completed.. client have to deal with this");
                 } catch (IOException ioe) {
                     ioe.printStackTrace();
                     break;
@@ -185,5 +187,4 @@ public class SseController {
             }
         }
     }
-
 }
