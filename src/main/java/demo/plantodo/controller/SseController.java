@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import javax.persistence.PersistenceException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @RequestMapping("/sse")
@@ -79,8 +82,21 @@ public class SseController {
             setLastSentTime(memberId, LocalDateTime.MIN);
         }
         emitter.send(initEvent);
-        emitter.onTimeout(() -> clients.remove(memberId));
-        emitter.onCompletion(() -> clients.remove(memberId));
+        emitter.onTimeout(() -> {
+            clients.remove(memberId);
+            log.info("Emitter Timeout");
+        });
+        emitter.onCompletion(() -> {
+            clients.remove(memberId);
+            log.info("Emitter Completion");
+        });
+        emitter.onError((ex) -> {
+            if (ex instanceof TimeoutException) {
+                log.info("IOException -> SSE Connection Timeout");
+            } else if (ex instanceof PersistenceException) {
+                log.info("IOException -> something wrong in DB(jpa)");
+            }
+        });
         return emitter;
     }
 
@@ -114,11 +130,13 @@ public class SseController {
 
         private Long memberId;
         private int alarm_term;
+        private boolean flag;
 
         public SendAlarmRunnable(PlanService planService, Long memberId, int alarm_term) {
             this.planService = planService;
             this.memberId = memberId;
             this.alarm_term = alarm_term;
+            this.flag = true;
         }
 
         @Override
@@ -147,7 +165,12 @@ public class SseController {
                         long duration = Duration.between(msgLastSentTime, now).toMillis();
                         long waitTime = duration % (alarm_term * 60000);
                         Thread.sleep(waitTime);
-                        trace.intervalLog("Message Transfer", msgLastSentTime, alarm_term);
+                        if (flag) {
+                            trace.simpleLog("Adjusting...");
+                            flag = false;
+                        } else {
+                            trace.intervalLog("Message Transfer", msgLastSentTime, alarm_term);
+                        }
                     }
                     client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
                     updateLastSentTime(memberId, now);

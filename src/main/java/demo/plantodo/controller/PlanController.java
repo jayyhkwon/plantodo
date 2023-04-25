@@ -7,6 +7,7 @@ import demo.plantodo.service.*;
 import demo.plantodo.validation.DateFilterValidatorIsInRange;
 import demo.plantodo.validation.PlanTermRegisterValidator;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -101,12 +102,14 @@ public class PlanController {
     @GetMapping("/{planId}")
     public String plan(@PathVariable Long planId, Model model) {
         Plan selectedPlan = planService.findOne(planId);
+
         LocalDate startDate = selectedPlan.getStartDate();
         LocalDate endDate = LocalDate.now();
 
         LinkedHashMap<LocalDate, List<TodoDate>> allTodoDatesByDate = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
         List<Todo> todosByPlanId = todoService.getTodoByPlanId(planId);
-        model.addAttribute("plan", selectedPlan);
+
+        model.addAttribute(  "plan", selectedPlan);
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("allToDatesByDate", allTodoDatesByDate);
         model.addAttribute("todosByPlanId", todosByPlanId);
