@@ -7,16 +7,26 @@ import demo.plantodo.service.AuthService;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.PlanService;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisCommandExecutionException;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ClientAbortException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisSystemException;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.persistence.PersistenceException;
+import java.awt.*;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -35,30 +45,18 @@ public class SseController {
     private final MemberService memberService;
     private final PlanService planService;
 
-    private final RedisClient redisClient;
+    private final RedisTemplate<String, String> redisTemplate;
 
     private static final Map<Long, SseEmitter> clients = new ConcurrentHashMap<>();
 
-    private void setLastSentTime(Long memberId, LocalDateTime time) {
-        StatefulRedisConnection<String, String> connection = redisClient.connect();
-        RedisCommands<String, String> commands = connection.sync();
-        commands.set(String.valueOf(memberId), time.toString());
-        connection.close();
-    }
 
     private LocalDateTime getLastSentTime(Long memberId) {
-        StatefulRedisConnection<String, String> connection = redisClient.connect();
-        RedisCommands<String, String> commands = connection.sync();
-        String s = commands.get(String.valueOf(memberId));
-        connection.close();
-        return LocalDateTime.parse(s);
+        String s = redisTemplate.opsForValue().get(String.valueOf(memberId));
+        return (s == null ? LocalDateTime.MIN : LocalDateTime.parse(s));
     }
 
-    private void updateLastSentTime(Long memberId, LocalDateTime time) {
-        StatefulRedisConnection<String, String> connection = redisClient.connect();
-        RedisCommands<String, String> commands = connection.sync();
-        commands.del(String.valueOf(memberId));
-        commands.set(String.valueOf(memberId), time.toString());
+    private void setLastSentTime(Long memberId, LocalDateTime time) {
+        redisTemplate.opsForValue().set(String.valueOf(memberId), time.toString());
     }
 
     @PostMapping("/last")
@@ -67,7 +65,7 @@ public class SseController {
         setLastSentTime(memberId, LocalDateTime.now());
     }
 
-    @GetMapping("/subscribe")
+    @GetMapping(value = "/subscribe")
     public SseEmitter subscribe(@CookieValue(name = "AUTH") String key) throws IOException {
         Long memberId = authService.getMemberIdByKey(key);
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
@@ -76,9 +74,8 @@ public class SseController {
                 .id(String.valueOf(memberId))
                 .name("dummy")
                 .data("EventStream Created. This is dummy data of [userId : " + memberId + "]");
-        StatefulRedisConnection<String, String> connection = redisClient.connect();
-        RedisCommands<String, String> commands = connection.sync();
-        if (commands.exists(String.valueOf(memberId)) == 0) {
+
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(String.valueOf(memberId)))) {
             setLastSentTime(memberId, LocalDateTime.MIN);
         }
         emitter.send(initEvent);
@@ -95,13 +92,16 @@ public class SseController {
                 log.info("IOException -> SSE Connection Timeout");
             } else if (ex instanceof PersistenceException) {
                 log.info("IOException -> something wrong in DB(jpa)");
+            } else if (ex instanceof IOException) {
+                log.info("IOException -> You have to wait until connection may be re-established by client");
             }
         });
         return emitter;
     }
 
-    @GetMapping("/sendAlarm")
+    @GetMapping(value = "/sendAlarm")
     public void sendAlarm(@CookieValue(name = "AUTH") String key) {
+        log.info("line 3");
         Long memberId = authService.getMemberIdByKey(key);
 
         int deadline_alarm_term = memberService.findOne(memberId).getSettings().getDeadline_alarm_term();
@@ -173,7 +173,7 @@ public class SseController {
                         }
                     }
                     client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
-                    updateLastSentTime(memberId, now);
+                    setLastSentTime(memberId, now);
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
                     break;
