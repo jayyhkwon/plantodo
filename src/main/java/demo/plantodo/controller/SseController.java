@@ -6,27 +6,14 @@ import demo.plantodo.logger.SseTrace;
 import demo.plantodo.service.AuthService;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.PlanService;
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisCommandExecutionException;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.ClientAbortException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.RedisSystemException;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import javax.persistence.PersistenceException;
-import java.awt.*;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +88,6 @@ public class SseController {
 
     @GetMapping(value = "/sendAlarm")
     public void sendAlarm(@CookieValue(name = "AUTH") String key) {
-        log.info("line 3");
         Long memberId = authService.getMemberIdByKey(key);
 
         int deadline_alarm_term = memberService.findOne(memberId).getSettings().getDeadline_alarm_term();
@@ -156,24 +142,25 @@ public class SseController {
                 }
                 SseEmitter client = clients.get(memberId);
                 try {
-                    LocalDateTime msgLastSentTime = getLastSentTime(memberId);
-                    LocalDateTime now = LocalDateTime.now();
+                    synchronized (redisTemplate) {
+                        LocalDateTime msgLastSentTime = getLastSentTime(memberId);
+                        LocalDateTime now = LocalDateTime.now();
 
-                    if (msgLastSentTime.isEqual(LocalDateTime.MIN)) {
-                        trace.simpleLog("First Message Transfer");
-                    } else {
-                        long duration = Duration.between(msgLastSentTime, now).toMillis();
-                        long waitTime = duration % (alarm_term * 60000);
-                        Thread.sleep(waitTime);
-                        if (flag) {
-                            trace.simpleLog("Adjusting...");
-                            flag = false;
+                        if (msgLastSentTime.isEqual(LocalDateTime.MIN)) {
+                            trace.simpleLog("First Message Transfer");
                         } else {
-                            trace.intervalLog("Message Transfer", msgLastSentTime, alarm_term);
+                            long waitTime = calWaitTime(msgLastSentTime, now, alarm_term);
+                            Thread.sleep(waitTime);
+                            if (flag) {
+                                trace.simpleLog("Adjusting...");
+                                flag = false;
+                            } else {
+                                trace.intervalLog("Message Transfer", msgLastSentTime, alarm_term);
+                            }
                         }
+                        client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
+                        setLastSentTime(memberId, now);
                     }
-                    client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
-                    setLastSentTime(memberId, now);
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
                     break;
@@ -184,6 +171,17 @@ public class SseController {
                     ioe.printStackTrace();
                     break;
                 }
+            }
+        }
+
+        private long calWaitTime(LocalDateTime msgLastSentTime, LocalDateTime now, int alarm_term) {
+            long duration = Duration.between(msgLastSentTime, now).toMillis();
+            long alarm_millis = alarm_term * 60000L;
+            if (duration < alarm_millis) {
+                LocalDateTime expectedTime = msgLastSentTime.plusMinutes(alarm_term);
+                return Duration.between(now, expectedTime).toMillis();
+            } else {
+                return (alarm_millis - duration % alarm_millis);
             }
         }
     }
