@@ -86,7 +86,7 @@ public class SseController {
         });
         emitter.onError((ex) -> {
             if (ex instanceof TimeoutException) {
-                log.info("IOException -> SSE Connection Timeout");
+                log.info("IOExcep tion -> SSE Connection Timeout");
             } else if (ex instanceof PersistenceException) {
                 log.info("IOException -> something wrong in DB(jpa)");
             } else if (ex instanceof IOException) {
