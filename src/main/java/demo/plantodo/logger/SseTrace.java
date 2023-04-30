@@ -26,10 +26,10 @@ public class SseTrace implements Trace {
         return "MsgLastSentTime : " + msgLastSentTime + " / Current Time : " + LocalDateTime.now() + " / Expected : " + String.valueOf(expected) + " / Result : " + String.valueOf(result);
     }
 
-    public void intervalLog(String msg, LocalDateTime msgLastSentTime, int deadline_alarm_term) {
+    public void intervalLog(String msg, LocalDateTime lst, LocalDateTime now, int deadline_alarm_term) {
         long dm = deadline_alarm_term * 60000L;
-        long dur = Duration.between(msgLastSentTime, LocalDateTime.now()).toMillis();
-        if (dm-100 <= dur && dur <= dm+100) complexLog(msg, "Valid", parseDetail(msgLastSentTime, dm, dur));
-        else complexLog(msg, "Invalid", parseDetail(msgLastSentTime, dm, dur));
+        long dur = Duration.between(lst, now).toMillis();
+        if (dm-100 <= dur && dur <= dm+100) complexLog(msg, "Valid", parseDetail(lst, dm, dur));
+        else complexLog(msg, "Invalid", parseDetail(lst, dm, dur));
     }
 }

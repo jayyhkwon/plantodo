@@ -135,41 +135,41 @@ public class SseController {
         @SneakyThrows
         @Override
         public void run() {
-            synchronized(this) {
-                able = false;
-                int waitCnt = 0;
-                while (!Thread.interrupted()) {
-                    // 현재 알림을 보낼 수 있는 plan이 있는지 확인
-                    List<PlanTerm> plans = planService.findUrgentPlans(memberId);
-                    if (plans.size() == 0) {
-                        trace.simpleLog("No Urgent Plans - Waiting");
-                        break;
-                    }
-                    // 현재 사용 가능한 SseEmitter 객체가 있는지 확인
-                    if (!clients.containsKey(memberId)) {
-                        waitCnt++;
-                        trace.simpleLog("Cannot Find Client ID - Waiting");
-                        if (waitCnt >= 5) break;
-                        continue;
-                    }
-                    SseEmitter client = clients.get(memberId);
-
-                    // waitTime 계산, 기다리기, 메세지 전송
-                    LocalDateTime lst = getLastSentTime(memberId);
-                    LocalDateTime now = LocalDateTime.now();
-
-                    if (lst.equals(LocalDateTime.MIN)) {
-                        trace.simpleLog("First Message Transfer");
-                    } else {
-                        Thread.sleep(calWaitTime(lst, now, alarm_term));
-                        trace.intervalLog("Message Transfer", lst, alarm_term);
-                    }
-                    setLastSentTime(memberId, now);
-                    client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
-
+            log.info("sendAlarm.run()");
+            able = false;
+            int waitCnt = 0;
+            while (!Thread.interrupted()) {
+                // 현재 알림을 보낼 수 있는 plan이 있는지 확인
+                List<PlanTerm> plans = planService.findUrgentPlans(memberId);
+                if (plans.size() == 0) {
+                    trace.simpleLog("No Urgent Plans - Waiting");
+                    break;
                 }
-                able = true;
+                // 현재 사용 가능한 SseEmitter 객체가 있는지 확인
+                if (!clients.containsKey(memberId)) {
+                    waitCnt++;
+                    trace.simpleLog("Cannot Find Client ID - Waiting");
+                    if (waitCnt >= 5) break;
+                    continue;
+                }
+                SseEmitter client = clients.get(memberId);
+
+                // waitTime 계산, 기다리기, 메세지 전송
+                LocalDateTime lst = getLastSentTime(memberId);
+                if (lst.equals(LocalDateTime.MIN)) {
+                    trace.simpleLog("First Message Transfer");
+                    setLastSentTime(memberId, LocalDateTime.now());
+                    client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
+                } else {
+                    LocalDateTime before_wait = LocalDateTime.now();
+                    Thread.sleep(calWaitTime(lst, before_wait, alarm_term));
+                    LocalDateTime after_wait = LocalDateTime.now();
+                    trace.intervalLog("Message Transfer", lst, after_wait, alarm_term);
+                    setLastSentTime(memberId, after_wait);
+                    client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
+                }
             }
+            able = true;
         }
 
         private long calWaitTime(LocalDateTime msgLastSentTime, LocalDateTime now, int alarm_term) {
