@@ -22,14 +22,14 @@ public class SseTrace implements Trace {
         else simpleLog(msg + " (" + type + ") (" + detail + ")");
     }
 
-    private String parseDetail(LocalDateTime msgLastSentTime, double expected, double result) {
+    private String parseDetail(LocalDateTime msgLastSentTime, long expected, long result) {
         return "MsgLastSentTime : " + msgLastSentTime + " / Current Time : " + LocalDateTime.now() + " / Expected : " + String.valueOf(expected) + " / Result : " + String.valueOf(result);
     }
 
     public void intervalLog(String msg, LocalDateTime msgLastSentTime, int deadline_alarm_term) {
+        long dm = deadline_alarm_term * 60000L;
         long dur = Duration.between(msgLastSentTime, LocalDateTime.now()).toMillis();
-        long ratio = dur / (deadline_alarm_term * 60000);
-        if (ratio == deadline_alarm_term) complexLog(msg, "Valid", "");
-        else complexLog(msg, "Invalid", parseDetail(msgLastSentTime, deadline_alarm_term, ratio));
+        if (dm-100 <= dur && dur <= dm+100) complexLog(msg, "Valid", parseDetail(msgLastSentTime, dm, dur));
+        else complexLog(msg, "Invalid", parseDetail(msgLastSentTime, dm, dur));
     }
 }
