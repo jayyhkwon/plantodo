@@ -26,9 +26,9 @@ function eventSourceLogic() {
 
                 es.onerror = (e) => {
                     if (e.currentTarget.readyState === EventSource.CLOSED) {
-                        new Notification('푸시 알림 전송이 중단되었습니다. 푸시 알림을 이어서 받고 싶다면 페이지를 새로고침해 주세요.');
+                        new Notification('푸시 알림 전송이 임의로 중단되었습니다. 푸시 알림을 이어서 받고 싶다면 페이지를 새로고침해 주세요.');
                     } else if (e.currentTarget.readyState === EventSource.CONNECTING) {
-                        new Notification('서버가 다운되었습니다. 이후에 다시 사이트에 접속해 주세요.');
+                        new Notification('푸시 알림 커넥션이 생성되지 않았거나, 이미 closed 상태이거나 서버가 다운되었습니다. 이후에 다시 사이트에 접속해 주세요.');
                         es.close();
                     } else {
                         console.log(e);
