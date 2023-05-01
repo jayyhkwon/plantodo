@@ -7,6 +7,7 @@ import demo.plantodo.form.PlanRegularUpdateForm;
 import demo.plantodo.form.PlanTermRegisterForm;
 import demo.plantodo.form.PlanTermUpdateForm;
 import demo.plantodo.repository.PlanRepository;
+import demo.plantodo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jni.Local;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 @Transactional
 public class PlanService {
     private final TodoService todoService;
+    private final TodoRepository todoRepository;
     private final PlanRepository planRepository;
     private final TodoDateService todoDateService;
 
@@ -112,7 +114,7 @@ public class PlanService {
     /*삭제*/
     public void delete(Long planId) {
         /*To-do 삭제*/
-        List<Todo> todo_list = todoService.getTodoByPlanId(planId);
+        List<Todo> todo_list = todoRepository.getTodoByPlanId(planId);
         todo_list.forEach(todo -> todoService.delete(todo.getId()));
 
         /*TodoDate(Daily) 삭제*/

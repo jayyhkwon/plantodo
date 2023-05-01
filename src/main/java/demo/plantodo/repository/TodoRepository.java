@@ -1,21 +1,24 @@
 package demo.plantodo.repository;
 
+import demo.plantodo.VO.TodoDetailVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoUpdateForm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional
-@RequiredArgsConstructor
 public class TodoRepository {
 
     @PersistenceContext
@@ -45,11 +48,10 @@ public class TodoRepository {
     }
 
     public List<Todo> getTodoByPlanId(Long planId) {
-        return em.createQuery("select t from Todo t join fetch t.repValue where t.plan.id = :planId")
+        return em.createQuery("select t from Todo t left join fetch t.repValue where t.plan.id = :planId", Todo.class)
                 .setParameter("planId", planId)
                 .getResultList();
     }
-
 
     public List<TodoDate> getTodoDateByTodoIdAfterToday(Long todoId, LocalDate today) {
         return em.createQuery("select td from TodoDate td where td.todo.id = :todoId and td.dateKey >= :today")

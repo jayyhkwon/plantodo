@@ -1,6 +1,7 @@
 package demo.plantodo.repository;
 
 import demo.plantodo.domain.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +12,11 @@ import java.util.List;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class TodoDateRepository {
+
     @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     /*등록*/
     public void save(TodoDate todoDate) {

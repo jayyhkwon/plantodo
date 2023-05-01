@@ -23,7 +23,6 @@ public class TodoDateService {
     private final TodoDateRepository todoDateRepository;
     private final TodoRepository todoRepository;
     private final CommonService commonService;
-
     private final CommentService commentService;
 
     /*등록*/

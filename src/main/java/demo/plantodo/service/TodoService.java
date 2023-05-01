@@ -1,5 +1,6 @@
 package demo.plantodo.service;
 
+import demo.plantodo.VO.TodoDetailVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoUpdateForm;
 import demo.plantodo.repository.PlanRepository;
@@ -7,12 +8,14 @@ import demo.plantodo.repository.TodoDateRepository;
 import demo.plantodo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

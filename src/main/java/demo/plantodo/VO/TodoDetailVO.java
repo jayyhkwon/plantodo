@@ -2,15 +2,19 @@ package demo.plantodo.VO;
 
 import demo.plantodo.domain.Todo;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Getter
+@Getter @Setter
 public class TodoDetailVO {
     private long id;
     private String title;
     private int repOption;
     private List<String> repValue;
+
+    public TodoDetailVO() {
+    }
 
     public TodoDetailVO(Todo todo) {
         this.id = todo.getId();
