@@ -2,6 +2,7 @@
 
 /*일자별 Plan, To-do 조회*/
 function loadDateBlockData(searchDate) {
+    console.log("loadDateBlockData executed!");
     let uri = "/home/calendar/" + searchDate;
     $.ajax({
         url: uri,

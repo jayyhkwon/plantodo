@@ -1,8 +1,9 @@
 package demo.plantodo.controller;
 
+import demo.plantodo.VO.PlanHomeVO;
+import demo.plantodo.VO.TodoDateHomeVO;
 import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.PlanRegular;
-import demo.plantodo.domain.TodoDate;
 import demo.plantodo.form.CalendarSearchForm;
 import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -63,10 +63,10 @@ public class HomeController {
           }
           Long memberId = authService.getMemberIdByKey(authKey);
           List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId);
-          LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
+          LinkedHashMap<PlanHomeVO, List<TodoDateHomeVO>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
-               List<TodoDate> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
-               dateBlockData.put(plan, planTodoDate);
+               List<TodoDateHomeVO> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
+               dateBlockData.put(new PlanHomeVO(plan.getId(), plan.getTitle(), plan.getPlanStatus().toString()), planTodoDate);
           }
 
           model.addAttribute("selectedDate", eachDate);
