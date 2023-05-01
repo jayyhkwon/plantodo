@@ -1,5 +1,7 @@
 package demo.plantodo.VO;
 
+import demo.plantodo.domain.Plan;
+import demo.plantodo.domain.PlanStatus;
 import lombok.Getter;
 
 @Getter
@@ -8,9 +10,9 @@ public class PlanHomeVO {
     private String title;
     private String planStatus;
 
-    public PlanHomeVO(long id, String title, String planStatus) {
-        this.id = id;
-        this.title = title;
-        this.planStatus = planStatus;
+    public PlanHomeVO(Plan plan) {
+        this.id = plan.getId();
+        this.title = plan.getTitle();
+        this.planStatus = plan.getPlanStatus().toString();
     }
 }

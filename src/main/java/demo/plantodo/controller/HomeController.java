@@ -66,7 +66,7 @@ public class HomeController {
           LinkedHashMap<PlanHomeVO, List<TodoDateHomeVO>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
                List<TodoDateHomeVO> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
-               dateBlockData.put(new PlanHomeVO(plan.getId(), plan.getTitle(), plan.getPlanStatus().toString()), planTodoDate);
+               dateBlockData.put(new PlanHomeVO(plan), planTodoDate);
           }
 
           model.addAttribute("selectedDate", eachDate);

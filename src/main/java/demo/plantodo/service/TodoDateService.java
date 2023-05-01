@@ -45,36 +45,36 @@ public class TodoDateService {
         return todoDateRepository.findOneDaily(todoDateId);
     }
 
-//    public LinkedHashMap<LocalDate, List<TodoDate>> allTodoDatesInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
-//        if (startDate==null && endDate==null) {
-//            startDate = plan.getStartDate();
-//            endDate = LocalDate.now();
-//            if (plan.getDtype().equals("Term")) {
-//                PlanTerm planTerm = (PlanTerm) plan;
-//                endDate = planTerm.getEndDate();
-//            }
-//        }
-//        int days = Period.between(startDate, endDate).getDays();
-//
-//        LinkedHashMap<LocalDate, List<TodoDateHomeVO>> allTodosByDate = new LinkedHashMap();
-//        /*startDate에는 getTodoDateAndPlan을 적용하지 않고 그냥 todoDate를 조회만 하기*/
-//        /*startDate 다음 날부터는 getTodoDateAndPlan을 적용하기*/
-//
-//        for (int i = 0; i < days + 1; i++) {
-//            LocalDate date = startDate.plusDays(i);
-//            List<TodoDate> todoDateList = new ArrayList<>();
-//            if (date.isEqual(LocalDate.now())) {
-//                todoDateList = getTodoDateByDateAndPlan(plan, date, false);
-//            } else {
-//                todoDateList = getTodoDateByDateAndPlan(plan, date, true);
-//            }
-//
-//            if (!todoDateList.isEmpty()) {
-//                allTodosByDate.put(date, todoDateList);
-//            }
-//        }
-//        return allTodosByDate;
-//    }
+    public LinkedHashMap<LocalDate, List<TodoDateHomeVO>> allTodoDatesInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
+        if (startDate==null && endDate==null) {
+            startDate = plan.getStartDate();
+            endDate = LocalDate.now();
+            if (plan.getDtype().equals("Term")) {
+                PlanTerm planTerm = (PlanTerm) plan;
+                endDate = planTerm.getEndDate();
+            }
+        }
+        int days = Period.between(startDate, endDate).getDays();
+
+        LinkedHashMap<LocalDate, List<TodoDateHomeVO>> allTodosByDate = new LinkedHashMap();
+        /*startDate에는 getTodoDateAndPlan을 적용하지 않고 그냥 todoDate를 조회만 하기*/
+        /*startDate 다음 날부터는 getTodoDateAndPlan을 적용하기*/
+
+        for (int i = 0; i < days + 1; i++) {
+            LocalDate date = startDate.plusDays(i);
+            List<TodoDateHomeVO> todoDateList = new ArrayList<>();
+            if (date.isEqual(LocalDate.now())) {
+                todoDateList = getTodoDateByDateAndPlan(plan, date, false);
+            } else {
+                todoDateList = getTodoDateByDateAndPlan(plan, date, true);
+            }
+
+            if (!todoDateList.isEmpty()) {
+                allTodosByDate.put(date, todoDateList);
+            }
+        }
+        return allTodosByDate;
+    }
 
 
     public List<TodoDateHomeVO> getTodoDateByDateAndPlan(Plan plan, LocalDate searchDate, boolean needUpdate) {
