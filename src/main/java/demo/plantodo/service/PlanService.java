@@ -59,15 +59,17 @@ public class PlanService {
         return planRepository.findAllPlan(memberId);
     }
 
-    public HashMap<Plan, Integer> findAllPlan_withCompPercent(Long memberId) {
+    public LinkedHashMap<Plan, Integer> findAllPlan_withCompPercent(Long memberId) {
         /*HashMap -> plan:달성도 계산*/
-        HashMap<Plan, Integer> resultMap = new HashMap<>();
-        List<Plan> plans = planRepository.findAllPlan(memberId);
+        LinkedHashMap<Plan, Integer> resultMap = new LinkedHashMap<>();
+        List<Plan> plans = planRepository.findAllPlan(memberId).stream().sorted(Comparator.comparing(Plan::getStartDate).reversed()).collect(Collectors.toList());
+
         for (Plan plan : plans) {
             /*달성도 계산*/
             int compPercent = plan.calculate_plan_compPercent();
             resultMap.put(plan, compPercent);
         }
+
         return resultMap;
     }
 

@@ -99,7 +99,7 @@ public class PlanController {
     @GetMapping("/plans")
     public String plans(Model model, @CookieValue(name = "AUTH") String authKey) {
         Long memberId = authService.getMemberIdByKey(authKey);
-        HashMap<Plan, Integer> plans = planService.findAllPlan_withCompPercent(memberId);
+        LinkedHashMap<Plan, Integer> plans = planService.findAllPlan_withCompPercent(memberId);
         model.addAttribute("plans", plans);
         return "plan/plan-list";
     }
