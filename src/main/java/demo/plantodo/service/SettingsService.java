@@ -30,7 +30,6 @@ public class SettingsService {
     }
 
     public Settings findOneByMemberId(Long memberId) {
-        System.out.println(memberId);
         return memberRepository.findOne(memberId).getSettings();
     }
 

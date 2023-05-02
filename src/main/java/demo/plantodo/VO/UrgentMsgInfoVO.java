@@ -3,6 +3,7 @@ package demo.plantodo.VO;
 import demo.plantodo.domain.PlanTerm;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter

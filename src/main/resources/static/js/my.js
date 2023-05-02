@@ -2,6 +2,7 @@
 
 /*일자별 Plan, To-do 조회*/
 function loadDateBlockData(searchDate) {
+    console.log("loadDateBlockData executed!");
     let uri = "/home/calendar/" + searchDate;
     $.ajax({
         url: uri,
@@ -30,16 +31,16 @@ function switchPlanEmphasis(planId, pageInfo) {
 }
 
 /*to-do 상태 바꾸기*/
-function switchTodoDateStatus_home(todoDateId) {
-    let uri = "/todoDate/switching?todoDateId="+todoDateId;
+function switchTodoDateStatus_home(todoDateId, planId) {
+    let uri = "/todoDate/switching?todoDateId="+todoDateId + "&planId="+planId;
     $.ajax({
         url: uri,
         type: "POST"
     })
 }
 
-function switchTodoDateStatus_detail(todoDateId) {
-    let uri = "/todoDate/switching?todoDateId="+todoDateId;
+function switchTodoDateStatus_detail(todoDateId, planId) {
+    let uri = "/todoDate/switching?todoDateId="+todoDateId + "&planId="+planId;
     $.ajax({
         url: uri,
         type: "POST"

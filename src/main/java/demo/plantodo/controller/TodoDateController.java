@@ -61,15 +61,15 @@ public class TodoDateController {
     /*todoDate 상태변경*/
     @ResponseBody
     @PostMapping("/switching")
-    public int switchStatus(@RequestParam Long todoDateId) {
+    public int switchStatus(@RequestParam Long todoDateId, @RequestParam Long planId) {
         TodoDate todoDate = todoDateService.findOne(todoDateId);
         if (todoDate instanceof TodoDateRep) {
             todoDateService.switchStatusRep(todoDateId);
-            Plan plan = ((TodoDateRep) todoDate).getTodo().getPlan();
+            Plan plan = planService.findOne(planId);
             return plan.calculate_plan_compPercent();
         } else {
             todoDateService.switchStatusDaily(todoDateId);
-            Plan plan = ((TodoDateDaily) todoDate).getPlan();
+            Plan plan = planService.findOne(planId);
             return plan.calculate_plan_compPercent();
         }
     }

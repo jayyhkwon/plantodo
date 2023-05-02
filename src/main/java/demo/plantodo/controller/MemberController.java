@@ -1,11 +1,14 @@
 package demo.plantodo.controller;
 
 import demo.plantodo.converter.StringToEnumConverterFactory;
+import demo.plantodo.domain.Auth;
 import demo.plantodo.domain.Member;
 import demo.plantodo.domain.PermStatus;
 import demo.plantodo.domain.Settings;
 import demo.plantodo.form.MemberJoinForm;
 import demo.plantodo.form.MemberLoginForm;
+import demo.plantodo.service.AuthService;
+import demo.plantodo.service.CommonService;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.SettingsService;
 import demo.plantodo.validation.MemberJoinlValidator;
@@ -29,9 +32,10 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
     private final SettingsService settingsService;
+    private final AuthService authService;
     private final MemberJoinlValidator memberJoinlValidator;
-
     private final StringToEnumConverterFactory converterFactory;
+    private final CommonService commonService;
 
     @GetMapping(value = "/join")
     public String createJoinForm(Model model) {
@@ -70,6 +74,10 @@ public class MemberController {
 
         Member member = new Member(memberJoinForm.getEmail(), memberJoinForm.getPassword(), memberJoinForm.getNickname(), settings);
         memberService.save(member);
+
+        // auth 생성
+        Long memberId = member.getId();
+        authService.save(memberId);
 
         model.addAttribute("memberLoginForm", new MemberLoginForm());
         return "redirect:/member/login";
@@ -116,27 +124,31 @@ public class MemberController {
         }
 
         HttpSession session = request.getSession();
-        session.setAttribute("memberId", rightMember.getId());
         session.setAttribute("nickname", rightMember.getNickname());
 
         /*마감 알람 on-off 여부 확인*/
         Settings settings = memberService.findOne(rightMember.getId()).getSettings();
 
         /*혹시 firstAccess, deadline_alarm_term 쿠키가 아직 있는 경우 삭제*/
-        ResponseCookie pastFirstAccess = makeCookie("firstAccess", null, 0);
+        ResponseCookie pastFirstAccess = commonService.makeCookie("firstAccess", null, 0);
         response.setHeader("Set-Cookie", pastFirstAccess.toString());
 
-        ResponseCookie pastDAT = makeCookie("deadline_alarm_term", null, 0);
+        ResponseCookie pastDAT = commonService.makeCookie("deadline_alarm_term", null, 0);
         response.setHeader("Set-Cookie", pastDAT.toString());
 
+        /*Auth 쿠키 생성*/
+        String authKey = String.valueOf(authService.getKeyByMemberId(rightMember.getId()));
+        ResponseCookie auth = commonService.makeCookie("AUTH", authKey, 1800);
+        response.setHeader("Set-Cookie", auth.toString());
+
         if (settings.getNotification_perm().toString().equals("GRANTED") && settings.isDeadline_alarm()) {
-            ResponseCookie firstAccessCookie = makeCookie("firstAccess", "1", 1800);
+            ResponseCookie firstAccessCookie = commonService.makeCookie("firstAccess", "1", 1800);
             response.addHeader("Set-Cookie", firstAccessCookie.toString());
 
-            ResponseCookie datCookie = makeCookie("deadline_alarm_term", String.valueOf(settings.getDeadline_alarm_term()), 300);
+            ResponseCookie datCookie = commonService.makeCookie("deadline_alarm_term", String.valueOf(settings.getDeadline_alarm_term()), 300);
             response.addHeader("Set-Cookie", datCookie.toString());
         } else {
-            ResponseCookie datCookie = makeCookie("deadline_alarm_term", "-1", 1800);
+            ResponseCookie datCookie = commonService.makeCookie("deadline_alarm_term", "-1", 1800);
             response.addHeader("Set-Cookie", datCookie.toString());
         }
 
@@ -146,18 +158,17 @@ public class MemberController {
     }
 
     @GetMapping("/logout")
-    public String logoutMember(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        session.invalidate();
+    public String logoutMember(HttpServletResponse response) {
+        ResponseCookie auth = commonService.makeCookie("AUTH", "", 0);
+        response.setHeader("Set-Cookie", auth.toString());
+
+        ResponseCookie dat = commonService.makeCookie("deadline_alarm_term", "", 0);
+        response.setHeader("Set-Cookie", dat.toString());
+
+        ResponseCookie firstAccess = commonService.makeCookie("firstAccess", "", 0);
+        response.setHeader("Set-Cookie", firstAccess.toString());
         return "redirect:/";
     }
 
-    private ResponseCookie makeCookie(String name, String value, int max_age) {
-        return ResponseCookie.from(name, value)
-                .maxAge(max_age)
-                .path("/")
-                .sameSite("None")
-                .secure(true)
-                .build();
-    }
+
 }

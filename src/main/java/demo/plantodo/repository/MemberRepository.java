@@ -40,9 +40,4 @@ public class MemberRepository {
                 .getResultList();
     }
 
-    public Long getMemberId(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Long memberId = (Long) session.getAttribute("memberId");
-        return memberId;
-    }
 }

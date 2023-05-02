@@ -1,8 +1,9 @@
 package demo.plantodo.controller;
 
+import demo.plantodo.VO.PlanHomeVO;
+import demo.plantodo.VO.TodoDateHomeVO;
 import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.PlanRegular;
-import demo.plantodo.domain.TodoDate;
 import demo.plantodo.form.CalendarSearchForm;
 import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,23 +25,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/home")
 public class HomeController {
-     private final MemberService memberService;
+     private final AuthService authService;
      private final PlanService planService;
      private final TodoDateService todoDateService;
 
      @GetMapping
-     public String createHome(HttpServletRequest request, HttpServletResponse response) {
-
+     public String createHome(HttpServletRequest request, @CookieValue(name = "AUTH") String authKey, HttpServletResponse response) {
           LocalDate today = LocalDate.now();
           if (!checkCookie(request)) {
-               Cookie cookie1 = regularTodoDateInitiate(request, today);
+               Cookie cookie1 = regularTodoDateInitiate(authKey, today);
                if (cookie1.getName().equals("RegularTodoDateInitiatedToday")) {
                     response.addCookie(cookie1);
                }
           }
-          HttpSession session = request.getSession();
-          Long memberId = (Long) session.getAttribute("memberId");
-          System.out.println(memberId);
           return "main-home";
      }
 
@@ -60,17 +56,17 @@ public class HomeController {
      }
 
      @GetMapping("/calendar/{eachDate}")
-     public String getDateBlock(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate eachDate, HttpServletRequest request, Model model) {
+     public String getDateBlock(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate eachDate, @CookieValue(name = "AUTH") String authKey, Model model) {
           boolean needUpdate = true;
           if (eachDate.isEqual(LocalDate.now())) {
                needUpdate = false;
           }
-          Long memberId = memberService.getMemberId(request);
+          Long memberId = authService.getMemberIdByKey(authKey);
           List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId);
-          LinkedHashMap<Plan, List<TodoDate>> dateBlockData = new LinkedHashMap<>();
+          LinkedHashMap<PlanHomeVO, List<TodoDateHomeVO>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
-               List<TodoDate> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
-               dateBlockData.put(plan, planTodoDate);
+               List<TodoDateHomeVO> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
+               dateBlockData.put(new PlanHomeVO(plan), planTodoDate);
           }
 
           model.addAttribute("selectedDate", eachDate);
@@ -79,8 +75,8 @@ public class HomeController {
           return "main-home :: #dateBlock";
      }
 
-     public Cookie regularTodoDateInitiate(HttpServletRequest request, LocalDate today) {
-          Long memberId = memberService.getMemberId(request);
+     public Cookie regularTodoDateInitiate(String authKey, LocalDate today) {
+          Long memberId = authService.getMemberIdByKey(authKey);
           List<Plan> allPlan = planService.findAllPlan(memberId);
 
           /*plan이 하나라도 있으면 planRegular인지 확인*/
@@ -111,7 +107,6 @@ public class HomeController {
      public boolean checkCookie(HttpServletRequest request) {
           Cookie[] cookies = request.getCookies();
           for (Cookie cookie : cookies) {
-               System.out.println("cookie.getName() = " + cookie.getName());
                if (cookie.getName().equals("RegularTodoDateInitiatedToday")) {
                     return true;
                }

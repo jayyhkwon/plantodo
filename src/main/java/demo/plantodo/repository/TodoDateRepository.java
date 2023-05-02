@@ -1,6 +1,7 @@
 package demo.plantodo.repository;
 
 import demo.plantodo.domain.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +12,11 @@ import java.util.List;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class TodoDateRepository {
+
     @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     /*등록*/
     public void save(TodoDate todoDate) {
@@ -49,7 +52,21 @@ public class TodoDateRepository {
     }
 
     public List<TodoDate> getTodoDateByTodoAndDate(Todo todo, LocalDate searchDate) {
-        return em.createQuery("select td from TodoDateRep td where td.todo.id = :todoId and td.dateKey = :searchDate")
+        return em.createQuery("select distinct tdr from TodoDateRep tdr join fetch tdr.todo td left join fetch td.repValue where tdr.todo.id = :todoId and tdr.dateKey = :searchDate")
+                .setParameter("todoId", todo.getId())
+                .setParameter("searchDate", searchDate)
+                .getResultList();
+    }
+
+    public List<TodoDate> getTodoDateByPlanAndDate(Plan plan, LocalDate searchDate) {
+        return em.createQuery("select tdr from TodoDate tdr where treat(tdr as TodoDateDaily).plan.id=:planId and tdr.dateKey=:searchDate")
+                .setParameter("planId", plan.getId())
+                .setParameter("searchDate", searchDate)
+                .getResultList();
+    }
+
+    public List<TodoDate> getTodoDateRep_ByTodoAndDate(Todo todo, LocalDate searchDate) {
+        return em.createQuery("select td from TodoDate td where treat(td as TodoDateRep).todo.id=:todoId and td.dateKey=:searchDate")
                 .setParameter("todoId", todo.getId())
                 .setParameter("searchDate", searchDate)
                 .getResultList();
@@ -72,20 +89,6 @@ public class TodoDateRepository {
     public void updateRep(Todo todo, Long todoDateId) {
         TodoDateRep oneRep = findOneRep(todoDateId);
         oneRep.setTodo(todo);
-    }
-
-    public List<TodoDate> getTodoDateByPlanAndDate(Plan plan, LocalDate searchDate) {
-        return em.createQuery("select td from TodoDate td where treat(td as TodoDateDaily).plan.id=:planId and td.dateKey=:searchDate")
-                .setParameter("planId", plan.getId())
-                .setParameter("searchDate", searchDate)
-                .getResultList();
-    }
-
-    public List<TodoDate> getTodoDateRep_ByTodoAndDate(Todo todo, LocalDate searchDate) {
-        return em.createQuery("select td from TodoDate td where treat(td as TodoDateRep).todo.id=:todoId and td.dateKey=:searchDate")
-                .setParameter("todoId", todo.getId())
-                .setParameter("searchDate", searchDate)
-                .getResultList();
     }
 
     public void updateTitle(Long todoDateId, String updateTitle) {

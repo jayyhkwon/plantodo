@@ -1,98 +1,41 @@
 import * as commonService from "./common.js";
 
-console.log("deadline_alarm_term : " + commonService.getCookieVal("deadline_alarm_term"));
-console.log("firstAccess : " + commonService.getCookieVal("firstAccess"));
-
 /*Main Logic*/
-if (commonService.getCookieVal("deadline_alarm_term") !== "-1") {
-    if (commonService.getCookieVal("firstAccess") === "1") {
-        initMsgLogic();
-    } else {
-        succeededMsgLogic();
-    }
+let dat = commonService.getCookieVal("deadline_alarm_term");
+if (dat !== null && dat !== "-1") {
+    eventSourceLogic();
 }
 
-/*세부 로직 함수들*/
-function getWaitTime(lst, interval) {
-    lst = Number(lst);
-    interval *= 60000;
-    while (lst <= new Date().getTime()) {
-        lst += interval;
-    }
-    return lst - new Date().getTime();
-}
-
-function initMsgLogic() {
-
+function eventSourceLogic() {
     /*subscribe*/
-    let uri = "/sse/subscribe";
-    const eventSource_start = new EventSource(uri);
-
-    /*sendAlarm*/
-    fetch(`/sse/sendAlarm`);
-
-    eventSource_start.onopen = (e) => {
-        console.log(e);
-    }
-
-    eventSource_start.onerror = (e) => {
-        if (e.currentTarget.readyState == EventSource.CLOSED) {
-        } else {
-            eventSource.close();
-        }
-    }
-
-    eventSource_start.onmessage = (e) => {
-
-        /*첫 로그인 쿠키 삭제*/
-        commonService.deleteCookie("firstAccess");
-
-        let deadline_alarm_term = Number(commonService.getCookieVal("deadline_alarm_term"));
-
-        let data = JSON.parse(e.data);
-        let msg = "아직 완료되지 않은 일정이 " + data.count + "개 있습니다. 가장 마감이 임박한 일정으로 이동하시겠습니까?";
-        let notification = new Notification('현재 메세지', {title: "마감 알림", body: msg});
-        notification.onclick = function (e) {
-            e.preventDefault();
-            window.open("/plan/" + data.planId, '_blank');
-        }
-        setTimeout(notification.close.bind(notification), deadline_alarm_term * 60000);
-    }
-}
-
-function succeededMsgLogic() {
-    $.ajax({
-        uri: "/sse/last",
-        type: "GET"
-    }).done(function(response) {
-        console.log(response);
-        let msgLastSentTime = response;
-        if (msgLastSentTime != null) {
-            let deadline_alarm_term = commonService.getCookieVal("deadline_alarm_term");
-            let waitTime = getWaitTime(msgLastSentTime, deadline_alarm_term);
-
-            /*waitTime만큼 기다리기*/
-            setTimeout(function () {
-                /*subscribe*/
+    fetch(`/sse/able`).then(
+        response => response.text()
+    ).then(
+        result => {
+            console.log(JSON.parse(result).able);
+            if (JSON.parse(result).able === true) {
                 let uri = "/sse/subscribe";
-                const eventSource_dur = new EventSource(uri);
+                var es = new EventSource(uri);
 
-                /*sendAlarm*/
                 fetch(`/sse/sendAlarm`);
 
-                /*eventSource onopen, onerror, onmessage*/
-                eventSource_dur.onopen = (e) => {
+                /*sendAlarm*/
+                es.onopen = (e) => {
                     console.log(e);
                 }
 
-                eventSource_dur.onerror = (e) => {
-                    if (e.currentTarget.readyState == EventSource.CLOSED) {
+                es.onerror = (e) => {
+                    if (e.currentTarget.readyState === EventSource.CLOSED) {
+                        new Notification('푸시 알림 전송이 임의로 중단되었습니다. 푸시 알림을 이어서 받고 싶다면 페이지를 새로고침해 주세요.');
+                    } else if (e.currentTarget.readyState === EventSource.CONNECTING) {
+                        new Notification('푸시 알림 커넥션이 생성되지 않았거나, 이미 closed 상태이거나 서버가 다운되었습니다. 이후에 다시 사이트에 접속해 주세요.');
+                        es.close();
                     } else {
-                        eventSource.close();
+                        console.log(e);
                     }
                 }
 
-                eventSource_dur.onmessage = (e) => {
+                es.onmessage = (e) => {
                     let data = JSON.parse(e.data);
                     let msg = "아직 완료되지 않은 일정이 " + data.count + "개 있습니다. 가장 마감이 임박한 일정으로 이동하시겠습니까?";
                     let notification = new Notification('현재 메세지', {title: "마감 알림", body: msg});
@@ -100,16 +43,8 @@ function succeededMsgLogic() {
                         e.preventDefault();
                         window.open("/plan/" + data.planId, '_blank');
                     }
-                    let now = new Date().getTime();
-                    setTimeout(notification.close.bind(notification), deadline_alarm_term * 60000);
-                    commonService.setCookie("msgLastSentTime", now);
                 }
-            }, waitTime);
-        } else {
-            initMsgLogic();
+            }
         }
-
-    })
-
-
+    );
 }
