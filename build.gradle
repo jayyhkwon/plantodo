@@ -40,6 +40,9 @@ dependencies {
 	testImplementation(platform('org.junit:junit-bom:5.8.2'))
 	testImplementation('org.junit.jupiter:junit-jupiter')
 
+	/*MariaDB database*/
+	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+
 	/*h2 database*/
 	runtimeOnly 'com.h2database:h2'
 
