@@ -48,7 +48,7 @@ public class TodoRepository {
     }
 
     public List<Todo> getTodoByPlanId(Long planId) {
-        return em.createQuery("select t from Todo t left join fetch t.repValue where t.plan.id = :planId", Todo.class)
+        return em.createQuery("select distinct t from Todo t left join fetch t.repValue where t.plan.id = :planId", Todo.class)
                 .setParameter("planId", planId)
                 .getResultList();
     }
