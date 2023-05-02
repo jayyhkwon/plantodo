@@ -147,7 +147,7 @@ public class PlanController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
             LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
-            setAttributesForPast(dateSearchForm, model, selectedPlan, all, todos);
+            setAttributesForPast(dateSearchForm, model, new PlanDetailVO(selectedPlan, planEnd), all, todos);
             return viewURI;
         }
 
@@ -156,15 +156,15 @@ public class PlanController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
             LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
-            setAttributesForPast(dateSearchForm, model, selectedPlan, all, todos);
+            setAttributesForPast(dateSearchForm, model, new PlanDetailVO(selectedPlan, planEnd), all, todos);
             return viewURI;
         }
         LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, searchStart, searchEnd);
-        setAttributesForPast(dateSearchForm, model, selectedPlan, all, todos);
+        setAttributesForPast(dateSearchForm, model, new PlanDetailVO(selectedPlan, planEnd), all, todos);
         return viewURI;
     }
 
-    private void setAttributesForPast(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm, Model model, Plan selectedPlan, LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all, List<Todo> todosByPlanId) {
+    private void setAttributesForPast(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm, Model model, PlanDetailVO selectedPlan, LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all, List<Todo> todosByPlanId) {
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("todosByPlanId", todosByPlanId);
