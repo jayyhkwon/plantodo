@@ -5,11 +5,11 @@
 </head>
 <body>
 <!--제목-->
+<header th:replace="fragments/common :: fragment-header" class="mb-auto text-gray-200"></header>
+<br>
 <div class="cover-container w-100 h-100 p-3 mx-auto flex-column">
-    <header th:replace="fragments/common :: fragment-header" class="mb-auto"></header>
-
     <main>
-        <section class="section-header bg-primary text-white pb-7 pb-lg-15">
+        <section class="section-header bg-primary text-white pb-8 pb-lg-15">
             <div class="container mb-5 mb-lg-10">
                 <div class="row mx-2 my-2">
                     <span th:if="${plan.dType.equals('Term')}" class="col justify-content-start"><span th:text="${plan.startDate}"></span>~<span th:text="${plan.endDate}"></span> <span th:text="${plan.endTime}"></span></span>
