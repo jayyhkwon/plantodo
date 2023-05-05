@@ -40,7 +40,7 @@ public class MemberController {
     @GetMapping(value = "/join")
     public String createJoinForm(Model model) {
         model.addAttribute("memberJoinForm", new MemberJoinForm());
-        return "/member/join-form";
+        return "member/join-form";
     }
 
     @PostMapping(value = "/join")

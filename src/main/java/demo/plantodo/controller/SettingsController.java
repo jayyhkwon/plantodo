@@ -29,7 +29,7 @@ public class SettingsController {
         Settings settings = settingsService.findOneByMemberId(memberId);
         SettingsUpdateForm form = new SettingsUpdateForm(settings.getNotification_perm(), settings.isDeadline_alarm() ? true : false, settings.getDeadline_alarm_term(), settings.getId());
         model.addAttribute("settingsUpdateForm", form);
-        return "/member/settings-form";
+        return "member/settings-form";
     }
 
     @PostMapping("/update")
