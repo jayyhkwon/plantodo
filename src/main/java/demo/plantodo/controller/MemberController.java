@@ -156,7 +156,7 @@ public class MemberController {
 
         /*로그인 세션 유지 시간 (임의 변경 가능)*/
         session.setMaxInactiveInterval(1800);
-        
+
         log.warn("login complete!");
         return "redirect:/home";
     }
