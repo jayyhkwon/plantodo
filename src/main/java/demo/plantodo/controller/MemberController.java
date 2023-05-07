@@ -158,7 +158,7 @@ public class MemberController {
         session.setMaxInactiveInterval(1800);
 
         log.warn("login complete!");
-        return "redirect:/home";
+        return "redirect:home";
     }
 
     @GetMapping("/logout")
