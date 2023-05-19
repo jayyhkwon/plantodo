@@ -14,6 +14,7 @@ import demo.plantodo.service.SettingsService;
 import demo.plantodo.validation.MemberJoinlValidator;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/member")
@@ -40,7 +42,7 @@ public class MemberController {
     @GetMapping(value = "/join")
     public String createJoinForm(Model model) {
         model.addAttribute("memberJoinForm", new MemberJoinForm());
-        return "/member/join-form";
+        return "member/join-form";
     }
 
     @PostMapping(value = "/join")
@@ -154,6 +156,8 @@ public class MemberController {
 
         /*로그인 세션 유지 시간 (임의 변경 가능)*/
         session.setMaxInactiveInterval(1800);
+
+        log.warn("login complete!");
         return "redirect:/home";
     }
 
