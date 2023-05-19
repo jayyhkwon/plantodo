@@ -50,8 +50,8 @@ public class CommonService {
         return ResponseCookie.from(name, value)
                 .maxAge(max_age)
                 .path("/")
-                .sameSite("None")
-                .secure(true)
+                // .sameSite("None")
+                // .secure(true)
                 .build();
     }
 
