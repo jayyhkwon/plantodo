@@ -23,11 +23,9 @@
 ## Screenshots
 
 ## Quick Start
-(230521 현재 .yml파일이 모두 gitignore되어 있어 실제로 사용은 불가능합니다.)
 
-#### [Local Environment (Docker, Docker Desktop X)](https://github.com/yeonleaf/plantodo/wiki/%EC%8B%A4%ED%96%89-%EB%B0%A9%EB%B2%95-(1)-Ubuntu,-Docker-(O),-Docker-Desktop-(x))
-#### Local Environment (Docker X)
-#### Local Environment (Docker, Docker Desktop O)
+#### [Local Environment (Docker O)](https://github.com/yeonleaf/plantodo/wiki/%EC%8B%A4%ED%96%89-%EB%B0%A9%EB%B2%95-(1)-Ubuntu,-Docker-(O),-Docker-Desktop-(x))
+#### [Local Environment (Docker X)](https://github.com/yeonleaf/plantodo/wiki/%EC%8B%A4%ED%96%89-%EB%B0%A9%EB%B2%95-(2)-Ubuntu,-Docker-(X))
 
 
 
