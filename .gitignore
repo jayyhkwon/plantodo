@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### .yml (contains sensitive info) ###
+application.yml
+docker-compose.yml
