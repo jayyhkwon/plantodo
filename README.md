@@ -24,8 +24,8 @@
 
 ## Quick Start
 
-#### [Local Environment (Docker O)](https://github.com/yeonleaf/plantodo/wiki/%EC%8B%A4%ED%96%89-%EB%B0%A9%EB%B2%95-(1)-Ubuntu,-Docker-(O),-Docker-Desktop-(x))
-#### [Local Environment (Docker X)](https://github.com/yeonleaf/plantodo/wiki/%EC%8B%A4%ED%96%89-%EB%B0%A9%EB%B2%95-(2)-Ubuntu,-Docker-(X))
+#### [Local Environment (Docker O)](https://github.com/yeonleaf/plantodo/wiki/%EC%8B%A4%ED%96%89-%EB%B0%A9%EB%B2%95-(1)-Ubuntu,-Docker(Docker-Compose)-(O))
+#### [Local Environment (Docker X)](https://github.com/yeonleaf/plantodo/wiki/%EC%8B%A4%ED%96%89-%EB%B0%A9%EB%B2%95-(2)-Ubuntu,-Docker(Docker-Compose)-(X))
 
 
 
