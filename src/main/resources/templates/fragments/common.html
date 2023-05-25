@@ -6,14 +6,28 @@
 </head>
 <body>
 
-<header th:fragment="fragment-header" class="mb-auto">
-    <div>
-        <h3 th:text="${session.nickname}" class="float-md-start mb-0"></h3>
-        <nav class="nav nav-masthead justify-content-center float-md-end">
-            <a th:href="@{/home}" th:text="'HOME'" class="nav-link"/>
-            <a href="/plan/plans" class="nav-link">MY PLANS</a>
-            <a href="/member/logout" class="nav-link">LOGOUT</a>
-            <a href="/settings" class="nav-link">SETTINGS</a>
+<!--<header th:fragment="fragment-header">-->
+<!--    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom fixed-top">-->
+<!--        <h3 th:text="${session.nickname}"></h3>-->
+<!--        <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">-->
+<!--            <a th:href="@{/home}" th:text="'HOME'" class="nav-link me-3 py-2"/>-->
+<!--            <a href="/plan/plans" class="nav-link me-3 py-2">MY PLANS</a>-->
+<!--            <a href="/settings" class="nav-link me-3 py-2">SETTINGS</a>-->
+<!--            <a href="/member/logout" class="nav-link me-3 py-2">LOGOUT</a>-->
+<!--        </nav>-->
+<!--    </div>-->
+<!--</header>-->
+
+<header th:fragment="fragment-header">
+    <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+        <div class="d-flex align-items-center link-body-emphasis text-decoration-none">
+            <span class="fs-4">Welcome to PlanToDo!</span>
+        </div>
+        <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none" th:href="@{/home}">Home</a>
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/plan/plans">My Plans</a>
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/settings">Settings</a>
+            <a class="py-2 link-body-emphasis text-decoration-none" href="/member/logout">Logout</a>
         </nav>
     </div>
 </header>

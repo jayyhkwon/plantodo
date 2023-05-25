@@ -1,8 +1,9 @@
 
 
 /*일자별 Plan, To-do 조회*/
-function loadDateBlockData(searchDate) {
-    console.log("loadDateBlockData executed!");
+function loadDateBlockData(searchDate, days) {
+    $('a[id^="eachDate"]').css("color", "black");
+    $('#eachDate'+days).css("color", "blue");
     let uri = "/home/calendar/" + searchDate;
     $.ajax({
         url: uri,
@@ -125,78 +126,120 @@ function getTodoUpdateForm(planId, todoId) {
 }
 
 
-function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId, todoDateTitle) {
-    let div_row = document.createElement("div");
-    div_row.className = "row mx-1 my-1"
+function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
+    // text와 edit, del 버튼 가리고 form 보여주기
+    let tdd_content = $('#todoDate-content'+todoDateId);
+    let tdd_edit_box = $('#todoDate-edit-box'+todoDateId);
+    tdd_content.hide();
+    tdd_edit_box.val(tdd_content.text()).show().focus();
 
-    // edit input
-    let div_col1 = document.createElement("div");
-    div_col1.className = "col"
-
-    let input = document.createElement("input");
-    input.id = "editTitle";
-    input.name = "editTitle";
-    input.setAttribute("pageInfo", pageInfo);
-    input.setAttribute("selectedDate", selectedDate);
-    input.setAttribute("planId", planId);
-    input.setAttribute("todoDateId", todoDateId);
-    input.className = "form-control";
-    input.value = todoDateTitle;
-
-    div_col1.appendChild(input);
-
-    // edit button
-    let div_col2 = document.createElement("div");
-    div_col2.className = "col"
-
-    let btn = document.createElement("input");
-    btn.type = "button"
-    btn.id = "editBtn"
-    btn.name = "editBtn"
-    btn.value = "EDT"
-    btn.className = "btn btn-sm btn-primary"
-    btn.onclick = function() {
-        let pageInfo = $('#editTitle').attr("pageInfo");
-        let selectedDate = $('#editTitle').attr("selectedDate");
-        let planId = $('#editTitle').attr("planId");
-        let todoDateId = $('#editTitle').attr("todoDateId");
-
-        let data = { pageInfo: pageInfo,
-            selectedDate: selectedDate,
-            planId: planId,
-            todoDateId: todoDateId,
-            updateTitle: $('#editTitle').val() }
-
-        console.log(data);
-
-        $.ajax({
-            url: "/todoDate",
-            type: "PUT",
-            data: data,
-            success: function (res) {
-                setTimeout(function () {
-                    console.log(res.pageInfo);
-                    if (res.pageInfo == "home") {
-                        loadDateBlockData(res.searchDate);
-                    } else {
-                        planDetailAjax(planId);
-                    }
-                }, 100);
-            }
-        })
-    }
-    div_col2.appendChild(btn);
-
-    div_row.appendChild(input);
-    div_row.appendChild(btn);
-
-    $("#" + todoDateId).empty().html(div_row);
+    $('#todoDate-btn-g1'+todoDateId).hide();
+    $('#todoDate-btn-g2'+todoDateId).show();
 }
+
+function afterTodoDateEdit(pageInfo, selectedDate, planId, todoDateId) {
+
+    let updatedTitle = $('#todoDate-edit-box'+todoDateId).val();
+    let data = { pageInfo: pageInfo,
+        selectedDate: selectedDate,
+        planId: planId,
+        todoDateId: todoDateId,
+        updateTitle: updatedTitle }
+
+    $.ajax({
+        url: "/todoDate",
+        type: "PUT",
+        data: data,
+        success: function (res) {
+
+            $('#todoDate-content'+todoDateId).val(updatedTitle).text(updatedTitle).css("display", "inline");
+            $('#todoDate-edit-box'+todoDateId).css("display", "none");
+
+            $('#todoDate-btn-g2'+todoDateId).css("display", "none");
+            $('#todoDate-btn-g1'+todoDateId).css("display", "inline");
+        }
+    })
+}
+
+function todoDateEditBack(todoDateId) {
+    $('#todoDate-content'+todoDateId).css("display", "inline");
+    $('#todoDate-edit-box'+todoDateId).css("display", "none");
+
+    $('#todoDate-btn-g2'+todoDateId).css("display", "none");
+    $('#todoDate-btn-g1'+todoDateId).css("display", "inline");
+}
+
+// function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId, todoDateTitle) {
+//     let div_row = document.createElement("div");
+//     div_row.className = "row mx-1 my-1"
+//
+//     // edit input
+//     let div_col1 = document.createElement("div");
+//     div_col1.className = "col"
+//
+//     let input = document.createElement("input");
+//     input.id = "editTitle";
+//     input.name = "editTitle";
+//     input.setAttribute("pageInfo", pageInfo);
+//     input.setAttribute("selectedDate", selectedDate);
+//     input.setAttribute("planId", planId);
+//     input.setAttribute("todoDateId", todoDateId);
+//     input.className = "form-control";
+//     input.value = todoDateTitle;
+//
+//     div_col1.appendChild(input);
+//
+//     // edit button
+//     let div_col2 = document.createElement("div");
+//     div_col2.className = "col"
+//
+//     let btn = document.createElement("input");
+//     btn.type = "button"
+//     btn.id = "editBtn"
+//     btn.name = "editBtn"
+//     btn.value = "EDT"
+//     btn.className = "btn btn-sm btn-primary"
+//     btn.onclick = function() {
+//         let pageInfo = $('#editTitle').attr("pageInfo");
+//         let selectedDate = $('#editTitle').attr("selectedDate");
+//         let planId = $('#editTitle').attr("planId");
+//         let todoDateId = $('#editTitle').attr("todoDateId");
+//
+//         let data = { pageInfo: pageInfo,
+//             selectedDate: selectedDate,
+//             planId: planId,
+//             todoDateId: todoDateId,
+//             updateTitle: $('#editTitle').val() }
+//
+//         console.log(data);
+//
+//         $.ajax({
+//             url: "/todoDate",
+//             type: "PUT",
+//             data: data,
+//             success: function (res) {
+//                 setTimeout(function () {
+//                     console.log(res.pageInfo);
+//                     if (res.pageInfo == "home") {
+//                         loadDateBlockData(res.searchDate);
+//                     } else {
+//                         planDetailAjax(planId);
+//                     }
+//                 }, 100);
+//             }
+//         })
+//     }
+//     div_col2.appendChild(btn);
+//
+//     div_row.appendChild(input);
+//     div_row.appendChild(btn);
+//
+//     $("#" + todoDateId).empty().html(div_row);
+// }
 
 // comment
 
 $(document).on("click", "#blockTrigger", function(event) {
-    console.log("*");
     event.preventDefault();
     let selectedDate = $(this).attr("selectedDate");
     let tododateId = $(this).attr("todoDateId");

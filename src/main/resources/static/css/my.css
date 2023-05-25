@@ -26,3 +26,96 @@
 #emphasis label:hover ~ label {
     text-shadow: 0 0 0 #feb950;
 }
+
+input.comment-btn {
+    width: 40px;
+    height: 35px;
+    background: url("../img/comment_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+    opacity: 0.3;
+}
+
+input.comment-btn:hover {
+    opacity: 0.6;
+}
+
+
+a.comment-content-btn {
+    font-size: smaller;
+    margin-top: -0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    text-decoration: none;
+    color: #5b6c8c;
+}
+
+input.tdd-delete-btn {
+    width: 18px;
+    height: 18px;
+    background: url("../img/tododate_delete_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+    opacity: 0.4;
+}
+
+input.tdd-delete-btn:hover {
+    opacity: 0.6;
+}
+
+input.tdd-edit-btn {
+    width: 18px;
+    height: 18px;
+    background: url("../img/tododate_edit_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+    opacity: 0.4;
+}
+
+input.tdd-edit-btn:hover {
+    opacity: 0.6;
+}
+
+a.comment-content-btn:hover {
+    color: #0a53be;
+}
+
+input.tdd-submit-btn {
+    width: 18px;
+    height: 18px;
+    background: url("../img/tododate_submit_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+    opacity: 0.4;
+}
+
+input.tdd-submit-btn:hover {
+    opacity: 0.6;
+}
+
+input.todoDate-edit-box {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    outline: none;
+}
+
+@media (min-width: 200px) {
+    .fixed-cal-col {
+        justify-content: center;
+    }
+}
+
+@media (min-width: 500px) {
+    .fixed-cal-col {
+        flex-basis: 400px; /* Set the width to 100% at the desired breakpoint */
+        max-width: 400px;
+    }
+}
+
+@media (min-width: 700px) {
+    .fixed-cal-col {
+        flex-basis: 500px; /* Set the width to 100% at the desired breakpoint */
+        max-width: 500px;
+    }
+}
+

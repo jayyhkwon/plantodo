@@ -2,31 +2,33 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="fragments/head.html :: fragment-header"></div>
+    <link href="../css/small_container.css" rel="stylesheet">
 </head>
 <body>
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <div class="row">
-        <h4 class="display-4">LOGIN</h4>
-    </div>
-    <div class="row">
-        <form th:object="${memberLoginForm}" th:action="@{/member/login}" method="post">
-            <div class="mb-3">
-                <label for="email" class="form-label">이메일</label>
-                <input type="text" id="email" name="email" th:field="*{email}" placeholder="이메일을 입력해주세요." class="form-control"/>
-                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-text"></small>
+<div class="container my-3">
+    <div class="small-container w-100 h-100 m-auto">
+        <div class="p-5 text-center bg-body-tertiary rounded-3">
+            <h1 class="h3 mb-3 fw-normal">LOGIN</h1>
+        </div>
+        <form th:object="${memberLoginForm}" th:action="@{/member/login}" method="post" class="mb-3">
+            <div class="mb-2">
+                <div class="form-floating">
+                    <input type="text" id="email" name="email" th:field="*{email}" placeholder="Email address" class="form-control"/>
+                    <label for="email" class="form-label">Email address</label>
+                    <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-text"></small>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">비밀번호</label>
-                <input type="password" id="password" name="password" th:field="*{password}" placeholder="비밀번호를 입력해주세요." class="form-control"/>
-                <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="form-text"></small>
+            <div>
+                <div class="form-floating">
+                    <input type="password" id="password" name="password" th:field="*{password}" placeholder="Password" class="form-control"/>
+                    <label for="password" class="form-label">Password</label>
+                    <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="form-text"></small>
+                </div>
             </div>
-            <div class="row mb-3">
-                <input type="submit" value="로그인" class="btn btn-success"/>
-            </div>
+            <input type="submit" value="로그인" class="w-100 btn btn-primary"/>
         </form>
-    </div>
-    <div class="row mb-3">
-        <a href=".." class="btn btn-primary">이전으로</a>
+        <br>
+        <a href=".." class="w-100 btn btn-outline-secondary">이전으로</a>
     </div>
 </div>
 </body>
