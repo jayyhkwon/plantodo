@@ -4,10 +4,47 @@
     <th:block th:replace="fragments/head.html :: fragment-header"></th:block>
     <link href="../css/my.css" rel="stylesheet">
 </head>
-<body style="background-color: #f5f5f5;">
+<body>
 <div class="container py-3">
 
     <header th:replace="fragments/common :: fragment-header"></header>
+
+    <div class="modal fade" id="prNoTermModal" tabindex="-1" aria-labelledby="prNoTermModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="prNoTermModalLabel">기간이 없는 일정 등록</h1>
+                    <button close="true" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="prNoTermModal-body" class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="prWithTermModal" tabindex="-1" aria-labelledby="prWithTermModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="prWithTermModalLabel">기간이 있는 일정 등록</h1>
+                    <button close="true" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="prWithTernModal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="tdrModal" tabindex="-1" aria-labelledby="tdrModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="tdrModalLabel">할일 등록</h1>
+                    <button close="true" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="tdrModal-body">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row m-auto">
         <div class="col fixed-cal-col ms-auto me-auto mt-2 mb-2 justify-content-center">
@@ -55,16 +92,31 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="row">
+            <div class="row m-1">
                 <div class="col d-grid">
-                    <a href="/plan/type" role="button" class="btn btn-primary">PLAN REGISTER</a>
+                    <a href="#" id="planTypeBtn" role="button" class="btn btn-outline-primary" th:attr="onclick=|selectType()|">PLAN REGISTER</a>
                 </div>
                 <div class="col d-grid">
-                    <a href="/todo/register" role="button" class="btn btn-primary">TODO REGISTER</a>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tdrModal">
+                        TODO REGISTER
+                    </button>
+<!--                    <a href="/todo/register" role="button" class="btn btn-outline-primary">TODO REGISTER</a>-->
                 </div>
             </div>
-<!--            <div class="text-center justify-content-center w-100">-->
-<!--            </div>-->
+            <div class="row m-1" id="selectType" style="display: none;">
+                <div class="col d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prNoTermModal">
+                        No Term
+                    </button>
+<!--                    <a href="/plan/regular" role="button" class="btn btn-primary">기간이 없는 일정</a>-->
+                </div>
+                <div class="col d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prWithTermModal">
+                        With Term
+                    </button>
+<!--                    <a href="/plan/term" role="button" class="btn btn-primary">기간이 있는 일정</a>-->
+                </div>
+            </div>
         </div>
         <div class="col fixed-cal-col ms-auto me-auto mt-2 mb-2 justify-content-center">
             <div id="dateBlock">

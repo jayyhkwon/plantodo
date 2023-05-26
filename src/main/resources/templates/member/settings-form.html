@@ -2,30 +2,36 @@
 <html lang="ko" xmlns:th="http://thymeleaf.org">
 <head>
     <div th:replace="fragments/head.html :: fragment-header"></div>
+    <link href="../css/my.css" rel="stylesheet">
 </head>
 <body>
-<div class="cover-container w-100 h-100 p-3 mx-auto">
-    <div th:replace="fragments/permission_modal.html :: permission-modal"></div>
+<div class="container py-3 m-auto justify-content-center">
     <header th:replace="fragments/common :: fragment-header" class="mb-auto"></header>
-    <div class="container-sm">
-        <h2 class="text-dark">Settings</h2>
-        <div class="form-check form-switch">
-            <small id="perm_warning" class="text-warning" th:style="'display:none;'">구글 설정 -> 개인 정보 보호 및 보안 -> 사이트 설정으로 들어가서 '알림' 권한을 허용으로 설정해 주십시오.</small>
-            <div th:object="${settingsUpdateForm}" id="settingsUpdateForm">
-                <input type="hidden" id = "settings_id" th:value="*{settings_id}">
-                <input type="hidden" id = "notification_perm" th:value="*{notification_perm}">
-                <div class="row">
-                    <label class="form-check-label" id="deadline_alarm_label" for="deadline_alarm">마감 알림 : <span th:if="*{deadline_alarm == true}" th:text="*{deadline_alarm_term + '분마다'}"></span></label>
-                    <input type="checkbox" id="deadline_alarm" th:checked="*{deadline_alarm}">
-                    <small class="text-dark">중요 표시를 한 (⭐) 일정의 달성도가 100%가 아닌 경우 마감일에 일정 간격으로 알람을 보냅니다.</small>
+    <div th:replace="fragments/permission_modal.html :: permission-modal"></div>
+    <h1 class="h3 mb-3 fw-normal">Settings</h1>
+    <div class="card" style="width: 20rem;">
+        <small id="perm_warning" class="text-warning" th:style="'display:none;'">구글 설정 -> 개인 정보 보호 및 보안 -> 사이트 설정으로 들어가서 '알림' 권한을 허용으로 설정해 주십시오.</small>
+        <div th:object="${settingsUpdateForm}" id="settingsUpdateForm">
+            <input type="hidden" id = "settings_id" th:value="*{settings_id}">
+            <input type="hidden" id = "notification_perm" th:value="*{notification_perm}">
+            <div class="card-body">
+                <div class="row m-1 p-1">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" id="deadline_alarm" th:checked="*{deadline_alarm}" class="form-check-input">
+                        <label class="form-check-label" id="deadline_alarm_label" for="deadline_alarm">마감 알림</label>
+                        <span id="alarm_term_text" class="card-text" th:if="*{deadline_alarm == true}" th:text="*{': ' + deadline_alarm_term + '분마다'}"></span>
+                    </div>
                 </div>
-                <div class="row" id="termBlock" th:style="${settingsUpdateForm.deadline_alarm_term == 0 ? 'display:none;' : 'display:inline;'}">
-                    <label class="form-label" for="deadline_alarm_term">몇 분 간격으로 보내시겠습니까?</label>
-                    <div class="col-md-6">
+                <div class="row m-1 p-1">
+                    <small class="card-text">중요 표시를 한 (⭐) 일정의 달성도가 100%가 아닌 경우 마감일에 일정 간격으로 알람을 보냅니다.</small>
+                </div>
+                <div class="row m-1 p-1" id="termBlock" th:style="${settingsUpdateForm.deadline_alarm_term == 0 ? 'display:none;' : 'display:inline;'}">
+                    <div class="row m-auto p-2">
+                        <label class="form-label" for="deadline_alarm_term">몇 분마다 알림을 보낼까요?</label>
                         <input type="text" id="deadline_alarm_term" name="deadline_alarm_term" class="form-control" th:field="*{deadline_alarm_term}">
                     </div>
-                    <div class="col-md-6">
-                        <button type="button" id="deadline_alarm_submit" class="btn btn-sm btn-primary">수정</button>
+                    <div class="row m-auto p-2">
+                        <button id="deadline_alarm_submit" class="btn btn-sm btn-primary">GO!</button>
                     </div>
                 </div>
             </div>

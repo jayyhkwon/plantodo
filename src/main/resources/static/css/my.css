@@ -1,4 +1,8 @@
 
+body {
+    background-color: #f5f5f5;
+}
+
 /* plan-list.html / plan-detail.html emphasis */
 #emphasis fieldset {
     display: inline-block;
@@ -16,7 +20,7 @@
 #emphasis label {
     font-size: 2em;
     color: transparent;
-    text-shadow: 0 0 0 #f0f0f0;
+    text-shadow: 0 0 0 #d3d3d4;
 }
 
 #emphasis label:hover {

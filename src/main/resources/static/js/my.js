@@ -14,6 +14,77 @@ function loadDateBlockData(searchDate, days) {
 }
 
 /*plan*/
+function selectType() {
+    if ($('#selectType').css('display') === 'none') {
+        $('#planTypeBtn').removeClass();
+        $('#planTypeBtn').addClass('btn btn-primary');
+        $('#selectType').show();
+    } else {
+        $('#planTypeBtn').removeClass();
+        $('#planTypeBtn').addClass('btn btn-outline-primary');
+        $('#selectType').hide();
+    }
+}
+
+$('#prNoTermModal').on('show.bs.modal', function() {
+    $.ajax({
+        url: '/plan/regular',
+        method: 'GET',
+        success: function (res) {
+            $('#prNoTermModal-body').html(res);
+        }
+    })
+})
+
+$('#prWithTermModal').on('show.bs.modal', function() {
+    $.ajax({
+        url: '/plan/term',
+        method: 'GET',
+        success: function (res) {
+            $('#prWithTernModal-body').html(res);
+        }
+    })
+})
+
+$('#tdrModal').on('show.bs.modal', function() {
+    $.ajax({
+        url: '/todo/register',
+        method: 'GET',
+        success: function (res) {
+            $('#tdrModal-body').html(res);
+        }
+    })
+})
+
+$('[close]').on('click', function() {
+    location.reload();
+})
+
+$('#tdrModal').on('click', '#tdr-submit', function() {
+    let form = $('#tdr-form').serialize();
+    $.ajax({
+        url: '/todo/register',
+        method: 'POST',
+        data: form,
+        success: function(res) {
+            if (sessionStorage.getItem('tdrStep') === null) {
+                sessionStorage.setItem('tdrStep', '1');
+                $('#tdrModal-body').html(res);
+            } else {
+                sessionStorage.removeItem('tdrStep');
+                $('#tdrModalClose').click();
+                location.reload();
+            }
+        }
+    })
+})
+
+
+function getPlanDetailPage(planId) {
+    console.log(planId);
+    $('#plan-detail-trigger'+planId)[0].click();
+}
+
 function planDetailAjax(planId) {
     $.ajax({
         url: "/plan/" + planId,

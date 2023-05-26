@@ -13,15 +13,13 @@ public class StringToEnumConverterFactory implements ConverterFactory<String, En
     }
 
     private final class StringToEnumConverter<T extends Enum> implements Converter<String, Enum> {
-
         private Class<T> enumType;
         public StringToEnumConverter(Class<T> enumType) {
             this.enumType = enumType;
         }
         @Override
         public T convert(String source) {
-            String newSource = source.toUpperCase();
-            return (T) Enum.valueOf(this.enumType, newSource);
+            return (T) Enum.valueOf(this.enumType, source.toUpperCase());
         }
     }
 }

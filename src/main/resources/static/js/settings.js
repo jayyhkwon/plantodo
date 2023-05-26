@@ -21,20 +21,19 @@ $(document).ready(function() {
                 method: 'post',
                 body: JSON.stringify({
                     'settings_id': $('#settings_id').val(),
-                    'notification_perm': commonService.parsePermission(Notification.permission),
+                    'notification_perm': commonService.parsePermission(Notification.permission).toUpperCase,
                     'deadline_alarm': false,
                     'deadline_alarm_term': 0
                 }),
                 headers: {"Content-Type": "application/json"}
             }).then(function() {
+                $("#alarm_term_text").text("");
                 $("#termBlock").css("display", "none");
                 $("#deadline_alarm_term").val(0);
             })
-            fetch("/sse/quitAlarm");
         }
     })
 });
-
 
 
 /*submit 버튼 클릭 시*/

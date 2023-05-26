@@ -46,11 +46,6 @@ public class PlanController {
     private final AuthService authService;
 
     /*등록 - regular*/
-    @GetMapping("/type")
-    public String createSelectForm() {
-        return "plan/plan-type";
-    }
-
     @GetMapping("/regular")
     public String createRegularForm(Model model) {
         model.addAttribute("planRegularRegisterForm", new PlanRegularRegisterForm());
