@@ -67,13 +67,14 @@ $('#tdrModal').on('click', '#tdr-submit', function() {
         method: 'POST',
         data: form,
         success: function(res) {
-            if (sessionStorage.getItem('tdrStep') === null) {
-                sessionStorage.setItem('tdrStep', '1');
-                $('#tdrModal-body').html(res);
-            } else {
-                sessionStorage.removeItem('tdrStep');
+            let tempElement = $('<html></html>').html(res);
+            let pageType = tempElement.find('input[id="pageType"]').val();
+
+            if (pageType === 'home') {
                 $('#tdrModalClose').click();
                 location.reload();
+            } else {
+                $('#tdrModal-body').html(res);
             }
         }
     })
@@ -102,7 +103,68 @@ function switchPlanEmphasis(planId, pageInfo) {
     })
 }
 
-/*to-do 상태 바꾸기*/
+
+/*to-do*/
+function getTodoEditForm(planId, todoId) {
+    $.ajax({
+        url: '/todo/todo?planId='+planId+"&todoId="+todoId,
+        method: 'GET',
+        success: function (res) {
+            $('#tdEditModal-body').html(res);
+            $('#tdEditModalTodoId').val(todoId);
+            $('#tdEditModelPlanId').val(planId);
+            $('#tdEditModal-body').show();
+            let tdEditModal = new bootstrap.Modal(document.getElementById('tdEditModal'));
+            tdEditModal.show();
+        }
+    })
+}
+
+document.addEventListener('DOMContentLoaded', function(event) {
+    document.addEventListener('change', function(event) {
+        let option = event.target.options[event.target.selectedIndex];
+        if (event.target.id === 'repOption-register') {
+            $.ajax({
+                url: '/todo/emptyRepOptForm?newRepOpt='+option.value,
+                method: 'GET',
+                success: function(res) {
+                    $('#repOptionBody').html(res);
+                }
+            })
+        }
+    })
+})
+
+document.addEventListener('DOMContentLoaded', function(event) {
+
+    document.addEventListener('change', function(event) {
+        if (event.target.id === 'repOption-update') {
+            let todoId = $('#tdEditModalTodoId').val();
+            let planId = $('#tdEditModelPlanId').val();
+            let option = event.target.options[event.target.selectedIndex];
+            $.ajax({
+                url: '/todo/repOptForm?planId=' + planId + '&todoId=' + todoId + '&newRepOpt='+option.value,
+                method: 'GET',
+                success: function(res) {
+                    $('#repOptionBody').html(res);
+                }
+            })
+        }
+    });
+
+})
+
+function deleteTodo(planId, todoId) {
+    $.ajax({
+        url: '/todo?planId='+planId+"&todoId="+todoId,
+        method: 'DELETE',
+        success: function() {
+            location.reload();
+        }
+    })
+}
+
+/*todoDate*/
 function switchTodoDateStatus_home(todoDateId, planId) {
     let uri = "/todoDate/switching?todoDateId="+todoDateId + "&planId="+planId;
     $.ajax({

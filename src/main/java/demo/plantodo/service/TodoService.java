@@ -96,10 +96,14 @@ public class TodoService {
         return todoRepository.findAllTodoByMemberId(memberId);
     }
 
+    public TodoUpdateForm getTodoUpdateForm(Long planId, Long todoId) {
+        return todoRepository.getTodoUpdateForm(planId, todoId);
+    }
+
     /*변경*/
     public void update(TodoUpdateForm todoUpdateForm, Long todoId, Plan plan) {
         /*to-do 찾아오기*/
-        Todo todo = todoRepository.findOne(todoId);
+        Todo todo = todoRepository.findOneWithRepValue(todoId);
         LocalDate today = LocalDate.now();
         /*todoUpdateForm와 to-do의 repOption과 repValue에 변화가 있었는지 확인*/
         if (todo.getRepOption() != todoUpdateForm.getRepOption() || !todo.getRepValue().equals(todoUpdateForm.getRepValue())) {
@@ -107,7 +111,7 @@ public class TodoService {
             List<TodoDate> todoDateAfterToday = todoRepository.getTodoDateByTodoIdAfterToday(todoId, today);
             for (TodoDate todoDate : todoDateAfterToday) {
                 if (todoDate instanceof TodoDateRep) {
-                    todoDateRepository.deleteRep((TodoDateRep) todoDate);
+                    todoDateRepository.deleteRep(todoDate.getId());
                 }
             }
             /*to-do 저장*/
@@ -122,7 +126,7 @@ public class TodoService {
             System.out.println("startDate = " + startDate);
             System.out.println("endDate = " + endDate);
 
-            Todo newTodo = todoRepository.findOne(todoId);
+            Todo newTodo = todoRepository.findOneWithRepValue(todoId);
             todoDateService.todoDateInitiate(startDate, endDate, newTodo);
         } else {
             /*repOption도 repValue도 바뀌지 않은 경우(타이틀만 변경)*/

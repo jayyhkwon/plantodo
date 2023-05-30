@@ -112,6 +112,10 @@ public class TodoDateRepository {
     public void deleteRep(TodoDateRep todoDateRep) {
         em.remove(todoDateRep);
     }
+    public void deleteRep(Long todoDateId) {
+        TodoDate tdd = findOne(todoDateId);
+        em.remove(tdd);
+    }
 
     public void deleteDaily(TodoDateDaily todoDateDaily) {
         em.remove(todoDateDaily);

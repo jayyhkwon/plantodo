@@ -4,73 +4,81 @@
     <div th:replace="fragments/head.html :: fragment-header"></div>
 </head>
 <body>
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <form id="tdr-form" th:action="@{/todo/register}" th:object="${todoRegisterForm}" method="post" class="row g-4">
-        <div class="row m-1">
-            <div class="col-md-3">
+<input type="hidden" id="pageType" value="register-form"/>
+<div class="container mx-2 my-1">
+    <form id="tdr-form" th:action="@{/todo/register}" th:object="${todoRegisterForm}" method="post" class="row">
+        <div class="row p-1">
+            <div class="col-4">
                 <label for="planId" class="form-label">일정 선택</label>
                 <select id="planId" name="planId" class="form-select">
                     <option th:each="plan : ${plans}" th:utext="${plan.title}" th:value="${plan.id}" th:selected="${plan.id == todoRegisterForm.planId}"></option>
                 </select>
             </div>
 
-            <div class="col-md-5">
+            <div class="col-4">
                 <label for="title" class="form-label">타이틀</label>
                 <input type="text" name="title" id="title" th:value="*{title}" class="form-control">
             </div>
 
-            <div class="col-md-4">
-                <label for="repOption" class="form-label">반복 선택</label>
-                <select id="repOption" name="repOption" class="form-select">
+            <div class="col-4">
+                <label for="repOption-register" class="form-label">반복 선택</label>
+                <select id="repOption-register" name="repOption" class="form-select">
                     <option value="0" th:selected="*{repOption == 0}">매일반복</option>
                     <option value="1" th:selected="*{repOption == 1}">요일마다</option>
                     <option value="2" th:selected="*{repOption == 2}">기간설정</option>
                 </select>
             </div>
         </div>
-
-        <div th:if="*{repOption==1}">
-            <div class="row m-1">
-                <p>요일을 선택해주세요.</p>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" id="mon" name="repValue" value="월" class="form-check-input">
-                    <label for="mon" class="form-check-label">월</label>
+        <div class="row p-1">
+            <div id="repOptionBody">
+                <div th:if="*{repOption == 0}">
+                    <input type="hidden" name="repValue" value=""/>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" id="tue" name="repValue" value="화" class="form-check-input">
-                    <label for="tue" class="form-check-label">화</label>
+                <div th:if="*{repOption == 1}">
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" id="mon" name="repValue" value="월" th:checked="*{repValue != null && repValue.contains('월')}" class="form-check-input">
+                        <label for="mon" class="form-check-label">월</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" id="tue" name="repValue" value="화" th:checked="*{repValue != null && repValue.contains('화')}" class="form-check-input">
+                        <label for="tue" class="form-check-label">화</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" id="wed" name="repValue" value="수" th:checked="*{repValue != null && repValue.contains('수')}" class="form-check-input">
+                        <label for="wed" class="form-check-label">수</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" id="thu" name="repValue" value="목" th:checked="*{repValue != null && repValue.contains('목')}" class="form-check-input">
+                        <label for="thu" class="form-check-label">목</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" id="fri" name="repValue" value="금" th:checked="*{repValue != null && repValue.contains('금')}" class="form-check-input">
+                        <label for="fri" class="form-check-label">금</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" id="sat" name="repValue" value="토" th:checked="*{repValue != null && repValue.contains('토')}" class="form-check-input">
+                        <label for="sat" class="form-check-label">토</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" id="sun" name="repValue" value="일" th:checked="*{repValue != null && repValue.contains('일')}" class="form-check-input">
+                        <label for="sun" class="form-check-label">일</label>
+                    </div>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" id="wed" name="repValue" value="수" class="form-check-input">
-                    <label for="wed" class="form-check-label">수</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" id="thu" name="repValue" value="목" class="form-check-input">
-                    <label for="thu" class="form-check-label">목</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" id="fri" name="repValue" value="금" class="form-check-input">
-                    <label for="fri" class="form-check-label">금</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" id="sat" name="repValue" value="토" class="form-check-input">
-                    <label for="sat" class="form-check-label">토</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input type="checkbox" id="sun" name="repValue" value="일" class="form-check-input">
-                    <label for="sun" class="form-check-label">일</label>
+                <div th:if="*{repOption == 2}">
+                    <div class="input-group">
+                        <div class="form-floating">
+                            <input type="text" id="repOpt2Input" name="repValue" th:value="*{repOption == 2} ? (*{repValue == null || repValue.isEmpty()} ? '' : *{repValue.get(0)})" class="form-control"/>
+                            <label for="repOpt2Input">ex) 3일마다 (숫자만 입력해주세요)</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div th:if="*{repOption==2}">
-            <div class="row m-1">
-                <input type="text" id="repValue" name="repValue" class="form-control">
-                <label for="repValue">일마다 반복합니다.</label>
-            </div>
+        <div class="row p-1">
+            <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger"></div>
+            <div th:if="${#fields.hasErrors('repValue')}" th:errors="*{repValue}" class="text-danger"></div>
         </div>
-
-        <div class="row m-1">
+        <div class="row p-1">
             <input type="button" class="btn btn-primary" id="tdr-submit" value="GO!"/>
         </div>
     </form>

@@ -31,6 +31,8 @@ body {
     text-shadow: 0 0 0 #feb950;
 }
 
+/*delete / edit / switch buttons*/
+
 input.comment-btn {
     width: 40px;
     height: 35px;
@@ -103,6 +105,55 @@ input.todoDate-edit-box {
     outline: none;
 }
 
+input.detail-edit-btn {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_edit_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-edit-btn:hover {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_edit_btn_hover_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-delete-btn {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_delete_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-delete-btn:hover {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_delete_btn_hover_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-switch-btn {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_swtich_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-switch-btn:hover {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_swtich_btn_hover_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+/*fixed cols*/
 @media (min-width: 200px) {
     .fixed-cal-col {
         justify-content: center;
