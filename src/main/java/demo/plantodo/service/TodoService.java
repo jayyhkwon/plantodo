@@ -38,7 +38,7 @@ public class TodoService {
         }
 
         /*todoDate 만들기*/
-        int uncheckedTodoDateCnt = todoDateService.todoDateInitiate(startDate, endDate, todo);
+        todoDateService.todoDateInitiate(startDate, endDate, todo);
     }
 
     /*조회*/
@@ -123,9 +123,6 @@ public class TodoService {
                 PlanTerm planTerm = (PlanTerm) plan;
                 endDate = planTerm.getEndDate();
             }
-            System.out.println("startDate = " + startDate);
-            System.out.println("endDate = " + endDate);
-
             Todo newTodo = todoRepository.findOneWithRepValue(todoId);
             todoDateService.todoDateInitiate(startDate, endDate, newTodo);
         } else {
@@ -141,6 +138,10 @@ public class TodoService {
                 }
             }
         }
+    }
+
+    public void updateByPlanEdit(Long todoId, LocalDate newEndDate) {
+
     }
 
     /*삭제*/

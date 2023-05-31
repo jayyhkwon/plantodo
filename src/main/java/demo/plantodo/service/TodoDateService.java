@@ -189,6 +189,10 @@ public class TodoDateService {
         return todoDateRepository.getTodoDateByTodo(todo);
     }
 
+    public List<TodoDateDaily> getTodoDateDaily_ByPlanIdAndDate(Long planId, LocalDate dk) {
+        return todoDateRepository.getTodoDateDaily_ByPlanIdAndDate(planId, dk);
+    }
+
 
     /*변경*/
     public void updateTitle(Long todoDateId, String updateTitle) {
@@ -221,6 +225,7 @@ public class TodoDateService {
 
     /*삭제*/
     public void delete(Long todoDateId) {
+        commentService.deleteCommentByTodoDateId(todoDateId);
         todoDateRepository.delete(todoDateId);
     }
 
@@ -244,4 +249,5 @@ public class TodoDateService {
         // 테스트용
         return todoDateRepository.getTodoDateDailyByPlanId(planId);
     }
+
 }

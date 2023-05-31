@@ -7,6 +7,7 @@ import demo.plantodo.form.PlanRegularUpdateForm;
 import demo.plantodo.form.PlanTermRegisterForm;
 import demo.plantodo.form.PlanTermUpdateForm;
 import demo.plantodo.repository.PlanRepository;
+import demo.plantodo.repository.TodoDateRepository;
 import demo.plantodo.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +16,11 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -111,6 +114,45 @@ public class PlanService {
 
     public void switchPlanEmphasis(Long planId) {
         planRepository.switchPlanEmphasis(planId);
+    }
+
+
+    public void updateTerm_del(PlanTermUpdateForm form, LocalDate newEndDate, LocalDate endDate, Long planId) {
+        /*to-do 조회 -> to-do와 연결된 tddd 조회 -> tdd와 연결된 comment 삭제 -> tdd 삭제*/
+
+        List<Todo> todos = todoService.getTodoByPlanId(planId);
+        for (Todo td : todos) {
+            Iterator<LocalDate> iterator = Stream.iterate(newEndDate.plusDays(1), d -> d.plusDays(1)).limit(ChronoUnit.DAYS.between(newEndDate, endDate)).iterator();
+            while (iterator.hasNext()) {
+                LocalDate dk = iterator.next();
+//                System.out.println(dk);
+                List<TodoDate> tddr_list = todoDateService.getTodoDateRep_ByTodoAndDate(td, dk);
+                for (TodoDate tdd : tddr_list) {
+                    todoDateService.delete(tdd.getId());
+                }
+            }
+        }
+
+        /*plan과 연결된 tddr 조회 -> 삭제*/
+        Iterator<LocalDate> iterator = Stream.iterate(newEndDate.plusDays(1), d -> d.plusDays(1)).limit(ChronoUnit.DAYS.between(newEndDate, endDate)).iterator();
+        while (iterator.hasNext()) {
+            LocalDate dk = iterator.next();
+            List<TodoDateDaily> tddd_list = todoDateService.getTodoDateDaily_ByPlanIdAndDate(planId, dk);
+            for (TodoDateDaily tddd : tddd_list) {
+                todoDateService.delete(tddd.getId());
+            }
+        }
+
+        updateTerm(form, planId);
+    }
+
+
+    public void updateTerm_add(PlanTermUpdateForm form, LocalDate newEndDate, LocalDate endDate, Long planId) {
+        List<Todo> todos = todoService.getTodoByPlanId(planId);
+        for (Todo td : todos) {
+            todoDateService.todoDateInitiate(endDate.plusDays(1), newEndDate, td);
+        }
+        updateTerm(form, planId);
     }
 
     /*삭제*/

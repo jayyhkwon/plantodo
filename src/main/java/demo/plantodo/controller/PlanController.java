@@ -232,7 +232,21 @@ public class PlanController {
     @PostMapping("/term/{planId}")
     public String planTermUpdate(@ModelAttribute PlanTermUpdateForm planTermUpdateForm,
                                  @PathVariable Long planId) {
-        planService.updateTerm(planTermUpdateForm, planId);
+
+        LocalDate newEndDate = planTermUpdateForm.getEndDate();
+        if (newEndDate.isBefore(LocalDate.now())) {
+            return "/";
+        }
+
+        PlanTerm planTerm = (PlanTerm) planService.findOne(planId);
+        LocalDate endDate = planTerm.getEndDate();
+        if (newEndDate.isBefore(endDate)) {
+            planService.updateTerm_del(planTermUpdateForm, newEndDate, endDate, planId);
+        } else if (newEndDate.isAfter(endDate)) {
+            planService.updateTerm_add(planTermUpdateForm, newEndDate, endDate, planId);
+        } else {
+            planService.updateTerm(planTermUpdateForm, planId);
+        }
         return "redirect:/plan/" + planId.toString();
     }
 

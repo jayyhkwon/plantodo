@@ -120,4 +120,11 @@ public class TodoDateRepository {
     public void deleteDaily(TodoDateDaily todoDateDaily) {
         em.remove(todoDateDaily);
     }
+
+    public List<TodoDateDaily> getTodoDateDaily_ByPlanIdAndDate(Long planId, LocalDate dk) {
+        return em.createQuery("select tdd from TodoDateDaily tdd where tdd.plan.id = :planId and tdd.dateKey = :dk")
+                .setParameter("planId", planId)
+                .setParameter("dk", dk)
+                .getResultList();
+    }
 }
