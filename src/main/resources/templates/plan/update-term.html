@@ -1,56 +1,93 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <div th:replace="fragments/head.html :: fragment-header"></div>
+    <th:block th:replace="fragments/head.html :: fragment-header"></th:block>
+    <link href="../../css/my.css" rel="stylesheet">
 </head>
 <body>
-
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+<div class="container py-3">
     <header th:replace="fragments/common :: fragment-header" class="mb-auto"></header>
-    <h3>Plan 수정</h3>
-    <p>과거의 데이터는 변경이 불가능하기 때문에 종료일은 오늘 이후로 설정하셔야 합니다.</p>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="card border-light shadow-soft p-2 p-md-4 p-lg-5">
-                <div class="card-body">
-                    <form th:object="${planTermUpdateForm}" th:action="@{/plan/term/{planId}(planId=${planId})}" method="post">
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="title" class="form-label text-dark">타이틀</label>
-                                    <div class="input-group mb-4">
-                                        <input type="text" id="title" name="title" th:value="*{title}" class="form-control">
-                                    </div>
-                                </div>
+    <div class="container mt-5 mb-5" style="max-width: 700px;">
+        <div class="row p-1">
+            <div class="row p-1">
+                <h5 class="fs-5 fw-bold">기간이 있는 일정 수정</h5>
+            </div>
+            <div class="row p-1 ms-2">
+                <div class="row p-1">
+                    종료일은 오늘 이후로 설정하셔야 합니다. (과거의 데이터는 변경이나 삭제가 불가능)
+                </div>
+                <div class="row p-1">
+                    <ul class="list-group list-group-flush p-1">
+                        <li class="list-group-item">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">종료일이 기존 종료일과 동일한 경우</div>
+                                할일 / 메모 데이터의 추가나 삭제가 발생하지 않습니다.
                             </div>
-                        </div>
-                        <div class="row">
-                            <input type="hidden" id="startDate" name="startDate" th:value="*{startDate}" class="form-control">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label for="endDate" class="form-label text-dark">종료일</label>
-                                    <div class="input-group mb-4">
-                                        <input type="date" id="endDate" name="endDate" th:value="*{endDate}" class="form-control">
-                                    </div>
-                                </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">종료일을 기존 종료일 이전으로 설정하는 경우</div>
+                                할일과 메모가 모두 삭제되며 복구되지 않습니다. (변경된 종료일+1 ~ 기존 종료일)
                             </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label for="endTime" class="form-label text-dark">종료 시간</label>
-                                    <div class="input-group mb-4">
-                                        <input type="time" id="endTime" name="endTime" th:value="*{endTime}" class="form-control">
-                                    </div>
-                                </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">종료일을 기존 종료일 이후로 설정하는 경우</div>
+                                기존의 데이터는 변경되거나 삭제되지 않으며, 반복 할일이 추가됩니다.<br>
+                                (기존 종료일+1 ~ 변경된 종료일)
                             </div>
-                        </div>
-                        <div class="row">
-                            <input type="submit" value="UPDATE" class="btn btn-secondary mt-4 animate-up-2"/>
-                        </div>
-                    </form>
+                        </li>
+                    </ul>
                 </div>
             </div>
+        </div>
+        <div class="row p-1">
             <div class="row">
-                <button onclick="history.back()" class="btn btn-light mt-4 animate-up-2">BACK</button>
+                <div class="card bg-white border-light shadow-sm m-2">
+                    <div class="card-body">
+                        <form th:object="${planTermUpdateForm}" th:action="@{/plan/term/{planId}(planId=${planId})}" method="post">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="title" class="form-label text-dark">타이틀</label>
+                                        <div class="input-group mb-4">
+                                            <input type="text" id="title" name="title" th:value="*{title}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <input type="hidden" id="startDate" name="startDate" th:value="*{startDate}" class="form-control">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="endDate" class="form-label text-dark">종료일</label>
+                                        <div class="input-group mb-4">
+                                            <input type="date" id="endDate" name="endDate" th:value="*{endDate}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="endTime" class="form-label text-dark">종료 시간</label>
+                                        <div class="input-group mb-4">
+                                            <input type="time" id="endTime" name="endTime" th:value="*{endTime}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <input type="submit" value="UPDATE" class="btn btn-primary"/>
+                            </div>
+                            <div class="row mb-2 pb-2">
+                                <small th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger"></small>
+                                <small th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="text-danger"></small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3 ps-3 pe-1">
+                <button onclick="history.back()" class="btn btn-outline-secondary">BACK</button>
             </div>
         </div>
     </div>

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -224,18 +225,42 @@ public class PlanController {
     // 내용 변경 (변경 감지)
     @PostMapping("/regular/{planId}")
     public String planRegularUpdate(@ModelAttribute PlanRegularUpdateForm planRegularUpdateForm,
-                                    @PathVariable Long planId) {
+                                    @PathVariable Long planId,
+                                    BindingResult bindingResult,
+                                    Model model) {
+
+        if (planRegularUpdateForm.getTitle() == null || planRegularUpdateForm.getTitle().equals("")) {
+            bindingResult.addError(new FieldError("planRegularUpdateForm", "title", "타이틀을 입력해주세요."));
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("planRegularUpdateForm", planRegularUpdateForm);
+            return "plan/update-regular";
+        }
+
         planService.updateRegular(planRegularUpdateForm, planId);
         return "redirect:/plan/" + planId.toString();
     }
 
     @PostMapping("/term/{planId}")
     public String planTermUpdate(@ModelAttribute PlanTermUpdateForm planTermUpdateForm,
-                                 @PathVariable Long planId) {
+                                 @PathVariable Long planId,
+                                 BindingResult bindingResult,
+                                 Model model) {
+
+        if (planTermUpdateForm.getTitle() == null || planTermUpdateForm.getTitle().equals("")) {
+            bindingResult.addError(new FieldError("planTermUpdateForm", "title", "타이틀을 입력해주세요."));
+        }
 
         LocalDate newEndDate = planTermUpdateForm.getEndDate();
         if (newEndDate.isBefore(LocalDate.now())) {
-            return "/";
+            bindingResult.addError(new FieldError("planTermUpdateForm", "endDate", "종료일은 오늘 이후로 설정해주셔야 합니다."));
+        }
+
+        if (bindingResult.hasErrors()) {
+            System.out.println("error detected!");
+            model.addAttribute("planTermUpdateForm", planTermUpdateForm);
+            return "plan/update-term";
         }
 
         PlanTerm planTerm = (PlanTerm) planService.findOne(planId);

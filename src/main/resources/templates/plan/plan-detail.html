@@ -95,12 +95,12 @@
         <div class="section pt-5">
             <div class="container p-1 pb-4" style="max-width: 918px;">
                 <div class="row pt-3 ps-5 pe-2">
-                    <p class="fs-5">반복 할 일 목록</p>
+                    <p class="fs-5 fw-bold">반복 할 일 목록</p>
                 </div>
                 <div class="row row-cols-auto justify-content-center pb-2">
                     <div th:each="todo : ${todosByPlanId}">
                         <div class="col pt-4 pb-1">
-                            <div class="card" style="width: 12rem; height: 12rem;">
+                            <div class="card bg-white border-light shadow-sm" style="width: 12rem; height: 12rem;">
                                 <div class="card-header">
                                     <div class="row">
                                         <div class="btn-group justify-content-end align-items-end">
@@ -133,17 +133,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
-                            <!--                                    <div class="d-grid gap2 d-md-block">-->
-                            <!--                                        <form th:object="${todoButtonDTO}" th:action="@{/todo}" method="post">-->
-                            <!--                                            <input type="hidden" name="planId" th:value="${plan.id}"/>-->
-                            <!--                                            <input type="hidden" name="todoId" th:value="${todo.id}"/>-->
-                            <!--                                            <input type="hidden" name="_method" value="DELETE"/>-->
-                            <!--                                            <button type="submit" class="btn btn-sm btn-outline-primary">DEL</button>-->
-                            <!--                                        </form>-->
-                            <!--                                        <button th:attr="onclick=|getTodoUpdateForm('${plan.id}', '${todo.id}')|" class="btn btn-sm btn-outline-primary d-grid gap-2">EDT</button>-->
-                            <!--                                    </div>-->
                         </div>
                     </div>
                 </div>
@@ -154,7 +143,7 @@
             <div class="section section-lg pt-10 ps-2 pe-2">
                 <div class="container pb-3" style="max-width: 974px;">
                     <div class="row justify-content-center p-4">
-                        <p class="ps-5 pe-5 fs-5">일자별 검색</p>
+                        <p class="ps-5 pe-5 fs-5 fw-bold">일자별 검색</p>
                         <div class="m-3 ps-5 pe-5">
                             <form th:action="@{/plan/filtering}" th:object="${dateSearchForm}" method="post" class="form-control">
                                 <input type="hidden" name="planId" th:value="${plan.id}">
