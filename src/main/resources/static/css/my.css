@@ -1,7 +1,16 @@
 
+/*global settings*/
 body {
     background-color: #f5f5f5;
+    font-family: 'NanumSquare', sans-serif;
 }
+
+.normal		{ font-weight: 400 }
+.bold		{ font-weight: 700 }
+.bolder		{ font-weight: 800 }
+.light		{ font-weight: 300 }
+
+
 
 /* plan-list.html / plan-detail.html emphasis */
 #emphasis fieldset {
@@ -18,7 +27,7 @@ body {
 }
 
 #emphasis label {
-    font-size: 2em;
+    font-size: 1.5em;
     color: transparent;
     text-shadow: 0 0 0 #d3d3d4;
 }
@@ -174,3 +183,38 @@ input.detail-switch-btn:hover {
     }
 }
 
+/*license*/
+input.icon-license {
+    width: 30px;
+    height: 30px;
+    border: none;
+    opacity: 0.5;
+}
+input.icon1-license {
+    background: url("../img/detail_swtich_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon2-license {
+    background: url("../img/detail_delete_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon3-license {
+    background: url("../img/detail_edit_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon4-license {
+    background: url("../img/tododate_delete_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon5-license {
+    background: url("../img/tododate_edit_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon6-license {
+    background: url("../img/tododate_submit_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon7-license {
+    background: url("../img/comment_btn_img.png") no-repeat;
+    background-size: contain;
+}

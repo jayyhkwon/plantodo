@@ -4,24 +4,24 @@
     <div th:replace="fragments/head.html :: fragment-header"></div>
     <link href="../css/my.css" rel="stylesheet">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="fragments/common :: fragment-header"></header>
 <div class="container py-3">
-    <header th:replace="fragments/common :: fragment-header"></header>
     <div class="container justify-content-center mt-5 mb-5">
         <div class="row row-cols-auto m-auto justify-content-center">
             <div th:each="plan : ${plans}">
                 <div class="col">
-                    <div class="card bg-white border-light shadow-sm m-2" style="width: 18rem;">
-                        <div class="card-header">
+                    <div class="card bg-white m-2" style="width: 18rem; height: 15rem;">
+                        <div class="card-header bg-gradient">
                             <div class="container">
                                 <div class="row">
-                                    <div class="col-3 pt-3">
+                                    <div class="col-3 pt-2">
                                         <span th:if="${plan.key.planStatus.toString().equals('PAST')}" th:text="${plan.key.planStatus}" class="badge bg-dark position-relative"></span>
                                         <span th:if="${plan.key.planStatus.toString().equals('COMPLETED')}" th:text="${plan.key.planStatus}" class="badge bg-secondary position-relative"></span>
                                         <span th:if="${plan.key.planStatus.toString().equals('NOW')}" th:text="${plan.key.planStatus}" class="badge bg-primary position-relative"></span>
                                     </div>
                                     <div class="col-7"></div>
-                                    <div class="col-2">
+                                    <div class="col-2 pt-1 ps-2">
                                         <div id="emphasis">
                                             <fieldset th:if="${plan.key.planStatus.toString().equals('NOW')}" >
                                                 <input type="checkbox" th:id="${'emphasis'+plan.key.id}" th:checked="${plan.key.emphasis==true}" th:attr="onclick=|switchPlanEmphasis('${plan.key.id}', 'list')|"><label th:for="${'emphasis'+plan.key.id}">⭐</label>
@@ -34,16 +34,27 @@
                         <div class="card-body justify-content-center" th:attr="onclick=|getPlanDetailPage('${plan.key.id}')|" style="cursor: pointer">
                             <div class="row mx-auto my-auto">
                                 <th:block th:if="${plan.key.dtype.equals('Term')}">
-                                    <div class="position-relative"><span th:text="${plan.key.startDate}"></span>~<span th:text="${plan.key.endDate}"></span> <span th:text="${plan.key.endTime}"></span></div>
+                                    <div class="position-relative">
+                                        <div>
+                                            시작일 : <span th:text="${plan.key.startDate}"></span>
+                                        </div>
+                                        <div>
+                                            종료일 : <span th:text="${plan.key.endDate}"></span> <span th:text="${plan.key.endTime}"></span>
+                                        </div>
+                                    </div>
                                 </th:block>
                                 <th:block th:if="${plan.key.dtype.equals('Regular')}">
-                                    <div class="position-relative">상시</div>
+                                    <div class="position-relative">
+                                        <div>상시</div>
+                                        <div>시작일 : <span th:text="${plan.key.startDate}"></span></div>
+                                    </div>
+
                                 </th:block>
                             </div>
-                            <div class="row mx-auto my-auto mt-5 mb-2">
-                                <div class="card-title text-action" th:text="${plan.key.title}"></div>
+                            <div class="row mx-auto my-auto mt-5">
+                                <h5 class="card-title bold" th:text="${plan.key.title}"></h5>
                             </div>
-                            <div class="progress">
+                            <div class="progress mb-1">
                                 <div class="progress-bar" role="progressbar" th:style="${'width: '+plan.value+'%;'}" th:text="${plan.value + '%'}" th:aria-valuenow="${plan.value}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
@@ -53,8 +64,8 @@
             </div>
         </div>
     </div>
-    <footer th:replace="fragments/common :: fragment-footer"></footer>
 </div>
+<footer th:replace="fragments/common :: fragment-footer" class="py-5 mt-auto"></footer>
 
 <script src="/js/my.js"></script>
 <script type="module" src="../js/sse.js"></script>

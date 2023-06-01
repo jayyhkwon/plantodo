@@ -4,7 +4,7 @@
     <div th:replace="fragments/head.html :: fragment-header"></div>
     <link href="../css/my.css" rel="stylesheet">
 </head>
-<body style="background-color: #0d6efd">
+<body class="d-flex flex-column min-vh-100" style="background-color: #0d6efd">
 
 <div class="modal fade" id="tdEditModal" tabindex="-1" aria-labelledby="tdEditModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -20,22 +20,22 @@
     </div>
 </div>
 
+<header>
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 mb-4">
+        <div class="d-flex align-items-center link-body-emphasis text-decoration-none text-white">
+            <span class="fs-4">Welcome to PlanToDo!</span>
+        </div>
+        <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white" th:href="@{/home}">Home</a>
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white" href="/plan/plans">My Plans</a>
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white" href="/settings">Settings</a>
+            <a class="py-2 link-body-emphasis text-decoration-none text-white" href="/member/logout">Logout</a>
+        </nav>
+    </div>
+</header>
 
 <!--제목-->
 <div class="container py-3">
-    <header>
-        <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4">
-            <div class="d-flex align-items-center link-body-emphasis text-decoration-none text-white">
-                <span class="fs-4">Welcome to PlanToDo!</span>
-            </div>
-            <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-                <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white" th:href="@{/home}">Home</a>
-                <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white" href="/plan/plans">My Plans</a>
-                <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white" href="/settings">Settings</a>
-                <a class="py-2 link-body-emphasis text-decoration-none text-white" href="/member/logout">Logout</a>
-            </nav>
-        </div>
-    </header>
     <section class="section-header text-white pb-8 pb-lg-15">
         <div class="container-sm mb-5 mb-lg-10">
             <div class="row mx-2 my-2">
@@ -51,7 +51,7 @@
             </div>
             <div class="row mx-2 my-2 p-3">
                 <div class="justify-content-center">
-                    <div th:text="${plan.title}" class="fs-3 text-center"></div>
+                    <h5 th:text="${plan.title}" class="fs-3 bold text-center"></h5>
                 </div>
             </div>
             <div class="row mx-2 my-2">
@@ -89,47 +89,50 @@
         </div>
     </section>
 </div>
-<div class="card" style="background-color: #f5f5f5">
+<div class="section" style="background-color: #f5f5f5; border-top-left-radius: 7px; border-top-right-radius: 7px;">
     <section class="section">
         <!--to-do 목록 출력-->
         <div class="section pt-5">
-            <div class="container p-1 pb-4" style="max-width: 918px;">
-                <div class="row pt-3 ps-5 pe-2">
-                    <p class="fs-5 fw-bold">반복 할 일 목록</p>
-                </div>
-                <div class="row row-cols-auto justify-content-center pb-2">
-                    <div th:each="todo : ${todosByPlanId}">
-                        <div class="col pt-4 pb-1">
-                            <div class="card bg-white border-light shadow-sm" style="width: 12rem; height: 12rem;">
-                                <div class="card-header">
-                                    <div class="row">
-                                        <div class="btn-group justify-content-end align-items-end">
-                                            <input type="button" class="tdd-edit-btn" th:attr="onclick=|getTodoEditForm('${plan.id}', '${todo.id}')|"/>
-                                            <input type="button" class="tdd-delete-btn" th:attr="onclick=|deleteTodo('${plan.id}', '${todo.id}')|"/>
+
+            <div class="section section-lg pt-10 ps-2 pe-3">
+                <div class="container justify-content-center align-items-center pb-3" style="max-width: 974px;">
+                    <div class="row justify-content-center p-4">
+                        <p class="ps-5 pe-5 fs-5 bold">반복 할 일 목록</p>
+                        <div class="row row-cols-auto justify-content-center ps-1 pe-1 pb-2">
+                            <div th:each="todo : ${todosByPlanId}">
+                                <div class="col pt-4 pb-1">
+                                    <div class="card bg-white" style="width: 12rem; height: 12rem;">
+                                        <div class="card-header">
+                                            <div class="row">
+                                                <div class="btn-group justify-content-end align-items-end">
+                                                    <input type="button" class="tdd-edit-btn" th:attr="onclick=|getTodoEditForm('${plan.id}', '${todo.id}')|"/>
+                                                    <input type="button" class="tdd-delete-btn" th:attr="onclick=|deleteTodo('${plan.id}', '${todo.id}')|"/>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row" style="height: 6em">
-                                        <div class="col-4">
-                                            <!--매일반복-->
-                                            <span th:if="${todo.repOption==0}" class="badge bg-primary">매일</span>
-                                            <!--요일반복-->
-                                            <span th:if="${todo.repOption==1}" class="badge bg-primary">요일</span>
-                                            <!--기간반복-->
-                                            <span th:if="${todo.repOption==2}" class="badge bg-primary">기간</span>
-                                        </div>
-                                        <div class="col-8">
+                                        <div class="card-body">
+                                            <div class="row" style="height: 6em">
+                                                <div class="col-4">
+                                                    <!--매일반복-->
+                                                    <span th:if="${todo.repOption==0}" class="badge bg-primary">매일</span>
+                                                    <!--요일반복-->
+                                                    <span th:if="${todo.repOption==1}" class="badge bg-primary">요일</span>
+                                                    <!--기간반복-->
+                                                    <span th:if="${todo.repOption==2}" class="badge bg-primary">기간</span>
+                                                </div>
+                                                <div class="col-8">
                                             <span th:if="${todo.repOption==1}" th:each="repVal : ${todo.repValue}">
                                                 <span th:text="${repVal}" class="badge bg-black"></span>
                                             </span>
-                                            <span th:if="${todo.repOption==2}" th:text="${todo.repValue.get(0)+'일마다'}" class="badge bg-black"></span>
+                                                    <span th:if="${todo.repOption==2}" th:text="${todo.repValue.get(0)+'일마다'}" class="badge bg-black"></span>
+                                                </div>
+                                            </div>
+                                            <div class="container m-auto"></div>
+                                            <div class="row justify-content-between">
+                                                <h5 th:text="${todo.title}" th:id="${'todo-content'+todo.id}"></h5>
+                                                <input type="text" style="display:none" th:id="${'todo-content'+todo.id}"/>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="container m-auto"></div>
-                                    <div class="row justify-content-between">
-                                        <h5 th:text="${todo.title}" th:id="${'todo-content'+todo.id}"></h5>
-                                        <input type="text" style="display:none" th:id="${'todo-content'+todo.id}"/>
                                     </div>
                                 </div>
                             </div>
@@ -138,12 +141,11 @@
                 </div>
             </div>
 
-
             <!--날짜로 검색-->
-            <div class="section section-lg pt-10 ps-2 pe-2">
-                <div class="container pb-3" style="max-width: 974px;">
+            <div class="section section-lg pt-10 ps-2 pe-3">
+                <div class="container justify-content-center align-items-center pb-3" style="max-width: 974px;">
                     <div class="row justify-content-center p-4">
-                        <p class="ps-5 pe-5 fs-5 fw-bold">일자별 검색</p>
+                        <p class="ps-5 pe-5 fs-5 bold">일자별 검색</p>
                         <div class="m-3 ps-5 pe-5">
                             <form th:action="@{/plan/filtering}" th:object="${dateSearchForm}" method="post" class="form-control">
                                 <input type="hidden" name="planId" th:value="${plan.id}">
@@ -170,58 +172,59 @@
         </div>
         <section class="section">
             <!--일자별 to-do-Date 출력-->
-
             <div class="container justify-content-center align-items-center" style="max-width: 1000px;">
                 <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-2 m-1 ps-2 pb-2">
                     <div th:each="entry : ${allToDatesByDate}" class="row">
-                        <div class="col ms-auto me-auto mb-3 pb-2">
-                            <div class="ps-5 pb-1">
-                                <div th:text="${entry.key}" class="btn btn-primary" style="min-width: 7rem; max-width: 12rem;"></div>
+                        <div class="col ms-auto me-auto mb-5">
+                            <div class="row ms-5 me-3">
+                                <div th:text="${entry.key}" class="btn btn-primary"></div>
                             </div>
-                            <div th:each="todoDate : ${entry.value}">
-                                <div th:id="${todoDate.id}" class="container">
-                                    <div class="row mx-1 my-1 ps-4" style="max-width: 30rem;">
-                                        <div th:id="${'titleBox'+todoDate.id}" class="card">
-                                            <div class="row p-2">
-                                                <div class="col-1 pt-1">
+                            <div class="row ps-1">
+                                <div th:each="todoDate : ${entry.value}">
+                                    <div th:id="${todoDate.id}" class="container">
+                                        <div class="row mx-1 my-1 ps-4" style="max-width: 30rem;">
+                                            <div th:id="${'titleBox'+todoDate.id}" class="card">
+                                                <div class="row p-2">
+                                                    <div class="col-1 pt-1">
                                                 <span class="form-check form-switch" th:if=${todoDate.dType.equals("Rep")} >
                                                     <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_detail(${todoDate.id}, ${plan.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
                                                 </span>
-                                                    <span class="form-check form-switch" th:if=${todoDate.dType.equals("Daily")} >
+                                                        <span class="form-check form-switch" th:if=${todoDate.dType.equals("Daily")} >
                                                     <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_detail(${todoDate.id}, ${plan.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
                                                 </span>
-                                                </div>
-                                                <div class="col-9 pt-1 ps-4" id="blockTrigger" type="button" th:selectedDate="${entry.key}" th:todoDateId="${todoDate.id}">
-                                                    <span th:id="${'todoDate-content'+todoDate.id}" th:text="${todoDate.title}" class="text-body text-center" style="display: inline;"></span>
-                                                    <input type="text" th:id="${'todoDate-edit-box'+todoDate.id}" style="display: none;" class="todoDate-edit-box" autofocus>
-                                                </div>
-                                                <div class="col-2 pt-1">
-                                                    <div th:id="${'todoDate-btn-g1'+todoDate.id}" style="display: inline">
-                                                        <div class="btn-group" role="group" area-label="Basic example">
-                                                            <form th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
-                                                                <input type="hidden" name="pageInfo" value="detail">
-                                                                <input type="hidden" name="selectedDate" th:value="${entry.key}">
-                                                                <input type="hidden" name="planId" th:value="${plan.id}">
-                                                                <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
-                                                                <input type="hidden" name="_method" value="DELETE">
-                                                                <input type="button" th:attr="onclick=|deleteTodoDate(${todoDate.id})|" class="tdd-delete-btn"/>
-                                                            </form>
-                                                            <br>
-                                                            <input type="button" th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:attr="onclick=|getTodoDateEditForm('detail', '${entry.key}', '${plan.id}', '${todoDate.id}')|" class="tdd-edit-btn"/>
-                                                        </div>
                                                     </div>
-                                                    <div th:id="${'todoDate-btn-g2'+todoDate.id}" style="display: none;">
-                                                        <div class="btn-group" role="group" area-label="Basic Example" >
-                                                            <input type="button" th:id="${'todoDate-edit-submit'+todoDate.id}" class="tdd-submit-btn" th:attr="onclick=|afterTodoDateEdit('detail', '${entry.key}', '${plan.id}', '${todoDate.id}')|">
-                                                            <input type="button" th:id="${'todoDate-edit-back'+todoDate.id}" class="tdd-delete-btn" th:attr="onclick=|todoDateEditBack('${todoDate.id}')|">
+                                                    <div class="col-9 pt-1 ps-4" id="blockTrigger" type="button" th:selectedDate="${entry.key}" th:todoDateId="${todoDate.id}">
+                                                        <span th:id="${'todoDate-content'+todoDate.id}" th:text="${todoDate.title}" class="text-body text-center" style="display: inline;"></span>
+                                                        <input type="text" th:id="${'todoDate-edit-box'+todoDate.id}" style="display: none;" class="todoDate-edit-box" autofocus>
+                                                    </div>
+                                                    <div class="col-2 pt-1">
+                                                        <div th:id="${'todoDate-btn-g1'+todoDate.id}" style="display: inline">
+                                                            <div class="btn-group" role="group" area-label="Basic example">
+                                                                <form th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:id="${'deleteForm'+todoDate.id}">
+                                                                    <input type="hidden" name="pageInfo" value="detail">
+                                                                    <input type="hidden" name="selectedDate" th:value="${entry.key}">
+                                                                    <input type="hidden" name="planId" th:value="${plan.id}">
+                                                                    <input type="hidden" name="todoDateId" th:value="${todoDate.id}">
+                                                                    <input type="hidden" name="_method" value="DELETE">
+                                                                    <input type="button" th:attr="onclick=|deleteTodoDate(${todoDate.id})|" class="tdd-delete-btn"/>
+                                                                </form>
+                                                                <br>
+                                                                <input type="button" th:if="${entry.key.isAfter(today) || entry.key.isEqual(today)}" th:attr="onclick=|getTodoDateEditForm('detail', '${entry.key}', '${plan.id}', '${todoDate.id}')|" class="tdd-edit-btn"/>
+                                                            </div>
+                                                        </div>
+                                                        <div th:id="${'todoDate-btn-g2'+todoDate.id}" style="display: none;">
+                                                            <div class="btn-group" role="group" area-label="Basic Example" >
+                                                                <input type="button" th:id="${'todoDate-edit-submit'+todoDate.id}" class="tdd-submit-btn" th:attr="onclick=|afterTodoDateEdit('detail', '${entry.key}', '${plan.id}', '${todoDate.id}')|">
+                                                                <input type="button" th:id="${'todoDate-edit-back'+todoDate.id}" class="tdd-delete-btn" th:attr="onclick=|todoDateEditBack('${todoDate.id}')|">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row bg-soft pe-2" style="padding-left: 1.85rem;!important;">
-                                        <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked" class="col justify-content-end"></div>
+                                        <div class="row bg-soft pe-2" style="padding-left: 1.85rem;!important;">
+                                            <div th:id="${'detailBlock'+todoDate.id}" state="un-clicked" class="col justify-content-end"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +235,7 @@
         </section>
     </section>
 </div>
-
+<footer th:replace="fragments/common :: fragment-footer" class="py-5 mt-auto"></footer>
 <script type="module" src="../js/sse.js"></script>
 <script src="../js/my.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

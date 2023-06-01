@@ -122,8 +122,8 @@ function getTodoEditForm(planId, todoId) {
 
 document.addEventListener('DOMContentLoaded', function(event) {
     document.addEventListener('change', function(event) {
-        let option = event.target.options[event.target.selectedIndex];
         if (event.target.id === 'repOption-register') {
+            let option = event.target.options[event.target.selectedIndex];
             $.ajax({
                 url: '/todo/emptyRepOptForm?newRepOpt='+option.value,
                 method: 'GET',
@@ -302,73 +302,6 @@ function todoDateEditBack(todoDateId) {
     $('#todoDate-btn-g1'+todoDateId).css("display", "inline");
 }
 
-// function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId, todoDateTitle) {
-//     let div_row = document.createElement("div");
-//     div_row.className = "row mx-1 my-1"
-//
-//     // edit input
-//     let div_col1 = document.createElement("div");
-//     div_col1.className = "col"
-//
-//     let input = document.createElement("input");
-//     input.id = "editTitle";
-//     input.name = "editTitle";
-//     input.setAttribute("pageInfo", pageInfo);
-//     input.setAttribute("selectedDate", selectedDate);
-//     input.setAttribute("planId", planId);
-//     input.setAttribute("todoDateId", todoDateId);
-//     input.className = "form-control";
-//     input.value = todoDateTitle;
-//
-//     div_col1.appendChild(input);
-//
-//     // edit button
-//     let div_col2 = document.createElement("div");
-//     div_col2.className = "col"
-//
-//     let btn = document.createElement("input");
-//     btn.type = "button"
-//     btn.id = "editBtn"
-//     btn.name = "editBtn"
-//     btn.value = "EDT"
-//     btn.className = "btn btn-sm btn-primary"
-//     btn.onclick = function() {
-//         let pageInfo = $('#editTitle').attr("pageInfo");
-//         let selectedDate = $('#editTitle').attr("selectedDate");
-//         let planId = $('#editTitle').attr("planId");
-//         let todoDateId = $('#editTitle').attr("todoDateId");
-//
-//         let data = { pageInfo: pageInfo,
-//             selectedDate: selectedDate,
-//             planId: planId,
-//             todoDateId: todoDateId,
-//             updateTitle: $('#editTitle').val() }
-//
-//         console.log(data);
-//
-//         $.ajax({
-//             url: "/todoDate",
-//             type: "PUT",
-//             data: data,
-//             success: function (res) {
-//                 setTimeout(function () {
-//                     console.log(res.pageInfo);
-//                     if (res.pageInfo == "home") {
-//                         loadDateBlockData(res.searchDate);
-//                     } else {
-//                         planDetailAjax(planId);
-//                     }
-//                 }, 100);
-//             }
-//         })
-//     }
-//     div_col2.appendChild(btn);
-//
-//     div_row.appendChild(input);
-//     div_row.appendChild(btn);
-//
-//     $("#" + todoDateId).empty().html(div_row);
-// }
 
 // comment
 
