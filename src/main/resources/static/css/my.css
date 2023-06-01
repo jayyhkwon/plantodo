@@ -1,4 +1,17 @@
 
+/*global settings*/
+body {
+    background-color: #f5f5f5;
+    font-family: 'NanumSquare', sans-serif;
+}
+
+.normal		{ font-weight: 400 }
+.bold		{ font-weight: 700 }
+.bolder		{ font-weight: 800 }
+.light		{ font-weight: 300 }
+
+
+
 /* plan-list.html / plan-detail.html emphasis */
 #emphasis fieldset {
     display: inline-block;
@@ -14,9 +27,9 @@
 }
 
 #emphasis label {
-    font-size: 2em;
+    font-size: 1.5em;
     color: transparent;
-    text-shadow: 0 0 0 #f0f0f0;
+    text-shadow: 0 0 0 #d3d3d4;
 }
 
 #emphasis label:hover {
@@ -25,4 +38,183 @@
 
 #emphasis label:hover ~ label {
     text-shadow: 0 0 0 #feb950;
+}
+
+/*delete / edit / switch buttons*/
+
+input.comment-btn {
+    width: 40px;
+    height: 35px;
+    background: url("../img/comment_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+    opacity: 0.3;
+}
+
+input.comment-btn:hover {
+    opacity: 0.6;
+}
+
+
+a.comment-content-btn {
+    font-size: smaller;
+    margin-top: -0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    text-decoration: none;
+    color: #5b6c8c;
+}
+
+input.tdd-delete-btn {
+    width: 18px;
+    height: 18px;
+    background: url("../img/tododate_delete_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+    opacity: 0.4;
+}
+
+input.tdd-delete-btn:hover {
+    opacity: 0.6;
+}
+
+input.tdd-edit-btn {
+    width: 18px;
+    height: 18px;
+    background: url("../img/tododate_edit_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+    opacity: 0.4;
+}
+
+input.tdd-edit-btn:hover {
+    opacity: 0.6;
+}
+
+a.comment-content-btn:hover {
+    color: #0a53be;
+}
+
+input.tdd-submit-btn {
+    width: 18px;
+    height: 18px;
+    background: url("../img/tododate_submit_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+    opacity: 0.4;
+}
+
+input.tdd-submit-btn:hover {
+    opacity: 0.6;
+}
+
+input.todoDate-edit-box {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    outline: none;
+}
+
+input.detail-edit-btn {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_edit_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-edit-btn:hover {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_edit_btn_hover_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-delete-btn {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_delete_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-delete-btn:hover {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_delete_btn_hover_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-switch-btn {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_swtich_btn_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+input.detail-switch-btn:hover {
+    width: 50px;
+    height: 50px;
+    background: url("../img/detail_swtich_btn_hover_img.png") no-repeat;
+    background-size: contain;
+    border: none;
+}
+
+/*fixed cols*/
+@media (min-width: 200px) {
+    .fixed-cal-col {
+        justify-content: center;
+    }
+}
+
+@media (min-width: 500px) {
+    .fixed-cal-col {
+        flex-basis: 400px; /* Set the width to 100% at the desired breakpoint */
+        max-width: 400px;
+    }
+}
+
+@media (min-width: 700px) {
+    .fixed-cal-col {
+        flex-basis: 500px; /* Set the width to 100% at the desired breakpoint */
+        max-width: 500px;
+    }
+}
+
+/*license*/
+input.icon-license {
+    width: 30px;
+    height: 30px;
+    border: none;
+    opacity: 0.5;
+}
+input.icon1-license {
+    background: url("../img/detail_swtich_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon2-license {
+    background: url("../img/detail_delete_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon3-license {
+    background: url("../img/detail_edit_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon4-license {
+    background: url("../img/tododate_delete_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon5-license {
+    background: url("../img/tododate_edit_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon6-license {
+    background: url("../img/tododate_submit_btn_img.png") no-repeat;
+    background-size: contain;
+}
+input.icon7-license {
+    background: url("../img/comment_btn_img.png") no-repeat;
+    background-size: contain;
 }

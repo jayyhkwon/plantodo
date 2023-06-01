@@ -1,25 +1,58 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link href="../css/my.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
 
-<header th:fragment="fragment-header" class="mb-auto">
-    <div>
-        <h3 th:text="${session.nickname}" class="float-md-start mb-0"></h3>
-        <nav class="nav nav-masthead justify-content-center float-md-end">
-            <a th:href="@{/home}" th:text="'HOME'" class="nav-link"/>
-            <a href="/plan/plans" class="nav-link">MY PLANS</a>
-            <a href="/member/logout" class="nav-link">LOGOUT</a>
-            <a href="/settings" class="nav-link">SETTINGS</a>
+<header th:fragment="fragment-header">
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 mb-4 border-bottom">
+        <div class="d-flex align-items-center link-body-emphasis text-decoration-none">
+            <span class="fs-4">Welcome to PlanToDo!</span>
+        </div>
+        <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none" th:href="@{/home}">Home</a>
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/plan/plans">My Plans</a>
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/settings">Settings</a>
+            <a class="py-2 link-body-emphasis text-decoration-none" href="/member/logout">Logout</a>
         </nav>
     </div>
 </header>
 
 <footer th:fragment="fragment-footer" class="mt-auto text-white-50">
-    <p>Cover template for <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>, by <a href="https://github.com/yeonleaf/plantodo" class="text-white">@yeon_leaf</a>.</p>
+    <!-- Footer -->
+    <footer class="text-center text-lg-start bg-light text-muted navbar-fixed-bottom">
+        <!-- Section: Licenses -->
+        <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+            <!-- Left -->
+            <div class="me-5 d-none d-sm-block">
+                <span>Icon License:</span>
+
+            </div>
+
+            <!-- Right -->
+            <div>
+                <input type="button" onclick="window.open('https://www.flaticon.com/kr/free-icon/setting_4408802')" class="icon-license icon1-license"/>
+                <input type="button" onclick="window.open('https://www.flaticon.com/kr/free-icon/failed_4408876')" class="icon-license icon2-license"/>
+                <input type="button" onclick="window.open('https://www.flaticon.com/kr/free-icon/edit_4409005')" class="icon-license icon3-license"/>
+                <input type="button" onclick="window.open('https://www.flaticon.com/kr/free-icon/failed_5251317')" class="icon-license icon4-license"/>
+                <input type="button" onclick="window.open('https://www.flaticon.com/kr/free-icon/edit-button_5251814')" class="icon-license icon5-license"/>
+                <input type="button" onclick="window.open('https://www.flaticon.com/kr/free-icon/success_5251296')" class="icon-license icon6-license"/>
+                <input type="button" onclick="window.open('https://www.flaticon.com/kr/free-icon/login_4402409')" class="icon-license icon7-license me-2"/>
+            </div>
+        </section>
+
+        <!-- Copyright -->
+        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2023 Copyright:
+            <a class="text-reset fw-bold" href="https://getbootstrap.com/">bootstrap</a>
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!-- Footer -->
+
 </footer>
 
 </body>

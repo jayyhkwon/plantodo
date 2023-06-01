@@ -1,8 +1,9 @@
 
 
 /*일자별 Plan, To-do 조회*/
-function loadDateBlockData(searchDate) {
-    console.log("loadDateBlockData executed!");
+function loadDateBlockData(searchDate, days) {
+    $('a[id^="eachDate"]').css("color", "black");
+    $('#eachDate'+days).css("color", "blue");
     let uri = "/home/calendar/" + searchDate;
     $.ajax({
         url: uri,
@@ -13,6 +14,78 @@ function loadDateBlockData(searchDate) {
 }
 
 /*plan*/
+function selectType() {
+    if ($('#selectType').css('display') === 'none') {
+        $('#planTypeBtn').removeClass();
+        $('#planTypeBtn').addClass('btn btn-primary');
+        $('#selectType').show();
+    } else {
+        $('#planTypeBtn').removeClass();
+        $('#planTypeBtn').addClass('btn btn-outline-primary');
+        $('#selectType').hide();
+    }
+}
+
+$('#prNoTermModal').on('show.bs.modal', function() {
+    $.ajax({
+        url: '/plan/regular',
+        method: 'GET',
+        success: function (res) {
+            $('#prNoTermModal-body').html(res);
+        }
+    })
+})
+
+$('#prWithTermModal').on('show.bs.modal', function() {
+    $.ajax({
+        url: '/plan/term',
+        method: 'GET',
+        success: function (res) {
+            $('#prWithTernModal-body').html(res);
+        }
+    })
+})
+
+$('#tdrModal').on('show.bs.modal', function() {
+    $.ajax({
+        url: '/todo/register',
+        method: 'GET',
+        success: function (res) {
+            $('#tdrModal-body').html(res);
+        }
+    })
+})
+
+$('[close]').on('click', function() {
+    location.reload();
+})
+
+$('#tdrModal').on('click', '#tdr-submit', function() {
+    let form = $('#tdr-form').serialize();
+    $.ajax({
+        url: '/todo/register',
+        method: 'POST',
+        data: form,
+        success: function(res) {
+            let tempElement = $('<html></html>').html(res);
+            let pageType = tempElement.find('input[id="pageType"]').val();
+
+            if (pageType === 'home') {
+                $('#tdrModalClose').click();
+                location.reload();
+            } else {
+                $('#tdrModal-body').html(res);
+            }
+        }
+    })
+})
+
+
+function getPlanDetailPage(planId) {
+    console.log(planId);
+    $('#plan-detail-trigger'+planId)[0].click();
+}
+
 function planDetailAjax(planId) {
     $.ajax({
         url: "/plan/" + planId,
@@ -30,7 +103,68 @@ function switchPlanEmphasis(planId, pageInfo) {
     })
 }
 
-/*to-do 상태 바꾸기*/
+
+/*to-do*/
+function getTodoEditForm(planId, todoId) {
+    $.ajax({
+        url: '/todo/todo?planId='+planId+"&todoId="+todoId,
+        method: 'GET',
+        success: function (res) {
+            $('#tdEditModal-body').html(res);
+            $('#tdEditModalTodoId').val(todoId);
+            $('#tdEditModelPlanId').val(planId);
+            $('#tdEditModal-body').show();
+            let tdEditModal = new bootstrap.Modal(document.getElementById('tdEditModal'));
+            tdEditModal.show();
+        }
+    })
+}
+
+document.addEventListener('DOMContentLoaded', function(event) {
+    document.addEventListener('change', function(event) {
+        if (event.target.id === 'repOption-register') {
+            let option = event.target.options[event.target.selectedIndex];
+            $.ajax({
+                url: '/todo/emptyRepOptForm?newRepOpt='+option.value,
+                method: 'GET',
+                success: function(res) {
+                    $('#repOptionBody').html(res);
+                }
+            })
+        }
+    })
+})
+
+document.addEventListener('DOMContentLoaded', function(event) {
+
+    document.addEventListener('change', function(event) {
+        if (event.target.id === 'repOption-update') {
+            let todoId = $('#tdEditModalTodoId').val();
+            let planId = $('#tdEditModelPlanId').val();
+            let option = event.target.options[event.target.selectedIndex];
+            $.ajax({
+                url: '/todo/repOptForm?planId=' + planId + '&todoId=' + todoId + '&newRepOpt='+option.value,
+                method: 'GET',
+                success: function(res) {
+                    $('#repOptionBody').html(res);
+                }
+            })
+        }
+    });
+
+})
+
+function deleteTodo(planId, todoId) {
+    $.ajax({
+        url: '/todo?planId='+planId+"&todoId="+todoId,
+        method: 'DELETE',
+        success: function() {
+            location.reload();
+        }
+    })
+}
+
+/*todoDate*/
 function switchTodoDateStatus_home(todoDateId, planId) {
     let uri = "/todoDate/switching?todoDateId="+todoDateId + "&planId="+planId;
     $.ajax({
@@ -125,78 +259,53 @@ function getTodoUpdateForm(planId, todoId) {
 }
 
 
-function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId, todoDateTitle) {
-    let div_row = document.createElement("div");
-    div_row.className = "row mx-1 my-1"
+function getTodoDateEditForm(pageInfo, selectedDate, planId, todoDateId) {
+    // text와 edit, del 버튼 가리고 form 보여주기
+    let tdd_content = $('#todoDate-content'+todoDateId);
+    let tdd_edit_box = $('#todoDate-edit-box'+todoDateId);
+    tdd_content.hide();
+    tdd_edit_box.val(tdd_content.text()).show().focus();
 
-    // edit input
-    let div_col1 = document.createElement("div");
-    div_col1.className = "col"
-
-    let input = document.createElement("input");
-    input.id = "editTitle";
-    input.name = "editTitle";
-    input.setAttribute("pageInfo", pageInfo);
-    input.setAttribute("selectedDate", selectedDate);
-    input.setAttribute("planId", planId);
-    input.setAttribute("todoDateId", todoDateId);
-    input.className = "form-control";
-    input.value = todoDateTitle;
-
-    div_col1.appendChild(input);
-
-    // edit button
-    let div_col2 = document.createElement("div");
-    div_col2.className = "col"
-
-    let btn = document.createElement("input");
-    btn.type = "button"
-    btn.id = "editBtn"
-    btn.name = "editBtn"
-    btn.value = "EDT"
-    btn.className = "btn btn-sm btn-primary"
-    btn.onclick = function() {
-        let pageInfo = $('#editTitle').attr("pageInfo");
-        let selectedDate = $('#editTitle').attr("selectedDate");
-        let planId = $('#editTitle').attr("planId");
-        let todoDateId = $('#editTitle').attr("todoDateId");
-
-        let data = { pageInfo: pageInfo,
-            selectedDate: selectedDate,
-            planId: planId,
-            todoDateId: todoDateId,
-            updateTitle: $('#editTitle').val() }
-
-        console.log(data);
-
-        $.ajax({
-            url: "/todoDate",
-            type: "PUT",
-            data: data,
-            success: function (res) {
-                setTimeout(function () {
-                    console.log(res.pageInfo);
-                    if (res.pageInfo == "home") {
-                        loadDateBlockData(res.searchDate);
-                    } else {
-                        planDetailAjax(planId);
-                    }
-                }, 100);
-            }
-        })
-    }
-    div_col2.appendChild(btn);
-
-    div_row.appendChild(input);
-    div_row.appendChild(btn);
-
-    $("#" + todoDateId).empty().html(div_row);
+    $('#todoDate-btn-g1'+todoDateId).hide();
+    $('#todoDate-btn-g2'+todoDateId).show();
 }
+
+function afterTodoDateEdit(pageInfo, selectedDate, planId, todoDateId) {
+
+    let updatedTitle = $('#todoDate-edit-box'+todoDateId).val();
+    let data = { pageInfo: pageInfo,
+        selectedDate: selectedDate,
+        planId: planId,
+        todoDateId: todoDateId,
+        updateTitle: updatedTitle }
+
+    $.ajax({
+        url: "/todoDate",
+        type: "PUT",
+        data: data,
+        success: function (res) {
+
+            $('#todoDate-content'+todoDateId).val(updatedTitle).text(updatedTitle).css("display", "inline");
+            $('#todoDate-edit-box'+todoDateId).css("display", "none");
+
+            $('#todoDate-btn-g2'+todoDateId).css("display", "none");
+            $('#todoDate-btn-g1'+todoDateId).css("display", "inline");
+        }
+    })
+}
+
+function todoDateEditBack(todoDateId) {
+    $('#todoDate-content'+todoDateId).css("display", "inline");
+    $('#todoDate-edit-box'+todoDateId).css("display", "none");
+
+    $('#todoDate-btn-g2'+todoDateId).css("display", "none");
+    $('#todoDate-btn-g1'+todoDateId).css("display", "inline");
+}
+
 
 // comment
 
 $(document).on("click", "#blockTrigger", function(event) {
-    console.log("*");
     event.preventDefault();
     let selectedDate = $(this).attr("selectedDate");
     let tododateId = $(this).attr("todoDateId");

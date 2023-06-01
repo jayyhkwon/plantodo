@@ -22,7 +22,6 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie c : cookies) {
-                log.warn("cookie {} : {}", c.getName(), c.getValue());
                 if (c.getName().equals("AUTH")) {
                     loggedIn = true;
                     commonService.setDATCookie(c.getValue(), response);

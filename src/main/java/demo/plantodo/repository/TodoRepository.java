@@ -28,8 +28,16 @@ public class TodoRepository {
         em.persist(todo);
     }
 
+
+    /*조회*/
     public Todo findOne(Long todoId) {
         return em.find(Todo.class, todoId);
+    }
+
+    public Todo findOneWithRepValue(Long todoId) {
+        return em.createQuery("select t from Todo t inner join fetch t.repValue inner join fetch t.plan where t.id = :todoId", Todo.class)
+                .setParameter("todoId", todoId)
+                .getSingleResult();
     }
 
     public List<Todo> getTodoByPlanIdAndDate(Plan plan, LocalDate date) {
@@ -60,16 +68,9 @@ public class TodoRepository {
                 .getResultList();
     }
 
-    public void delete(Long todoId) {
-        Todo todo = findOne(todoId);
-        em.remove(todo);
-    }
-
-    public void update(TodoUpdateForm todoUpdateForm, Long todoId) {
-        Todo todo = findOne(todoId);
-        todo.setTitle(todoUpdateForm.getTitle());
-        todo.setRepOption(todoUpdateForm.getRepOption());
-        todo.setRepValue(todoUpdateForm.getRepValue());
+    public TodoUpdateForm getTodoUpdateForm(Long planId, Long todoId) {
+        Todo todo = findOneWithRepValue(todoId);
+        return new TodoUpdateForm(planId, todo.getId(), todo.getTitle(), todo.getRepOption(), todo.getRepValue());
     }
 
 
@@ -90,5 +91,19 @@ public class TodoRepository {
         return em.createQuery("select td from Todo td where td.member.id = :memberId", Todo.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
+    }
+
+    /*수정, 삭제*/
+
+    public void delete(Long todoId) {
+        Todo todo = findOne(todoId);
+        em.remove(todo);
+    }
+
+    public void update(TodoUpdateForm todoUpdateForm, Long todoId) {
+        Todo todo = findOne(todoId);
+        todo.setTitle(todoUpdateForm.getTitle());
+        todo.setRepOption(todoUpdateForm.getRepOption());
+        todo.setRepValue(todoUpdateForm.getRepValue());
     }
 }

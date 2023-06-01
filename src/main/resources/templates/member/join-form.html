@@ -2,37 +2,41 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <div th:replace="fragments/head.html :: fragment-header"></div>
+    <link href="../css/small_container.css" rel="stylesheet">
 </head>
 <body>
-<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <div th:replace="fragments/permission_modal.html :: permission-modal"></div>
-    <div class="row">
-        <h4 class="display-4">JOIN</h4>
-    </div>
-    <div class="row">
-        <form th:object="${memberJoinForm}" method="post">
-            <div class="mb-3">
-                <label for="email" class="form-label">이메일</label>
-                <input type="text" id="email" name="email" class="form-control" th:field="*{email}" placeholder="이메일을 입력해주세요."/>
-                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
+<div class="container my-3">
+    <div class="small-container w-100 h-100 m-auto">
+        <div th:replace="fragments/permission_modal.html :: permission-modal"></div>
+        <div class="p-5 text-center bg-body-tertiary rounded-3">
+            <h1 class="h3 mb-3 fw-normal">JOIN</h1>
+        </div>
+        <form th:object="${memberJoinForm}" method="post" class="mb-3">
+            <div class="mb-2">
+                <div class="form-floating">
+                    <input type="text" id="email" class="form-control" th:field="*{email}" placeholder="name@example.com">
+                    <label for="email">Email address</label>
+                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">비밀번호</label>
-                <input type="password" id="password" name="password" class="form-control" th:field="*{password}" placeholder="비밀번호를 입력해주세요."/>
-                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+            <div class="mb-2">
+                <div class="form-floating">
+                    <input type="password" id="password" name="password" class="form-control" th:field="*{password}" placeholder="비밀번호를 입력해주세요."/>
+                    <label for="password" class="form-label">Password</label>
+                    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="nickname" class="form-label">별명</label>
-                <input type="text" id="nickname" name="nickname" class="form-control" th:field="*{nickname}" placeholder="사용할 별명을 입력해주세요."/>
-                <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="text-danger"></div>
+            <div class="mb-2">
+                <div class="form-floating">
+                    <input type="text" id="nickname" name="nickname" class="form-control" th:field="*{nickname}" placeholder="사용할 별명을 입력해주세요."/>
+                    <label for="nickname" class="form-label">Nickname</label>
+                    <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="text-danger"></div>
+                </div>
             </div>
-            <div class="row gap-2">
-                <input type="button" id="join_submit" value="가입하기" class="btn btn-success"/>
-            </div>
+            <input type="button" id="join_submit" value="가입하기" class="w-100 btn btn-primary"/>
         </form>
-    </div>
-    <div class="row gap-2">
-        <a href=".." class="btn btn-primary">이전으로</a>
+        <br>
+        <a href=".." class="w-100 btn btn-outline-secondary">이전으로</a>
     </div>
 </div>
 </body>

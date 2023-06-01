@@ -2,18 +2,19 @@
 <html lang="ko" xmlns:th="http://thymeleaf.org">
 <head>
     <div th:replace="fragments/head.html :: fragment-header"></div>
+    <link href="../css/small_container.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container-sm">
-        <div class="row gap-2">
-            <h1 class="display-3">PLAN TO DO</h1>
-        </div>
-        <div class="row gap-2">
-            <h5>manage your life</h5>
-        </div>
-        <div class="d-grid gap-2">
-            <a class="btn btn-primary btn-sm" href='/member/join'>JOIN US</a>
-            <a class="btn btn-primary btn-sm" href='/member/login'>LOGIN</a>
+    <div class="container my-3">
+        <div class="small-container w-100 h-100 m-auto">
+            <div class="p-5 text-center bg-body-tertiary rounded-3">
+                <h1 class="text-body-emphasis">PlanToDo</h1>
+                <p>manage your life</p>
+            </div>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a type="button" class="w-100 btn btn-primary btn-sm" href='/member/join'>JOIN US</a>
+                <a type="button" class="w-100 btn btn-primary btn-sm" href='/member/login'>LOGIN</a>
+            </div>
         </div>
     </div>
 <script>

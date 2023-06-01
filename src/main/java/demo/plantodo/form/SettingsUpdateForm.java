@@ -4,6 +4,9 @@ import demo.plantodo.converter.StringToEnumConverterFactory;
 import demo.plantodo.domain.PermStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.XSlf4j;
+
+import java.util.Locale;
 
 @Getter
 @NoArgsConstructor

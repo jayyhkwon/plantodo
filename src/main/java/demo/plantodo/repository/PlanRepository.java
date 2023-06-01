@@ -42,6 +42,10 @@ public class PlanRepository {
         return em.find(Plan.class, id);
     }
 
+    public PlanTerm findOneTerm(Long planId) {
+        return em.find(PlanTerm.class, planId);
+    }
+
     // memberId를 받아서 해당 member의 모든 plan을 가져오기 (to-do 등록 시 사용)
     public List<Plan> findAllPlan(Long memberId) {
         List<Plan> planList = em.createQuery("select p from Plan p where p.member.id = :memberId")
@@ -111,7 +115,7 @@ public class PlanRepository {
     }
 
     public void updateTerm(PlanTermUpdateForm planTermUpdateForm, Long planId) {
-        PlanTerm planTerm = (PlanTerm) findOne(planId);
+        PlanTerm planTerm = findOneTerm(planId);
         planTerm.setTitle(planTermUpdateForm.getTitle());
         planTerm.setStartDate(planTermUpdateForm.getStartDate());
         planTerm.setEndDate(planTermUpdateForm.getEndDate());
