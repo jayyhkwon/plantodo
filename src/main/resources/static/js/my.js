@@ -3,8 +3,12 @@
 /*일자별 Plan, To-do 조회*/
 function loadDateBlockData(searchDate, days) {
     $('a[id^="eachDate"]').css("color", "black");
-    $('#eachDate'+days).css("color", "blue");
-    let uri = "/home/calendar/" + searchDate;
+    $('a[id^="eachDate"]').css("background", "#f5f5f5");
+
+    $('#eachDate'+days).css("color", "white");
+    $('#eachDate'+days).css("background", "#0d6efd");
+    $('#eachDate'+days).css("border-radius", "2px 2px 2px 2px / 2px 2px 2px 2px");
+        let uri = "/home/calendar/" + searchDate;
     $.ajax({
         url: uri,
         type: "GET"
