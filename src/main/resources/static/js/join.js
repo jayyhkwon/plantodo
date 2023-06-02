@@ -32,7 +32,9 @@ $(document).ready(function() {
 
     let grantedBtn = document.getElementById("grantedBtn");
     grantedBtn.addEventListener('click', function() {
+        console.log(Notification.permission);
         Notification.requestPermission().then(function(permission) {
+            console.log(Notification.permission);
             joinProcess(commonService.parsePermission(permission));
         })
     });

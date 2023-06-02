@@ -22,10 +22,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Controller
@@ -156,21 +159,22 @@ public class MemberController {
 
         /*로그인 세션 유지 시간 (임의 변경 가능)*/
         session.setMaxInactiveInterval(1800);
-
-        log.warn("login complete!");
         return "redirect:/home";
     }
 
     @GetMapping("/logout")
-    public String logoutMember(HttpServletResponse response) {
-        ResponseCookie auth = commonService.makeCookie("AUTH", "", 0);
-        response.setHeader("Set-Cookie", auth.toString());
-
-        ResponseCookie dat = commonService.makeCookie("deadline_alarm_term", "", 0);
-        response.setHeader("Set-Cookie", dat.toString());
-
-        ResponseCookie firstAccess = commonService.makeCookie("firstAccess", "", 0);
-        response.setHeader("Set-Cookie", firstAccess.toString());
+    public String logoutMember(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("AUTH") || cookie.getName().equals("deadline_alarm_term") || cookie.getName().equals("firstAccess")) {
+                    cookie.setValue("");
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                }
+            }
+        }
         return "redirect:/";
     }
 
