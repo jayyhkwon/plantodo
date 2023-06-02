@@ -7,12 +7,14 @@ import demo.plantodo.service.CommonService;
 import demo.plantodo.service.MemberService;
 import demo.plantodo.service.SettingsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Slf4j
 @Controller
 @RequestMapping("/settings")
 @RequiredArgsConstructor
@@ -34,6 +36,9 @@ public class SettingsController {
 
     @PostMapping("/update")
     public String updateSettings(@RequestBody SettingsUpdateForm settingsUpdateForm) {
+        if (settingsUpdateForm.getNotification_perm() == null) {
+            log.info("A null value will be inserted to settingsUpdateForm");
+        }
         settingsService.update(settingsUpdateForm.getSettings_id(), settingsUpdateForm);
         return "redirect:/settings";
     }

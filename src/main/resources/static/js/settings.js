@@ -2,6 +2,20 @@ import * as modalService from "./permission_modal.js"
 import * as commonService from "./common.js";
 
 /*settings*/
+
+$(document).ready(function() {
+    if (Notification.permission === 'denied') {
+        if ($('#deadline_alarm').is(":checked")) {
+            $('#perm_warning_1').show();
+        }
+    } else if (Notification.permission === 'default') {
+        if ($('#deadline_alarm').is(":checked")) {
+            modalService.showPermModal();
+        }
+    }
+})
+
+/*현재 */
 /*termBlock style을 none <- -> inline으로 변경한다.*/
 $(document).ready(function() {
     $("#deadline_alarm").click(function() {
@@ -13,6 +27,8 @@ $(document).ready(function() {
                 $("#termBlock").css("display", "inline");
             }
         } else {
+
+            console.log(Notification.permission.toUpperCase())
             /*on -> off인 경우 quitAlarm한다.*/
             fetch("/sse/quitAlarm");
 
@@ -21,7 +37,7 @@ $(document).ready(function() {
                 method: 'post',
                 body: JSON.stringify({
                     'settings_id': $('#settings_id').val(),
-                    'notification_perm': commonService.parsePermission(Notification.permission).toUpperCase,
+                    'notification_perm': Notification.permission.toUpperCase(),
                     'deadline_alarm': false,
                     'deadline_alarm_term': 0
                 }),
@@ -53,12 +69,15 @@ $(document).ready(function () {
 
 /*모달 창에서 granted를 선택한 경우*/
 $(document).on("click", "#grantedBtn", function(event) {
-    modalService.hidePermModal();
+    $('#permission-close').click();
+    console.log(Notification.permission);
     Notification.requestPermission().then(function(permission) {
+        console.log(permission);
         if (permission === 'granted') {
             afterGrantedConfirmed();
         } else {
-            afterDeniedConfirmed();
+            $('#permission-close').click();
+            $('#perm_warning_1').show();
         }
     });
 
@@ -66,13 +85,10 @@ $(document).on("click", "#grantedBtn", function(event) {
 
 /*모달 창에서 denied를 선택한 경우 모달 창을 닫고 경고 창을 띄운다. Notification.permission의 변화 없음*/
 $(document).on("click", "#deniedBtn", function(event) {
-    afterDeniedConfirmed();
+    $('#permission-close').click();
+    $('#perm_warning_2').show();
 })
 
-function afterDeniedConfirmed() {
-    modalService.hidePermModal();
-    $("#perm_warning").css("display", "inline");
-}
 
 function afterGrantedConfirmed() {
     let data = JSON.stringify({

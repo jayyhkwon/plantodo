@@ -100,7 +100,6 @@
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tdrModal">
                             TODO REGISTER
                         </button>
-                        <!--                    <a href="/todo/register" role="button" class="btn btn-outline-primary">TODO REGISTER</a>-->
                     </div>
                 </div>
                 <div class="row m-1" id="selectType" style="display: none;">
@@ -108,13 +107,11 @@
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prNoTermModal">
                             No Term
                         </button>
-                        <!--                    <a href="/plan/regular" role="button" class="btn btn-primary">기간이 없는 일정</a>-->
                     </div>
                     <div class="col d-grid">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prWithTermModal">
                             With Term
                         </button>
-                        <!--                    <a href="/plan/term" role="button" class="btn btn-primary">기간이 있는 일정</a>-->
                     </div>
                 </div>
             </div>
@@ -123,43 +120,40 @@
                     <th:block th:if="${dateBlockData != null}">
                         <div th:each="entry : ${dateBlockData}">
                             <div class="row">
-                                <div class="content bg-soft shadow-soft border border-light rounded p-4">
-                                    <!--start-->
-                                    <div class="row mx-2 my-2 ps-2">
-                                        <div class="col-1">
-                                            <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title}" class="btn btn-primary"></button>
+                                <!--start-->
+                                <div class="row ps-5 pb-2">
+                                    <div>
+                                        <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title + '&nbsp;&nbsp;&nbsp;+'}" class="btn btn-primary"></button>
+                                    </div>
+                                </div>
+                                <div th:id="${'dailyTdRegister'+entry.key.id}" style="display: none;">
+                                    <form th:if="${!entry.key.planStatus.equals('DELETED')}" th:id="${'dailyTdRegisterForm'+entry.key.id}" class="row row-cols-md-auto ps-2 pe-2 pb-2 m-1 g-2 justify-content-center align-items-center">
+                                        <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
+                                        <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
+                                        <div class="col-12">
+                                            <input type="text" id="title" name="title" class="form-control"/>
                                         </div>
-                                    </div>
-                                    <div th:id="${'dailyTdRegister'+entry.key.id}" style="display: none;">
-                                        <form th:if="${!entry.key.planStatus.equals('DELETED')}" th:id="${'dailyTdRegisterForm'+entry.key.id}">
-                                            <input type="hidden" id="selectedDailyDate" name="selectedDailyDate" th:value="${selectedDate}">
-                                            <input type="hidden" id="planId" name="planId" th:value="${entry.key.id}">
-                                            <div class="ps-4 pt-4 pb-4 pe-3">
-                                                <div class="card">
-                                                    <div class="row p-2">
-                                                        <div class="col-10 p-1">
-                                                            <input type="text" id="title" name="title" class="form-control"/>
-                                                        </div>
-                                                        <div class="col-2 p-1">
-                                                            <input type="button" id="tdSubmit" name="tdSubmit" value="GO!" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|" class="btn btn-primary">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
+                                        <div class="col-12">
+                                            <input type="button" id="tdSubmit" name="tdSubmit" value="GO!" th:attr="onclick=|registerTodoDateDaily(${entry.key.id})|" class="btn btn-primary">
+                                        </div>
+                                    </form>
+                                </div>
+<!--                                <div class="row ps-5 pt-2 pb-2 justify-content-center">-->
+<!--                                    -->
+<!--                                </div>-->
+                                <div class="row">
                                     <div th:each="todoDate : ${entry.value}">
                                         <div th:id="${todoDate.id}">
-                                            <div class="row mx-1 my-1 ps-4">
+                                            <div class="row mx-2 my-1 ps-4">
                                                 <div th:id="${'titleBox'+todoDate.id}" class="card">
                                                     <div class="row p-2">
                                                         <div class="col-1 pt-1">
-                                                    <span class="form-check form-switch" th:if=${todoDate.dType.equals("Rep")} >
-                                                        <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_home(${todoDate.id}, ${entry.key.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
-                                                    </span>
+                                                            <span class="form-check form-switch" th:if=${todoDate.dType.equals("Rep")} >
+                                                                <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_home(${todoDate.id}, ${entry.key.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
+                                                            </span>
                                                             <span class="form-check form-switch" th:if=${todoDate.dType.equals("Daily")} >
-                                                        <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_home(${todoDate.id}, ${entry.key.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
-                                                    </span>
+                                                                <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_home(${todoDate.id}, ${entry.key.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${selectedDate.isBefore(today) or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
+                                                            </span>
                                                         </div>
                                                         <div class="col-9 pt-1 ps-4" id="blockTrigger" type="button" th:selectedDate="${selectedDate}" th:todoDateId="${todoDate.id}">
                                                             <span th:id="${'todoDate-content'+todoDate.id}" th:text="${todoDate.title}" class="text-body text-center" style="display: inline;"></span>
@@ -195,8 +189,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--end-->
                                 </div>
+                                <!--end-->
                             </div>
                         </div>
                     </th:block>
