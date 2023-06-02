@@ -123,7 +123,7 @@
                                 <!--start-->
                                 <div class="row ps-5 pb-2">
                                     <div>
-                                        <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title}" class="btn btn-primary"></button>
+                                        <button th:attr="onclick=|getTodoDateRegisterForm(${entry.key.id})|" th:text="${entry.key.title + '&nbsp;&nbsp;&nbsp;+'}" class="btn btn-primary"></button>
                                     </div>
                                 </div>
                                 <div th:id="${'dailyTdRegister'+entry.key.id}" style="display: none;">
