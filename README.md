@@ -31,6 +31,7 @@
 - [웹사이트](plantodo.site)
 
 ## Screenshots
+- [링크](https://github.com/yeonleaf/plantodo/wiki/%EB%8F%99%EC%9E%91-%ED%99%95%EC%9D%B8%EC%9A%A9-GIF-(2023.06.04))
 
 ## Quick Start
 
