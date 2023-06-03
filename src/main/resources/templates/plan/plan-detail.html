@@ -187,10 +187,10 @@
                                                 <div class="row p-2">
                                                     <div class="col-1 pt-1">
                                                 <span class="form-check form-switch" th:if=${todoDate.dType.equals("Rep")} >
-                                                    <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_detail(${todoDate.id}, ${plan.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
+                                                    <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_detail(${todoDate.id}, ${plan.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.planStatus.equals('COMPLETED') or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
                                                 </span>
                                                         <span class="form-check form-switch" th:if=${todoDate.dType.equals("Daily")} >
-                                                    <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_detail(${todoDate.id}, ${plan.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
+                                                    <input type="checkbox" th:id="${todoDate.id}" th:name="${todoDate.id}" th:value="${todoDate.id}" th:attr="onclick=|switchTodoDateStatus_detail(${todoDate.id}, ${plan.id})|" th:checked="${todoDate.todoStatus.equals('CHECKED')}" th:disabled="${entry.key.isBefore(today) or todoDate.planStatus.equals('COMPLETED') or todoDate.planStatus.equals('PAST')}" role="switch" class="form-check-input">
                                                 </span>
                                                     </div>
                                                     <div class="col-9 pt-1 ps-4" id="blockTrigger" type="button" th:selectedDate="${entry.key}" th:todoDateId="${todoDate.id}">

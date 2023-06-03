@@ -4,6 +4,7 @@ import demo.plantodo.VO.PlanHomeVO;
 import demo.plantodo.VO.TodoDateHomeVO;
 import demo.plantodo.domain.Plan;
 import demo.plantodo.domain.PlanRegular;
+import demo.plantodo.domain.PlanStatus;
 import demo.plantodo.form.CalendarSearchForm;
 import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -62,7 +64,8 @@ public class HomeController {
                needUpdate = false;
           }
           Long memberId = authService.getMemberIdByKey(authKey);
-          List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId);
+          List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId).stream().filter(p -> p.getPlanStatus().equals(PlanStatus.NOW)).collect(Collectors.toList());
+
           LinkedHashMap<PlanHomeVO, List<TodoDateHomeVO>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {
                List<TodoDateHomeVO> planTodoDate = todoDateService.getTodoDateByDateAndPlan(plan, eachDate, needUpdate);
