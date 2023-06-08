@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.5.6'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'org.flywaydb.flyway' version '9.19.0'
 }
 
 group = 'demo'
@@ -57,10 +58,13 @@ dependencies {
 	/*lettuce (REDIS)*/
 	implementation 'io.lettuce:lettuce-core:6.2.3.RELEASE'
 
-	/*DB migration tool (flyway)*/
-//	implementation "org.flywaydb:flyway-mysql"
 }
 
 test {
 	useJUnitPlatform()
+}
+
+flyway {
+	url = 'jdbc:mariadb://localhost:3306/plantodo'
+	user = 'plantodo'
 }
