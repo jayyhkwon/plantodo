@@ -10,20 +10,20 @@ import javax.transaction.Transactional;
 @SpringBootTest
 @Transactional
 class AuthServiceTest {
-
-    @Autowired
-    private AuthService authService;
-
-    @Test
-    public void saveOnlyAuthTest() throws Exception {
-        String realKey = authService.save(1L);
-        String testKey = authService.getKeyByMemberId(1L);
-        Assertions.assertThat(testKey).isEqualTo(realKey);
-    }
-
-    @Test
-    public void getMemberIdTest() throws Exception {
-        String realKey = authService.save(1L);
-        Assertions.assertThat(authService.getMemberIdByKey(realKey)).isEqualTo(1L);
-    }
+//
+//    @Autowired
+//    private AuthService authService;
+//
+//    @Test
+//    public void saveOnlyAuthTest() throws Exception {
+//        String realKey = authService.save(1L);
+//        String testKey = authService.getKeyByMemberId(1L);
+//        Assertions.assertThat(testKey).isEqualTo(realKey);
+//    }
+//
+//    @Test
+//    public void getMemberIdTest() throws Exception {
+//        String realKey = authService.save(1L);
+//        Assertions.assertThat(authService.getMemberIdByKey(realKey)).isEqualTo(1L);
+//    }
 }

@@ -56,6 +56,9 @@ dependencies {
 
 	/*lettuce (REDIS)*/
 	implementation 'io.lettuce:lettuce-core:6.2.3.RELEASE'
+
+	/*DB migration tool (flyway)*/
+//	implementation "org.flywaydb:flyway-mysql"
 }
 
 test {

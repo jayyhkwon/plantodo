@@ -1,6 +1,7 @@
 package demo.plantodo.service;
 
 import demo.plantodo.domain.Auth;
+import demo.plantodo.domain.Member;
 import demo.plantodo.repository.AuthRepository;
 import demo.plantodo.security.Encrypt;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,10 @@ public class AuthService {
     Encrypt encrypt = new Encrypt();
     private final AuthRepository authRepository;
 
-    public String save(Long memberId) {
-        String authKey = encrypt.getEncrypt(String.valueOf(memberId), encrypt.getSalt());
+    public String save(Member member) {
+        String authKey = encrypt.getEncrypt(String.valueOf(member.getId()), encrypt.getSalt());
 
-        Auth auth = new Auth(authKey, memberId);
+        Auth auth = new Auth(authKey, member);
         authRepository.save(auth);
         return auth.getKey_sha256();
     }
@@ -26,7 +27,7 @@ public class AuthService {
     }
 
     public Long getMemberIdByKey(String key_sha256) {
-        Auth auth = authRepository.findOne(key_sha256);
-        return auth.getMemberId();
+        Auth auth = authRepository.findOneBySha256(key_sha256);
+        return auth.getMember().getId();
     }
 }
