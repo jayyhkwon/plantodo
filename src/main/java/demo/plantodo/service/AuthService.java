@@ -3,6 +3,7 @@ package demo.plantodo.service;
 import demo.plantodo.domain.Auth;
 import demo.plantodo.domain.Member;
 import demo.plantodo.repository.AuthRepository;
+import demo.plantodo.repository.MemberRepository;
 import demo.plantodo.security.Encrypt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     Encrypt encrypt = new Encrypt();
     private final AuthRepository authRepository;
+    private final MemberRepository memberRepository;
 
     public String save(Member member) {
         String authKey = encrypt.getEncrypt(String.valueOf(member.getId()), encrypt.getSalt());

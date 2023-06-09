@@ -2,7 +2,6 @@ plugins {
 	id 'org.springframework.boot' version '2.5.6'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-	id 'org.flywaydb.flyway' version '9.19.0'
 }
 
 group = 'demo'
@@ -44,9 +43,6 @@ dependencies {
 	/*MariaDB database*/
 	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 
-	/*h2 database*/
-	runtimeOnly 'com.h2database:h2'
-
 	/*devtools*/
 	implementation 'org.springframework.boot:spring-boot-devtools'
 
@@ -58,13 +54,9 @@ dependencies {
 	/*lettuce (REDIS)*/
 	implementation 'io.lettuce:lettuce-core:6.2.3.RELEASE'
 
+	implementation 'org.flywaydb:flyway-core'
 }
 
 test {
 	useJUnitPlatform()
-}
-
-flyway {
-	url = 'jdbc:mariadb://localhost:3306/plantodo'
-	user = 'plantodo'
 }

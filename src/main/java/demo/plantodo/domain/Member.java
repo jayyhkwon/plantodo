@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -29,10 +29,6 @@ public class Member {
     @JoinColumn(name = "settings_id")
     private Settings settings;
 
-    @OneToOne
-    @JoinColumn(name = "auth_id")
-    private Auth auth;
-
     public Member(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
@@ -46,11 +42,4 @@ public class Member {
         this.settings = settings;
     }
 
-    public Member(String email, String password, String nickname, Settings settings, Auth auth) {
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.settings = settings;
-        this.auth = auth;
-    }
 }
