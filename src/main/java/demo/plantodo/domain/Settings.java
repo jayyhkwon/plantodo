@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter @Setter
 @NoArgsConstructor
 public class Settings {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "settings_id")
     private Long id;
 

@@ -81,8 +81,7 @@ public class MemberController {
         memberService.save(member);
 
         // auth 생성
-        Long memberId = member.getId();
-        authService.save(memberId);
+        authService.save(member);
 
         model.addAttribute("memberLoginForm", new MemberLoginForm());
         return "redirect:/member/login";

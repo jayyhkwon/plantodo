@@ -13,7 +13,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter @Setter
 public class Todo {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "todo_id")
     private Long id;
 
@@ -30,8 +30,9 @@ public class Todo {
     private int repOption;
 
     @ElementCollection(fetch = LAZY)
+    @CollectionTable(name = "todo_rep_value", joinColumns = @JoinColumn(name="todo_id"))
+    @Column(name="rep_value")
     private List<String> repValue = new ArrayList<>();
-
 
     public Todo() {
     }

@@ -43,9 +43,6 @@ dependencies {
 	/*MariaDB database*/
 	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 
-	/*h2 database*/
-	runtimeOnly 'com.h2database:h2'
-
 	/*devtools*/
 	implementation 'org.springframework.boot:spring-boot-devtools'
 
@@ -56,6 +53,8 @@ dependencies {
 
 	/*lettuce (REDIS)*/
 	implementation 'io.lettuce:lettuce-core:6.2.3.RELEASE'
+
+	implementation 'org.flywaydb:flyway-core'
 }
 
 test {

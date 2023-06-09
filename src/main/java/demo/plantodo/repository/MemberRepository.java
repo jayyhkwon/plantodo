@@ -1,5 +1,6 @@
 package demo.plantodo.repository;
 
+import demo.plantodo.domain.Auth;
 import demo.plantodo.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -40,4 +41,9 @@ public class MemberRepository {
                 .getResultList();
     }
 
+    public List<Member> findOneByAuthId(Long authId) {
+        return em.createQuery("select m from Member m where m.auth.id = :authId", Member.class)
+                .setParameter("authId", authId)
+                .getResultList();
+    }
 }

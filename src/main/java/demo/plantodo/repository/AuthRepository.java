@@ -18,12 +18,14 @@ public class AuthRepository {
         em.persist(auth);
     }
 
-    public Auth findOne(String key_sha256) {
-        return em.find(Auth.class, key_sha256);
+    public Auth findOneBySha256(String key_sha256) {
+        return em.createQuery("select au from Auth au where au.key_sha256 = :key_sha256", Auth.class)
+                .setParameter("key_sha256", key_sha256)
+                .getSingleResult();
     }
 
     public Auth findOneByMemberId(Long memberId) {
-        return em.createQuery("select au from Auth au where au.memberId = :memberId", Auth.class)
+        return em.createQuery("select au from Auth au where au.member.id = :memberId", Auth.class)
                 .setParameter("memberId", memberId)
                 .getSingleResult();
     }

@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TodoDate {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "todo_date_id")
     private Long id;
 

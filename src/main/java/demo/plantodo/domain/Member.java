@@ -1,6 +1,8 @@
 package demo.plantodo.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -8,8 +10,9 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -25,9 +28,6 @@ public class Member {
     @OneToOne
     @JoinColumn(name = "settings_id")
     private Settings settings;
-
-    public Member() {
-    }
 
     public Member(String email, String password, String nickname) {
         this.email = email;
