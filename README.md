@@ -26,6 +26,8 @@
 - 푸시 알림
 
 ## Architecture
+![아키텍처](https://github.com/yeonleaf/plantodo/assets/91470133/0328a8f2-ade2-4a4d-a175-26a151e0390a)
+
 
 ## Link
 - [링크](https://plantodo.site)
