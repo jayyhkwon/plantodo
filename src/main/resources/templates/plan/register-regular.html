@@ -4,13 +4,15 @@
     <div th:replace="fragments/head.html :: fragment-header"></div>
 </head>
 <body>
+<input type="hidden" id="pageType" value="plan-regular-regi"/>
 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <form th:object="${planRegularRegisterForm}" th:action="@{/plan/regular}" method="post" class="row g-1">
+    <form id="prNoTerm-form" th:object="${planRegularRegisterForm}" class="row g-1">
         <div class="col-11">
             <input type="text" id="title" name="title" class="form-control">
+            <small th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger"></small>
         </div>
         <div class="col-1">
-            <input type="submit" value="GO!" class="btn btn-primary"/>
+            <input type="button" class="btn btn-primary" id="prNoTerm-submit" value="GO!"/>
         </div>
     </form>
 </div>

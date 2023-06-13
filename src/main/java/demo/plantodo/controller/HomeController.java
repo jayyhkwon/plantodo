@@ -64,7 +64,7 @@ public class HomeController {
                needUpdate = false;
           }
           Long memberId = authService.getMemberIdByKey(authKey);
-          List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId).stream().filter(p -> p.getPlanStatus().equals(PlanStatus.NOW)).collect(Collectors.toList());
+          List<Plan> plans = planService.findAllPlanForBlock(eachDate, memberId);
 
           LinkedHashMap<PlanHomeVO, List<TodoDateHomeVO>> dateBlockData = new LinkedHashMap<>();
           for (Plan plan : plans) {

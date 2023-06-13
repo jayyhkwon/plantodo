@@ -54,12 +54,20 @@ public class PlanController {
     }
 
     @PostMapping("/regular")
-    public String planRegisterRegular(@ModelAttribute("planRegularRegisterForm") PlanRegularRegisterForm planRegularRegisterForm,
-                                      HttpServletRequest request) {
-        Long memberId = commonService.getMemberId(request);
+    public String planRegisterRegular(@Validated @ModelAttribute("planRegularRegisterForm") PlanRegularRegisterForm form,
+                                      BindingResult bindingResult,
+                                      Model model,
+                                      @CookieValue(name = "AUTH") String authKey) {
+
+        if (bindingResult.hasErrors()) {
+            // model.addAttribute("planRegularRegisterForm", form);
+            return "plan/register-regular";
+        }
+
+        Long memberId = authService.getMemberIdByKey(authKey);
         Member findMember = memberService.findOne(memberId);
         LocalDate startDate = LocalDate.now();
-        PlanRegular planRegular = new PlanRegular(findMember, PlanStatus.NOW, startDate, planRegularRegisterForm.getTitle());
+        PlanRegular planRegular = new PlanRegular(findMember, PlanStatus.NOW, startDate, form.getTitle());
         planService.saveRegular(planRegular);
         return "redirect:/home";
     }
@@ -72,22 +80,24 @@ public class PlanController {
     }
 
     @PostMapping("/term")
-    public String planRegisterTerm(@Validated @ModelAttribute("planTermRegisterForm") PlanTermRegisterForm planTermRegisterForm,
-                             BindingResult bindingResult, @CookieValue(name = "AUTH") String authKey) {
+    public String planRegisterTerm(@Validated @ModelAttribute("planTermRegisterForm") PlanTermRegisterForm form,
+                             BindingResult bindingResult,
+                             Model model,
+                             @CookieValue(name = "AUTH") String authKey) {
         /*null 검증*/
         if (bindingResult.hasErrors()) {
+            // model.addAttribute("planTermRegisterForm", form);
             return "plan/register-term";
         }
         /*startDate가 오늘 이전인 경우 / endDate가 startDate 이전인 경우 검증*/
-        planTermRegisterValidator.validate(planTermRegisterForm, bindingResult);
+        planTermRegisterValidator.validate(form, bindingResult);
         if (bindingResult.hasErrors()) {
             return "plan/register-term";
         }
-
         Long memberId = authService.getMemberIdByKey(authKey);
         Member findMember = memberService.findOne(memberId);
 
-        planService.saveTerm(findMember, planTermRegisterForm);
+        planService.saveTerm(findMember, form);
         return "redirect:/home";
     }
 

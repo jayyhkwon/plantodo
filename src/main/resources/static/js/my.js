@@ -1,6 +1,6 @@
 
 
-/*일자별 Plan, To-do 조회*/
+/*## home*/
 function loadDateBlockData(searchDate, days) {
     $('a[id^="eachDate"]').css("color", "black");
     $('a[id^="eachDate"]').css("background", "#f5f5f5");
@@ -17,7 +17,14 @@ function loadDateBlockData(searchDate, days) {
     });
 }
 
-/*plan*/
+
+/*plan, todo 등록/수정 modal close버튼*/
+$('[close]').on('click', function() {
+    location.reload();
+})
+
+
+/*## plan*/
 function selectType() {
     if ($('#selectType').css('display') === 'none') {
         $('#planTypeBtn').removeClass();
@@ -40,6 +47,30 @@ $('#prNoTermModal').on('show.bs.modal', function() {
     })
 })
 
+$('#prNoTermModal').on('click', '#prNoTerm-submit', function() {
+    let form = $('#prNoTerm-form').serialize();
+    console.log(form);
+    $.ajax({
+        url: '/plan/regular',
+        method: 'POST',
+        data: form,
+        success: function(res) {
+            let tempElement = $('<html></html>').html(res);
+            let pageType = tempElement.find('input[id="pageType"]').val();
+
+            if (pageType === 'home') {
+                $('#prNoTermClose').click();
+                location.reload();
+            } else {
+                $('#prNoTermModal-body').html(res);
+            }
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    })
+})
+
 $('#prWithTermModal').on('show.bs.modal', function() {
     $.ajax({
         url: '/plan/term',
@@ -50,24 +81,10 @@ $('#prWithTermModal').on('show.bs.modal', function() {
     })
 })
 
-$('#tdrModal').on('show.bs.modal', function() {
+$('#prWithTermModal').on('click', '#prWithTerm-submit', function() {
+    let form = $('#prWithTerm-form').serialize();
     $.ajax({
-        url: '/todo/register',
-        method: 'GET',
-        success: function (res) {
-            $('#tdrModal-body').html(res);
-        }
-    })
-})
-
-$('[close]').on('click', function() {
-    location.reload();
-})
-
-$('#tdrModal').on('click', '#tdr-submit', function() {
-    let form = $('#tdr-form').serialize();
-    $.ajax({
-        url: '/todo/register',
+        url: '/plan/term',
         method: 'POST',
         data: form,
         success: function(res) {
@@ -75,14 +92,18 @@ $('#tdrModal').on('click', '#tdr-submit', function() {
             let pageType = tempElement.find('input[id="pageType"]').val();
 
             if (pageType === 'home') {
-                $('#tdrModalClose').click();
+                $('#prWithTermClose').click();
                 location.reload();
             } else {
-                $('#tdrModal-body').html(res);
+                $('#prWithTernModal-body').html(res);
             }
+        },
+        error: function(err) {
+            console.log(err);
         }
     })
 })
+
 
 
 function getPlanDetailPage(planId) {
@@ -108,7 +129,7 @@ function switchPlanEmphasis(planId, pageInfo) {
 }
 
 
-/*to-do*/
+/*## to-do*/
 function getTodoEditForm(planId, todoId) {
     $.ajax({
         url: '/todo/todo?planId='+planId+"&todoId="+todoId,
@@ -123,6 +144,40 @@ function getTodoEditForm(planId, todoId) {
         }
     })
 }
+
+/*home - todo 등록*/
+$('#tdrModal').on('show.bs.modal', function() {
+    $.ajax({
+        url: '/todo/register',
+        method: 'GET',
+        success: function (res) {
+            $('#tdrModal-body').html(res);
+        }
+    })
+})
+
+
+$('#tdrModal').on('click', '#tdr-submit', function() {
+    let form = $('#tdr-form').serialize();
+    $.ajax({
+        url: '/todo/register',
+        method: 'POST',
+        data: form,
+        success: function(res) {
+            let tempElement = $('<html></html>').html(res);
+            let pageType = tempElement.find('input[id="pageType"]').val();
+
+            if (pageType === 'home') {
+                $('#tdrModalClose').click();
+                location.reload();
+            } else {
+                $('#tdrModal-body').html(res);
+            }
+        }
+    })
+})
+
+
 
 document.addEventListener('DOMContentLoaded', function(event) {
     document.addEventListener('change', function(event) {

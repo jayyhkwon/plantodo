@@ -24,8 +24,11 @@ public class PlanTermRegisterValidator implements Validator {
         if (startDate.isBefore(today)) {
             errors.rejectValue("startDate", "invalid");
         }
+        if (endDate.isBefore(today)) {
+            errors.rejectValue("endDate", "invalid1");
+        }
         if (endDate.isBefore(startDate)) {
-            errors.rejectValue("endDate", "invalid");
+            errors.rejectValue("endDate", "invalid2");
         }
     }
 }

@@ -4,8 +4,9 @@
     <div th:replace="fragments/head.html :: fragment-header"></div>
 </head>
 <body>
+<input type="hidden" id="pageType" value="plan-term-regi"/>
 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <form th:object="${planTermRegisterForm}" th:action="@{/plan/term}" method="post" class="row g-3">
+    <form id="prWithTerm-form" th:object="${planTermRegisterForm}" class="row g-3">
 
         <div class="col-12">
             <label for="title" class="form-label">타이틀</label>
@@ -43,7 +44,7 @@
         </div>
 
         <div class="col-12">
-            <input type="submit" value="전송" class="btn btn-primary"/>
+            <input type="button" class="btn btn-primary" id="prWithTerm-submit" value="GO!"/>
         </div>
     </form>
 </div>
