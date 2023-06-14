@@ -1,9 +1,6 @@
 package demo.plantodo.controller;
 
-import demo.plantodo.VO.FilteredPlanVO;
-import demo.plantodo.VO.PlanDetailVO;
-import demo.plantodo.VO.TodoDateHomeVO;
-import demo.plantodo.VO.TodoDetailVO;
+import demo.plantodo.VO.*;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.*;
 import demo.plantodo.service.*;
@@ -105,7 +102,7 @@ public class PlanController {
     @GetMapping("/plans")
     public String plans(Model model, @CookieValue(name = "AUTH") String authKey) {
         Long memberId = authService.getMemberIdByKey(authKey);
-        LinkedHashMap<Plan, Integer> plans = planService.findAllPlan_withCompPercent(memberId);
+        List<PlanListVO> plans = planService.findAllPlan_withCompPercent(memberId);
         model.addAttribute("plans", plans);
         return "plan/plan-list";
     }

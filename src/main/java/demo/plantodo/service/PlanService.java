@@ -1,6 +1,7 @@
 package demo.plantodo.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import demo.plantodo.VO.PlanListVO;
 import demo.plantodo.VO.UrgentMsgInfoVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.PlanRegularUpdateForm;
@@ -49,7 +50,7 @@ public class PlanService {
     }
 
     private PlanTerm createPlanTerm(Member member, PlanTermRegisterForm form) {
-        LocalTime endTime = form.getEndTime() == "" ? LocalTime.of(23, 59) : LocalTime.parse(form.getEndTime());
+        LocalTime endTime = form.getEndTime().equals("") ? LocalTime.of(23, 59) : LocalTime.parse(form.getEndTime());
         return new PlanTerm(member, PlanStatus.NOW, form.getStartDate(), form.getTitle(), form.getEndDate(), endTime);
     }
 
@@ -62,18 +63,17 @@ public class PlanService {
         return planRepository.findAllPlan(memberId);
     }
 
-    public LinkedHashMap<Plan, Integer> findAllPlan_withCompPercent(Long memberId) {
-        /*HashMap -> plan:달성도 계산*/
-        LinkedHashMap<Plan, Integer> resultMap = new LinkedHashMap<>();
-        List<Plan> plans = planRepository.findAllPlan(memberId).stream().sorted(Comparator.comparing(Plan::getStartDate).reversed()).collect(Collectors.toList());
-
-        for (Plan plan : plans) {
-            /*달성도 계산*/
-            int compPercent = plan.calculate_plan_compPercent();
-            resultMap.put(plan, compPercent);
-        }
-
-        return resultMap;
+    public List<PlanListVO> findAllPlan_withCompPercent(Long memberId) {
+        return planRepository.findAllPlan(memberId).stream()
+                .sorted(Comparator.comparing(Plan::getPlanStatus)
+                        .thenComparing(Comparator.comparing(Plan::getStartDate).reversed()))
+                .map(p -> {
+                    if (p instanceof PlanTerm) {
+                        return new PlanListVO((PlanTerm) p);
+                    } else {
+                        return new PlanListVO((PlanRegular) p);
+                    }
+                }).collect(Collectors.toList());
     }
 
     public List<PlanTerm> findAllPlanTerm(Long memberId) {
