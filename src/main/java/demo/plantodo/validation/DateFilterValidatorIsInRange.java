@@ -28,5 +28,8 @@ public class DateFilterValidatorIsInRange implements Validator {
         if (searchEnd.isBefore(planStart) || searchEnd.isAfter(planEnd)) {
             errors.rejectValue("endDate", "range", new Object[]{planEnd}, null);
         }
+        if (searchEnd.isBefore(searchStart)) {
+            errors.rejectValue("endDate", "invalid");
+        }
     }
 }

@@ -112,9 +112,7 @@ public class PlanController {
     public String plan(@PathVariable Long planId, Model model) {
         Plan plan = planService.findOne(planId);
 
-        LocalDate startDate = plan.getStartDate();
         LocalDate endDate = LocalDate.now();
-
         LinkedHashMap<LocalDate, List<TodoDateHomeVO>> allTodoDatesByDate = todoDateService.allTodoDatesInTerm(plan, null, null);
         List<TodoDetailVO> todos = todoService.getTodoVOByPlanId(planId);
         model.addAttribute(  "plan", new PlanDetailVO(plan, endDate));
@@ -143,10 +141,10 @@ public class PlanController {
             PlanTerm planTerm = (PlanTerm) selectedPlan;
             planEnd = planTerm.getEndDate();
         }
-        List<Todo> todos = todoService.getTodoByPlanId(planId);
+
+        List<TodoDetailVO> todos = todoService.getTodoVOByPlanId(planId);
 
         /*validation - is null*/
-        FilteredPlanVO filteredPlanVO = new FilteredPlanVO(searchStart, searchEnd, planStart, planEnd);
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
             LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
@@ -154,7 +152,8 @@ public class PlanController {
             return viewURI;
         }
 
-        /*validation - is in range*/
+        /*validation - format (range)*/
+        FilteredPlanVO filteredPlanVO = new FilteredPlanVO(searchStart, searchEnd, planStart, planEnd);
         isInRangeValidator.validate(filteredPlanVO, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
@@ -167,7 +166,7 @@ public class PlanController {
         return viewURI;
     }
 
-    private void setAttributesForPast(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm, Model model, PlanDetailVO selectedPlan, LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all, List<Todo> todosByPlanId) {
+    private void setAttributesForPast(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm, Model model, PlanDetailVO selectedPlan, LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all, List<TodoDetailVO> todosByPlanId) {
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("todosByPlanId", todosByPlanId);
