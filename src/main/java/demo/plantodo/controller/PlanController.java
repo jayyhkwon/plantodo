@@ -116,7 +116,7 @@ public class PlanController {
         LocalDate endDate = LocalDate.now();
 
         LinkedHashMap<LocalDate, List<TodoDateHomeVO>> allTodoDatesByDate = todoDateService.allTodoDatesInTerm(plan, null, null);
-        List<Todo> todos = todoService.getTodoByPlanId(planId);
+        List<TodoDetailVO> todos = todoService.getTodoVOByPlanId(planId);
         model.addAttribute(  "plan", new PlanDetailVO(plan, endDate));
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("allToDatesByDate", allTodoDatesByDate);

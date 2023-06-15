@@ -1,6 +1,5 @@
 package demo.plantodo.controller;
 import demo.plantodo.VO.ClientKeySet;
-import demo.plantodo.VO.RedisResultVO;
 import demo.plantodo.VO.UrgentMsgInfoVO;
 import demo.plantodo.converter.ObjToJsonConverter;
 import demo.plantodo.domain.PlanTerm;
