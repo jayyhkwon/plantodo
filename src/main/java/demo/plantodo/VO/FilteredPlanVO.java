@@ -6,7 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-@Getter @Setter
+@Getter
 public class FilteredPlanVO {
     @DateTimeFormat(pattern = "yyyy-MM-dd") private LocalDate searchStart;
     @DateTimeFormat(pattern = "yyyy-MM-dd") private LocalDate searchEnd;

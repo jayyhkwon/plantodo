@@ -51,6 +51,10 @@ public class TodoService {
         return todo.getPlan();
     }
 
+    public List<TodoDetailVO> getTodoVOByPlanId(Long planId) {
+        return todoRepository.getTodoByPlanId(planId).stream().map(TodoDetailVO::new).collect(Collectors.toList());
+    }
+
     public List<Todo> getTodoByPlanId(Long planId) {
         return todoRepository.getTodoByPlanId(planId);
     }

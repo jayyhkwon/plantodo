@@ -1,6 +1,6 @@
 package demo.plantodo.service;
 
-import demo.plantodo.VO.TodoDateHomeVO;
+import demo.plantodo.VO.TodoDateVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.repository.PlanRepository;
 import demo.plantodo.repository.TodoDateRepository;
@@ -46,7 +46,7 @@ public class TodoDateService {
         return todoDateRepository.findOneDaily(todoDateId);
     }
 
-    public LinkedHashMap<LocalDate, List<TodoDateHomeVO>> allTodoDatesInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
+    public LinkedHashMap<LocalDate, List<TodoDateVO>> allTodoDatesInTerm(Plan plan, @Nullable LocalDate startDate, @Nullable LocalDate endDate) {
         if (startDate==null && endDate==null) {
             startDate = plan.getStartDate();
             endDate = LocalDate.now();
@@ -57,13 +57,13 @@ public class TodoDateService {
         }
         int days = Period.between(startDate, endDate).getDays();
 
-        LinkedHashMap<LocalDate, List<TodoDateHomeVO>> allTodosByDate = new LinkedHashMap();
+        LinkedHashMap<LocalDate, List<TodoDateVO>> allTodosByDate = new LinkedHashMap();
         /*startDate에는 getTodoDateAndPlan을 적용하지 않고 그냥 todoDate를 조회만 하기*/
         /*startDate 다음 날부터는 getTodoDateAndPlan을 적용하기*/
 
         for (int i = 0; i < days + 1; i++) {
             LocalDate date = startDate.plusDays(i);
-            List<TodoDateHomeVO> todoDateList = new ArrayList<>();
+            List<TodoDateVO> todoDateList = new ArrayList<>();
             if (date.isEqual(LocalDate.now())) {
                 todoDateList = getTodoDateByDateAndPlan(plan, date, false);
             } else {
@@ -78,7 +78,7 @@ public class TodoDateService {
     }
 
 
-    public List<TodoDateHomeVO> getTodoDateByDateAndPlan(Plan plan, LocalDate searchDate, boolean needUpdate) {
+    public List<TodoDateVO> getTodoDateByDateAndPlan(Plan plan, LocalDate searchDate, boolean needUpdate) {
         /*searchDate 검증*/
         if (plan instanceof PlanTerm) {
             PlanTerm planTerm = (PlanTerm) plan;
@@ -96,7 +96,7 @@ public class TodoDateService {
             return new ArrayList<>();
         }
 
-        ArrayList<TodoDateHomeVO> todoDateList = new ArrayList<>();
+        ArrayList<TodoDateVO> todoDateList = new ArrayList<>();
 
         for (Todo todo : todolist) {
             /*해당 날짜에 todo로 todoDate를 만들 수 있는지?*/
@@ -106,14 +106,14 @@ public class TodoDateService {
                 /*planRegular이고 이미 해당 날짜에 생성되어 있는 todoDate가 있음*/
                 if (plan instanceof PlanTerm || !result.isEmpty()) {
                     for (TodoDate td : result) {
-                        todoDateList.add(new TodoDateHomeVO(td.getId(), getTitleFromTodoDate(td), td.getDtype(), td.getTodoStatus().toString(), plan.getPlanStatus().toString()));
+                        todoDateList.add(new TodoDateVO(td.getId(), getTitleFromTodoDate(td), td.getDtype(), td.getTodoStatus().toString(), plan.getPlanStatus().toString()));
                     }
                 } else {
                     if (needUpdate) {
                         /*PlanRegular이면서 해당 날짜에 todoDate를 만들 수 있는데 없는 경우 새로 만들어서 저장*/
                         TodoDateRep tdr = new TodoDateRep(TodoStatus.UNCHECKED, searchDate, todo);
                         save(tdr);
-                        todoDateList.add(new TodoDateHomeVO(tdr.getId(), tdr.getTitle(), tdr.getDtype(), tdr.getTodoStatus().toString(), plan.getPlanStatus().toString()));
+                        todoDateList.add(new TodoDateVO(tdr.getId(), tdr.getTitle(), tdr.getDtype(), tdr.getTodoStatus().toString(), plan.getPlanStatus().toString()));
                     }
                 }
             }
@@ -121,7 +121,7 @@ public class TodoDateService {
 
         List<TodoDate> notBindingTodo = todoDateRepository.getTodoDateByPlanAndDate(plan, searchDate);
         for (TodoDate td : notBindingTodo) {
-            todoDateList.add(new TodoDateHomeVO(td.getId(), getTitleFromTodoDate(td), td.getDtype(), td.getTodoStatus().toString(), plan.getPlanStatus().toString()));
+            todoDateList.add(new TodoDateVO(td.getId(), getTitleFromTodoDate(td), td.getDtype(), td.getTodoStatus().toString(), plan.getPlanStatus().toString()));
         }
         return todoDateList;
     }

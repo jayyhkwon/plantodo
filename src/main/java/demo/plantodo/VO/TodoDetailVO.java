@@ -4,29 +4,26 @@ import demo.plantodo.domain.Todo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Getter @Setter
+@Getter
 public class TodoDetailVO {
     private long id;
     private String title;
     private int repOption;
     private List<String> repValue;
 
-    public TodoDetailVO() {
-    }
-
     public TodoDetailVO(Todo todo) {
         this.id = todo.getId();
         this.title = todo.getTitle();
         this.repOption = todo.getRepOption();
-        this.repValue = todo.getRepValue();
+        this.repValue = this.repOption == 1 ? sortRepVal(todo.getRepValue()) : todo.getRepValue();
     }
-
-    public TodoDetailVO(long id, String title, int repOption, List<String> repValue) {
-        this.id = id;
-        this.title = title;
-        this.repOption = repOption;
-        this.repValue = repValue;
+    private List<String> sortRepVal(List<String> repValue) {
+        String[] days = {"월", "화", "수", "목", "금", "토", "일"};
+        return Arrays.stream(days).filter(repValue::contains).collect(Collectors.toList());
     }
 }

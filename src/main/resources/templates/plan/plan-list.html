@@ -16,49 +16,49 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col-3 pt-2">
-                                        <span th:if="${plan.key.planStatus.toString().equals('PAST')}" th:text="${plan.key.planStatus}" class="badge bg-dark position-relative"></span>
-                                        <span th:if="${plan.key.planStatus.toString().equals('COMPLETED')}" th:text="${plan.key.planStatus}" class="badge bg-secondary position-relative"></span>
-                                        <span th:if="${plan.key.planStatus.toString().equals('NOW')}" th:text="${plan.key.planStatus}" class="badge bg-primary position-relative"></span>
+                                        <span th:if="${plan.planStatus.toString().equals('PAST')}" th:text="${plan.planStatus}" class="badge bg-dark position-relative"></span>
+                                        <span th:if="${plan.planStatus.toString().equals('COMPLETED')}" th:text="${plan.planStatus}" class="badge bg-secondary position-relative"></span>
+                                        <span th:if="${plan.planStatus.toString().equals('NOW')}" th:text="${plan.planStatus}" class="badge bg-primary position-relative"></span>
                                     </div>
                                     <div class="col-7"></div>
                                     <div class="col-2 pt-1 ps-2">
                                         <div id="emphasis">
-                                            <fieldset th:if="${plan.key.planStatus.toString().equals('NOW')}" >
-                                                <input type="checkbox" th:id="${'emphasis'+plan.key.id}" th:checked="${plan.key.emphasis==true}" th:attr="onclick=|switchPlanEmphasis('${plan.key.id}', 'list')|"><label th:for="${'emphasis'+plan.key.id}">⭐</label>
+                                            <fieldset th:if="${plan.planStatus.toString().equals('NOW')}" >
+                                                <input type="checkbox" th:id="${'emphasis'+plan.id}" th:checked="${plan.emphasis==true}" th:attr="onclick=|switchPlanEmphasis('${plan.id}', 'list')|"><label th:for="${'emphasis'+plan.id}">⭐</label>
                                             </fieldset>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body justify-content-center" th:attr="onclick=|getPlanDetailPage('${plan.key.id}')|" style="cursor: pointer">
+                        <div class="card-body justify-content-center" th:attr="onclick=|getPlanDetailPage('${plan.id}')|" style="cursor: pointer">
                             <div class="row mx-auto my-auto">
-                                <th:block th:if="${plan.key.dtype.equals('Term')}">
+                                <th:block th:if="${plan.dtype.equals('Term')}">
                                     <div class="position-relative">
                                         <div>
-                                            시작일 : <span th:text="${plan.key.startDate}"></span>
+                                            시작일 : <span th:text="${plan.startDate}"></span>
                                         </div>
                                         <div>
-                                            종료일 : <span th:text="${plan.key.endDate}"></span> <span th:text="${plan.key.endTime}"></span>
+                                            종료일 : <span th:text="${plan.endDate}"></span> <span th:text="${plan.endTime}"></span>
                                         </div>
                                     </div>
                                 </th:block>
-                                <th:block th:if="${plan.key.dtype.equals('Regular')}">
+                                <th:block th:if="${plan.dtype.equals('Regular')}">
                                     <div class="position-relative">
                                         <div>상시</div>
-                                        <div>시작일 : <span th:text="${plan.key.startDate}"></span></div>
+                                        <div>시작일 : <span th:text="${plan.startDate}"></span></div>
                                     </div>
 
                                 </th:block>
                             </div>
                             <div class="row mx-auto my-auto mt-5">
-                                <h5 class="card-title bold" th:text="${plan.key.title}"></h5>
+                                <h5 class="card-title bold" th:text="${plan.title}"></h5>
                             </div>
                             <div class="progress mb-1">
-                                <div class="progress-bar" role="progressbar" th:style="${'width: '+plan.value+'%;'}" th:text="${plan.value + '%'}" th:aria-valuenow="${plan.value}" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" th:style="${'width: '+plan.compPercent+'%;'}" th:text="${plan.compPercent + '%'}" th:aria-valuenow="${plan.compPercent}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
-                        <a th:id="${'plan-detail-trigger'+plan.key.id}" th:href="@{/plan/{planId}(planId=${plan.key.id})}" style="display: none;"></a>
+                        <a th:id="${'plan-detail-trigger'+plan.id}" th:href="@{/plan/{planId}(planId=${plan.id})}" style="display: none;"></a>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 package demo.plantodo.controller;
 
+import demo.plantodo.VO.CommentVO;
 import demo.plantodo.domain.TodoDate;
 import demo.plantodo.domain.TodoDateComment;
 import demo.plantodo.service.CommentService;
@@ -30,7 +31,7 @@ public class CommentController {
         commentService.save(todoDateId, comment);
 
         TodoDate todoDate = todoDateService.findOne(todoDateId);
-        List<TodoDateComment> comments = commentService.getCommentsByTodoDateId(todoDateId);
+        List<CommentVO> comments = commentService.getCommentVOByTodoDateId(todoDateId);
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("comments", comments);
         model.addAttribute("selectedDate", selectedDate);
@@ -46,7 +47,7 @@ public class CommentController {
                                 Model model) {
         commentService.delete(commentId);
         TodoDate todoDate = todoDateService.findOne(todoDateId);
-        List<TodoDateComment> comments = commentService.getCommentsByTodoDateId(todoDateId);
+        List<CommentVO> comments = commentService.getCommentVOByTodoDateId(todoDateId);
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("comments", comments);
         model.addAttribute("selectedDate", selectedDate);

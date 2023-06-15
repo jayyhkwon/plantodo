@@ -36,6 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
-### .yml (contains sensitive info) ###
+### contains sensitive info ###
+keystore.p12
 application.yml
+application-dev.yml
 docker-compose.yml

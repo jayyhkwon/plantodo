@@ -1,6 +1,8 @@
 package demo.plantodo.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import demo.plantodo.VO.PlanListVO;
+import demo.plantodo.VO.PlanSimpleVO;
 import demo.plantodo.VO.UrgentMsgInfoVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.PlanRegularUpdateForm;
@@ -49,7 +51,7 @@ public class PlanService {
     }
 
     private PlanTerm createPlanTerm(Member member, PlanTermRegisterForm form) {
-        LocalTime endTime = form.getEndTime() == "" ? LocalTime.of(23, 59) : LocalTime.parse(form.getEndTime());
+        LocalTime endTime = form.getEndTime().equals("") ? LocalTime.of(23, 59) : LocalTime.parse(form.getEndTime());
         return new PlanTerm(member, PlanStatus.NOW, form.getStartDate(), form.getTitle(), form.getEndDate(), endTime);
     }
 
@@ -62,26 +64,21 @@ public class PlanService {
         return planRepository.findAllPlan(memberId);
     }
 
-    public LinkedHashMap<Plan, Integer> findAllPlan_withCompPercent(Long memberId) {
-        /*HashMap -> plan:달성도 계산*/
-        LinkedHashMap<Plan, Integer> resultMap = new LinkedHashMap<>();
-        List<Plan> plans = planRepository.findAllPlan(memberId).stream().sorted(Comparator.comparing(Plan::getStartDate).reversed()).collect(Collectors.toList());
-
-        for (Plan plan : plans) {
-            /*달성도 계산*/
-            int compPercent = plan.calculate_plan_compPercent();
-            resultMap.put(plan, compPercent);
-        }
-
-        return resultMap;
+    public List<PlanListVO> findAllPlan_withCompPercent(Long memberId) {
+        return planRepository.findAllPlan(memberId).stream()
+                .sorted(Comparator.comparing(Plan::getPlanStatus)
+                        .thenComparing(Comparator.comparing(Plan::getStartDate).reversed()))
+                .map(p -> {
+                    if (p instanceof PlanTerm) {
+                        return new PlanListVO((PlanTerm) p);
+                    } else {
+                        return new PlanListVO((PlanRegular) p);
+                    }
+                }).collect(Collectors.toList());
     }
 
     public List<PlanTerm> findAllPlanTerm(Long memberId) {
         return planRepository.findAllPlanTerm(memberId);
-    }
-
-    public List<PlanRegular> findAllPlanRegular(Long memberId) {
-        return planRepository.findAllPlanRegular(memberId);
     }
 
     public List<PlanTerm> findUrgentPlans(Long memberId) {
@@ -96,6 +93,32 @@ public class PlanService {
                 .filter(p -> p.getEndDate().isEqual(LocalDate.now()))
                 .sorted(Comparator.comparing(PlanTerm::getEndTime))
                 .collect(Collectors.toList());
+    }
+
+    public List<PlanSimpleVO> findAllPlanForPlanRegister(Long memberId) {
+        return planRepository.findAllPlanForPlanRegister(memberId).stream().map(PlanSimpleVO::new).collect(Collectors.toList());
+    }
+
+    public List<Plan> findAllPlanForBlock(LocalDate eachDate, Long memberId) {
+        /*planTerm인 경우 plan의 StartDate와 endDate 사이에 eachDate가 있어야 한다.*/
+        /*planRegular의 경우 plan의 StartDate >= eachDate*/
+        ArrayList<Plan> result = new ArrayList<>();
+        List<Plan> allPlan = planRepository.findAllPlan(memberId);
+        for (Plan plan : allPlan) {
+            if (plan.getDtype().equals("Term")) {
+                PlanTerm planTerm = (PlanTerm) plan;
+                if (eachDate.isBefore(planTerm.getStartDate()) || eachDate.isAfter(planTerm.getEndDate())) {
+                    continue;
+                }
+                result.add(plan);
+            } else {
+                if (eachDate.isBefore(plan.getStartDate())) {
+                    continue;
+                }
+                result.add(plan);
+            }
+        }
+        return result;
     }
 
 
@@ -168,34 +191,9 @@ public class PlanService {
         planRepository.delete(planId);
     }
 
-    public List<Plan> findAllPlanForPlanRegister(Long memberId) {
-        return planRepository.findAllPlanForPlanRegister(memberId);
-    }
 
-    public List<Plan> findAllPlanForBlock(LocalDate eachDate, Long memberId) {
-        /*planTerm인 경우 plan의 StartDate와 endDate 사이에 eachDate가 있어야 한다.*/
-        /*planRegular의 경우 plan의 StartDate >= eachDate*/
-        ArrayList<Plan> result = new ArrayList<>();
-        List<Plan> allPlan = planRepository.findAllPlan(memberId);
-        for (Plan plan : allPlan) {
-            if (plan.getDtype().equals("Term")) {
-                PlanTerm planTerm = (PlanTerm) plan;
-                if (eachDate.isBefore(planTerm.getStartDate()) || eachDate.isAfter(planTerm.getEndDate())) {
-                    continue;
-                }
-                result.add(plan);
-            } else {
-                if (eachDate.isBefore(plan.getStartDate())) {
-                    continue;
-                }
-                result.add(plan);
-            }
-        }
-        return result;
+    /*테스트용 임시 함수*/
+    public List<Plan> findOneByTitle(String title) {
+        return planRepository.findOneByTitle(title);
     }
-
-    public void addUnchecked(Plan plan, int uncheckedTodoDateCnt) {
-        planRepository.addUnchecked(plan, uncheckedTodoDateCnt);
-    }
-
 }

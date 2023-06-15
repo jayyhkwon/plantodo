@@ -1,6 +1,7 @@
 package demo.plantodo.controller;
 
-import demo.plantodo.DTO.TodoButtonDTO;
+import demo.plantodo.DTO.TodoButtonVO;
+import demo.plantodo.VO.PlanSimpleVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoRegisterForm;
 import demo.plantodo.form.TodoUpdateForm;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class TodoController {
     @GetMapping("/register")
     public String createRegisterForm(HttpServletRequest request, Model model) {
         Long memberId = commonService.getMemberId(request);
-        List<Plan> plans = planService.findAllPlanForPlanRegister(memberId);
+        List<PlanSimpleVO> plans = planService.findAllPlanForPlanRegister(memberId);
 
         model.addAttribute("plans", plans);
         model.addAttribute("todoRegisterForm", new TodoRegisterForm());
@@ -58,26 +58,23 @@ public class TodoController {
             bindingResult.addError(new FieldError("todoRegisterForm", "title", "타이틀을 추가해 주세요."));
         }
 
+        Long memberId = commonService.getMemberId(request);
+        List<PlanSimpleVO> plans = planService.findAllPlanForPlanRegister(memberId);
+
         int repOption = todoRegisterForm.getRepOption();
         List<String> repValue = todoRegisterForm.getRepValue();
         if ((repOption == 1 && repValue == null) || (repOption == 1 && repValue.isEmpty()) || (repOption == 2 && repValue == null) || (repOption == 2 && repValue.isEmpty())) {
-            Long memberId = commonService.getMemberId(request);
-            List<Plan> plans = planService.findAllPlan(memberId);
             model.addAttribute("plans", plans);
             bindingResult.addError(new FieldError("todoRegisterForm", "repValue", "옵션을 추가해야 합니다."));
         }
 
         if (bindingResult.hasErrors()) {
-            Long memberId = commonService.getMemberId(request);
-            List<Plan> plans = planService.findAllPlanForPlanRegister(memberId);
-
             model.addAttribute("plans", plans);
             model.addAttribute("todoRegisterForm", todoRegisterForm);
             return "todo/register-form";
         }
-        Long memberId = commonService.getMemberId(request);
-        Member member = memberService.findOne(memberId);
 
+        Member member = memberService.findOne(memberId);
         Plan plan = planService.findOne(todoRegisterForm.getPlanId());
 
         if (repValue == null) {
@@ -98,8 +95,8 @@ public class TodoController {
     public String getTodoButtonBlock(@RequestParam Long planId,
                                      @RequestParam Long todoId,
                                      Model model) {
-        TodoButtonDTO todoButtonDTO = new TodoButtonDTO(planId, todoId);
-        model.addAttribute("todoButtonDTO", todoButtonDTO);
+        TodoButtonVO todoButtonVO = new TodoButtonVO(planId, todoId);
+        model.addAttribute("todoButtonDTO", todoButtonVO);
         return "fragments/todo-button-block :: todoButtonBlock";
     }
 
@@ -148,7 +145,6 @@ public class TodoController {
                                    @RequestParam int repOption,
                                    @RequestParam List<String> repValue,
                                    RedirectView redirectView) {
-        System.out.println(repValue);
         if (repValue.isEmpty()) {
             repValue.add("");
         }

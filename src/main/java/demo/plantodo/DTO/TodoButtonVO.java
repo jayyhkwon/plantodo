@@ -4,14 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-public class TodoButtonDTO {
+public class TodoButtonVO {
     private Long planId;
     private Long todoId;
 
-    public TodoButtonDTO() {
+    public TodoButtonVO() {
     }
 
-    public TodoButtonDTO(Long planId, Long todoId) {
+    public TodoButtonVO(Long planId, Long todoId) {
         this.planId = planId;
         this.todoId = todoId;
     }
