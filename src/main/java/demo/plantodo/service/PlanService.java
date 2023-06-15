@@ -2,6 +2,7 @@ package demo.plantodo.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import demo.plantodo.VO.PlanListVO;
+import demo.plantodo.VO.PlanSimpleVO;
 import demo.plantodo.VO.UrgentMsgInfoVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.PlanRegularUpdateForm;
@@ -80,10 +81,6 @@ public class PlanService {
         return planRepository.findAllPlanTerm(memberId);
     }
 
-    public List<PlanRegular> findAllPlanRegular(Long memberId) {
-        return planRepository.findAllPlanRegular(memberId);
-    }
-
     public List<PlanTerm> findUrgentPlans(Long memberId) {
         /*혹시 Past상태가 안 된 Plan이 있으면 Past 상태로 + 모든 Plan 조회*/
         List<Plan> plans = planRepository.findAllPlan(memberId);
@@ -98,8 +95,8 @@ public class PlanService {
                 .collect(Collectors.toList());
     }
 
-    public List<Plan> findAllPlanForPlanRegister(Long memberId) {
-        return planRepository.findAllPlanForPlanRegister(memberId);
+    public List<PlanSimpleVO> findAllPlanForPlanRegister(Long memberId) {
+        return planRepository.findAllPlanForPlanRegister(memberId).stream().map(PlanSimpleVO::new).collect(Collectors.toList());
     }
 
     public List<Plan> findAllPlanForBlock(LocalDate eachDate, Long memberId) {

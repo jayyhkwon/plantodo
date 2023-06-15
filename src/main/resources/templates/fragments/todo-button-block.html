@@ -2,13 +2,13 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <div id="todoButtonBlock" th:fragment="todoButtonBlock" class="col">
     <div class="btn btn-group" role="group" area-label="Basic example">
-        <form th:object="${todoButtonDTO}" th:action="@{/todo}" method="post">
+        <form th:object="${todoButtonVO}" th:action="@{/todo}" method="post">
             <input type="hidden" name="planId" th:value="*{planId}"/>
             <input type="hidden" name="todoId" th:value="*{todoId}"/>
             <input type="hidden" name="_method" value="DELETE"/>
             <button type="submit" class="btn btn-sm btn-dark">DEL</button>
         </form>
-        <button th:attr="onclick=|getTodoUpdateForm('${todoButtonDTO.planId}', '${todoButtonDTO.todoId}')|" class="btn btn-sm btn-dark">EDT</button>
+        <button th:attr="onclick=|getTodoUpdateForm('${todoButtonVO.planId}', '${todoButtonVO.todoId}')|" class="btn btn-sm btn-dark">EDT</button>
     </div>
 </div>
 </html>
