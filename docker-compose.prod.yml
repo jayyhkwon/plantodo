@@ -1,0 +1,4 @@
+services:
+  springboot:
+    ports:
+      - "80:8080"

@@ -98,6 +98,32 @@ public class PlanService {
                 .collect(Collectors.toList());
     }
 
+    public List<Plan> findAllPlanForPlanRegister(Long memberId) {
+        return planRepository.findAllPlanForPlanRegister(memberId);
+    }
+
+    public List<Plan> findAllPlanForBlock(LocalDate eachDate, Long memberId) {
+        /*planTerm인 경우 plan의 StartDate와 endDate 사이에 eachDate가 있어야 한다.*/
+        /*planRegular의 경우 plan의 StartDate >= eachDate*/
+        ArrayList<Plan> result = new ArrayList<>();
+        List<Plan> allPlan = planRepository.findAllPlan(memberId);
+        for (Plan plan : allPlan) {
+            if (plan.getDtype().equals("Term")) {
+                PlanTerm planTerm = (PlanTerm) plan;
+                if (eachDate.isBefore(planTerm.getStartDate()) || eachDate.isAfter(planTerm.getEndDate())) {
+                    continue;
+                }
+                result.add(plan);
+            } else {
+                if (eachDate.isBefore(plan.getStartDate())) {
+                    continue;
+                }
+                result.add(plan);
+            }
+        }
+        return result;
+    }
+
 
     /*수정*/
     public void updateStatus(Long planId) {
@@ -168,34 +194,9 @@ public class PlanService {
         planRepository.delete(planId);
     }
 
-    public List<Plan> findAllPlanForPlanRegister(Long memberId) {
-        return planRepository.findAllPlanForPlanRegister(memberId);
-    }
 
-    public List<Plan> findAllPlanForBlock(LocalDate eachDate, Long memberId) {
-        /*planTerm인 경우 plan의 StartDate와 endDate 사이에 eachDate가 있어야 한다.*/
-        /*planRegular의 경우 plan의 StartDate >= eachDate*/
-        ArrayList<Plan> result = new ArrayList<>();
-        List<Plan> allPlan = planRepository.findAllPlan(memberId);
-        for (Plan plan : allPlan) {
-            if (plan.getDtype().equals("Term")) {
-                PlanTerm planTerm = (PlanTerm) plan;
-                if (eachDate.isBefore(planTerm.getStartDate()) || eachDate.isAfter(planTerm.getEndDate())) {
-                    continue;
-                }
-                result.add(plan);
-            } else {
-                if (eachDate.isBefore(plan.getStartDate())) {
-                    continue;
-                }
-                result.add(plan);
-            }
-        }
-        return result;
+    /*테스트용 임시 함수*/
+    public List<Plan> findOneByTitle(String title) {
+        return planRepository.findOneByTitle(title);
     }
-
-    public void addUnchecked(Plan plan, int uncheckedTodoDateCnt) {
-        planRepository.addUnchecked(plan, uncheckedTodoDateCnt);
-    }
-
 }

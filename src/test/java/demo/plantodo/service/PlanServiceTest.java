@@ -1,6 +1,7 @@
 package demo.plantodo.service;
 
 import demo.plantodo.PlantodoApplication;
+import demo.plantodo.VO.PlanListVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.PlanTermRegisterForm;
 import demo.plantodo.form.PlanTermUpdateForm;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +27,12 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
+@ActiveProfiles("test")
 @Transactional
 @SpringBootTest(classes = {PlantodoApplication.class})
 class PlanServiceTest {
+    @Autowired private SettingsService settingsService;
+    @Autowired private AuthService authService;
     @Autowired private PlanService planService;
     @Autowired private MemberService memberService;
     @Autowired private TodoDateService todoDateService;
@@ -418,5 +423,49 @@ class PlanServiceTest {
         Assertions.assertThat(todoDateService.getTodoDateByTodo(todo)).isEmpty();
         Assertions.assertThat(commentService.findAllCommentsByTodoDateId(todoDate.getId())).isEmpty();
 
+    }
+
+    @Test
+    public void findAllPlan_withCompPercent_Test() throws Exception {
+        //given
+
+        Settings settings = new Settings(PermStatus.GRANTED);
+        settingsService.save(settings);
+
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test", settings);
+        memberService.save(member);
+
+        authService.save(member);
+
+        PlanRegular plan = new PlanRegular(member, PlanStatus.NOW, LocalDate.now(), "plan1");
+        planService.saveRegular(plan);
+
+        PlanRegular plan2 = new PlanRegular(member, PlanStatus.COMPLETED, LocalDate.now(), "plan2");
+        planService.saveRegular(plan2);
+
+        PlanRegular plan3 = new PlanRegular(member, PlanStatus.PAST, LocalDate.now(), "plan3");
+        planService.saveRegular(plan3);
+
+        /*now 1*/
+        PlanTerm plan4 = new PlanTerm(member, PlanStatus.NOW, LocalDate.now(), "plan4", LocalDate.now().plusDays(7), LocalTime.of(23, 59));
+        planService.saveTerm(plan4);
+
+        /*now 2*/
+        PlanTerm plan5 = new PlanTerm(member, PlanStatus.NOW, LocalDate.now().plusDays(1), "plan5", LocalDate.now().plusDays(7), LocalTime.of(23, 59));
+        planService.saveTerm(plan5);
+
+        /*completed*/
+        PlanTerm plan6 = new PlanTerm(member, PlanStatus.COMPLETED, LocalDate.now().plusDays(1), "plan6", LocalDate.now().plusDays(7), LocalTime.of(23, 59));
+        planService.saveTerm(plan6);
+
+        /*past*/
+        PlanTerm plan7 = new PlanTerm(member, PlanStatus.PAST, LocalDate.now().minusDays(7), "plan7", LocalDate.now().minusDays(4), LocalTime.of(23, 59));
+        planService.saveTerm(plan7);
+
+        //when
+        List<PlanListVO> results = planService.findAllPlan_withCompPercent(member.getId());
+        results.forEach(planListVO -> {
+            System.out.println(planListVO.getTitle());
+        });
     }
 }

@@ -154,4 +154,12 @@ public class PlanRepository {
         Plan plan = findOne(planId);
         em.remove(plan);
     }
+
+
+    /*테스트용 임시 함수*/
+    public List<Plan> findOneByTitle(String title) {
+        return em.createQuery("select p from Plan p where p.title = :title", Plan.class)
+                .setParameter("title", title)
+                .getResultList();
+    }
 }
