@@ -1,5 +1,6 @@
 package demo.plantodo.service;
 
+import demo.plantodo.VO.CommentVO;
 import demo.plantodo.domain.TodoDate;
 import demo.plantodo.domain.TodoDateComment;
 import demo.plantodo.repository.CommentRepository;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,5 +48,9 @@ public class CommentService {
     public List<TodoDateComment> findAllCommentsByTodoDateId(Long todoDateId) {
         // 테스트용
         return commentRepository.getCommentsByTodoDateId(todoDateId);
+    }
+
+    public List<CommentVO> getCommentVOByTodoDateId(Long todoDateId) {
+        return commentRepository.getCommentsByTodoDateId(todoDateId).stream().map(CommentVO::new).collect(Collectors.toList());
     }
 }

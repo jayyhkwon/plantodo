@@ -148,7 +148,6 @@ public class TodoController {
                                    @RequestParam int repOption,
                                    @RequestParam List<String> repValue,
                                    RedirectView redirectView) {
-        System.out.println(repValue);
         if (repValue.isEmpty()) {
             repValue.add("");
         }

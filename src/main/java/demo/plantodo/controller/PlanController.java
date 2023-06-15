@@ -8,7 +8,6 @@ import demo.plantodo.validation.DateFilterValidatorIsInRange;
 import demo.plantodo.validation.PlanTermRegisterValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,14 +17,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -113,7 +107,7 @@ public class PlanController {
         Plan plan = planService.findOne(planId);
 
         LocalDate endDate = LocalDate.now();
-        LinkedHashMap<LocalDate, List<TodoDateHomeVO>> allTodoDatesByDate = todoDateService.allTodoDatesInTerm(plan, null, null);
+        LinkedHashMap<LocalDate, List<TodoDateVO>> allTodoDatesByDate = todoDateService.allTodoDatesInTerm(plan, null, null);
         List<TodoDetailVO> todos = todoService.getTodoVOByPlanId(planId);
         model.addAttribute(  "plan", new PlanDetailVO(plan, endDate));
         model.addAttribute("today", LocalDate.now());
@@ -147,7 +141,7 @@ public class PlanController {
         /*validation - is null*/
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
-            LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
+            LinkedHashMap<LocalDate, List<TodoDateVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
             setAttributesForPast(dateSearchForm, model, new PlanDetailVO(selectedPlan, planEnd), all, todos);
             return viewURI;
         }
@@ -157,16 +151,16 @@ public class PlanController {
         isInRangeValidator.validate(filteredPlanVO, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
-            LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
+            LinkedHashMap<LocalDate, List<TodoDateVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, null, null);
             setAttributesForPast(dateSearchForm, model, new PlanDetailVO(selectedPlan, planEnd), all, todos);
             return viewURI;
         }
-        LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, searchStart, searchEnd);
+        LinkedHashMap<LocalDate, List<TodoDateVO>> all = todoDateService.allTodoDatesInTerm(selectedPlan, searchStart, searchEnd);
         setAttributesForPast(dateSearchForm, model, new PlanDetailVO(selectedPlan, planEnd), all, todos);
         return viewURI;
     }
 
-    private void setAttributesForPast(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm, Model model, PlanDetailVO selectedPlan, LinkedHashMap<LocalDate, List<TodoDateHomeVO>> all, List<TodoDetailVO> todosByPlanId) {
+    private void setAttributesForPast(@ModelAttribute("dateSearchForm") DateSearchForm dateSearchForm, Model model, PlanDetailVO selectedPlan, LinkedHashMap<LocalDate, List<TodoDateVO>> all, List<TodoDetailVO> todosByPlanId) {
         model.addAttribute("plan", selectedPlan);
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("todosByPlanId", todosByPlanId);

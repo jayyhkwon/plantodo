@@ -6,8 +6,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-@Getter @Setter
+@Getter
 public class TodoDateResHomeVO {
     private String pageInfo;
     @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate;
+
+    public TodoDateResHomeVO(String pageInfo, LocalDate searchDate) {
+        this.pageInfo = pageInfo;
+        this.searchDate = searchDate;
+    }
 }

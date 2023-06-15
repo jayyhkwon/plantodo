@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter @Setter
+@Getter
 public class TodoDetailVO {
     private long id;
     private String title;

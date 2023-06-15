@@ -12,7 +12,7 @@ import org.springframework.lang.Nullable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter @Setter
+@Getter
 public class PlanListVO {
     private Long id;
     private PlanStatus planStatus;
