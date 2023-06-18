@@ -18,7 +18,7 @@ function loadDateBlockData(searchDate, days) {
 }
 
 
-/*plan, todo 등록/수정 modal close버튼*/
+/*plan, to-do 등록/수정 modal close버튼*/
 $('[close]').on('click', function() {
     location.reload();
 })

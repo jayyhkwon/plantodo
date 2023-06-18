@@ -1,6 +1,6 @@
 package demo.plantodo.controller;
 
-import demo.plantodo.DTO.TodoButtonVO;
+import demo.plantodo.VO.TodoButtonVO;
 import demo.plantodo.VO.PlanSimpleVO;
 import demo.plantodo.domain.*;
 import demo.plantodo.form.TodoRegisterForm;
