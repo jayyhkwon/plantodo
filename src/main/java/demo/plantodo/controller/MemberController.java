@@ -99,6 +99,7 @@ public class MemberController {
                               BindingResult bindingResult,
                               HttpServletRequest request,
                               HttpServletResponse response) {
+
         /*null값 체크 후 에러가 발생했을 경우 이전 페이지로 돌아가기*/
         if (bindingResult.hasErrors()) {
             return "member/login-form";
