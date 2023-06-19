@@ -134,7 +134,6 @@ public class SseController {
         @SneakyThrows
         @Override
         public void run() {
-            log.info("sendAlarm.run()");
             able = false;
             int waitCnt = 0;
             while (!Thread.interrupted()) {

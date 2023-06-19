@@ -279,47 +279,54 @@ class PlanServiceTest {
 
 
     @Test
-    @DisplayName("(endDate = Today), (isEmphasis = false)")
+    @DisplayName("(endDate = Today), (isEmphasis = true)")
     public void findUrgentPlansWithEmphasis_Test_1() throws Exception {
         //given
         /*member 저장*/
-        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        Settings settings = new Settings(PermStatus.GRANTED);
+        settingsService.save(settings);
+
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test", settings);
         memberService.save(member);
 
         /*PlanTerm 저장*/
         LocalDate start = LocalDate.now().minusDays(3);
         LocalDate end = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        String endTime = LocalTime.now().plusHours(1).format(formatter);
-        PlanTermRegisterForm form = new PlanTermRegisterForm("plan1", start, end, endTime);
-        planService.saveTerm(member, form);
+        PlanTerm plan = new PlanTerm(member, PlanStatus.NOW, start, "plan1", end, LocalTime.now().plusHours(1));
+        planService.saveTerm(plan);
+
+        TodoDateDaily tddd = new TodoDateDaily(TodoStatus.UNCHECKED, LocalDate.now(), "tdd1", plan);
+        todoDateService.save(tddd);
+
+        planService.switchPlanEmphasis(plan.getId());
 
         //then
-        Assertions.assertThat(planService.findUrgentPlans(member.getId()).size()).isEqualTo(0);
+        Assertions.assertThat(planService.findUrgentPlans(member.getId()).size()).isEqualTo(1);
 
     }
 
     @Test
-    @DisplayName("(endDate = Today), (isEmphasis = true)")
+    @DisplayName("(endDate = Today), (isEmphasis = false)")
     public void findUrgentPlansWithEmphasis_Test_2() throws Exception {
         //given
         /*member 저장*/
-        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        Settings settings = new Settings(PermStatus.GRANTED);
+        settingsService.save(settings);
+
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test", settings);
         memberService.save(member);
 
         /*PlanTerm 저장*/
         LocalDate start = LocalDate.now().minusDays(3);
         LocalDate end = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        String endTime = LocalTime.now().plusHours(1).format(formatter);
-        PlanTermRegisterForm form = new PlanTermRegisterForm("plan1", start, end, endTime);
-        planService.saveTerm(member, form);
+        PlanTerm plan = new PlanTerm(member, PlanStatus.NOW, start, "plan1", end, LocalTime.now().plusHours(1));
+        planService.saveTerm(plan);
 
-        Plan plan = planService.findAllPlan(member.getId()).get(0);
-        plan.switchEmphasis();
+        TodoDateDaily tddd = new TodoDateDaily(TodoStatus.UNCHECKED, LocalDate.now(), "tdd1", plan);
+        todoDateService.save(tddd);
 
         //then
-        Assertions.assertThat(planService.findUrgentPlans(member.getId()).size()).isEqualTo(1);
+        Assertions.assertThat(planService.findUrgentPlans(member.getId()).size()).isEqualTo(0);
     }
 
     @Test
@@ -327,23 +334,26 @@ class PlanServiceTest {
     public void findUrgentPlansWithEmphasis_Test_3() throws Exception {
         //given
         /*member 저장*/
-        Member member = new Member("test@abc.co.kr", "abc123!@#", "test");
+        Settings settings = new Settings(PermStatus.GRANTED);
+        settingsService.save(settings);
+
+        Member member = new Member("test@abc.co.kr", "abc123!@#", "test", settings);
         memberService.save(member);
 
         /*PlanTerm 저장*/
         LocalDate start = LocalDate.now().minusDays(3);
         LocalDate end = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        String endTime = LocalTime.now().plusHours(1).format(formatter);
-        PlanTermRegisterForm form = new PlanTermRegisterForm("planTerm", start, end, endTime);
-        planService.saveTerm(member, form);
+        PlanTerm term = new PlanTerm(member, PlanStatus.NOW, start, "plan1", end, LocalTime.now().plusHours(1));
+        planService.saveTerm(term);
+
+        TodoDateDaily tddd = new TodoDateDaily(TodoStatus.UNCHECKED, LocalDate.now(), "tdd1", term);
+        todoDateService.save(tddd);
+
+        planService.switchPlanEmphasis(term.getId());
 
         /*planRegular 저장*/
         PlanRegular regular = new PlanRegular(member, PlanStatus.NOW, start, "planRegular");
         planService.saveRegular(regular);
-
-        Plan plan = planService.findAllPlan(member.getId()).get(0);
-        plan.switchEmphasis();
 
         //then
         Assertions.assertThat(planService.findUrgentPlans(member.getId()).size()).isEqualTo(1);
