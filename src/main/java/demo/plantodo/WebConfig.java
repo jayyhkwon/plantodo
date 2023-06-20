@@ -4,20 +4,24 @@ import demo.plantodo.converter.StringToEnumConverterFactory;
 import demo.plantodo.interceptor.FirstLoginCheckInterceptor;
 import demo.plantodo.interceptor.HomeRenderInterceptor;
 import demo.plantodo.interceptor.LoginCheckInterceptor;
-import demo.plantodo.service.CommonService;
+import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
     private final CommonService commonService;
+//    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -55,4 +59,16 @@ public class WebConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverterFactory(new StringToEnumConverterFactory());
     }
+
+    @Bean
+    public ConcurrentStore concurrentStore() {
+        return new ConcurrentStore();
+    }
+
+    @Bean
+    public CacheService cacheService() {
+//        return new RedisServiceImpl(redisTemplate);
+        return new ConcurrentServiceImpl(concurrentStore().getStore());
+    }
 }
+
