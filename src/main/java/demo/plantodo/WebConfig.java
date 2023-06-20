@@ -5,16 +5,14 @@ import demo.plantodo.interceptor.FirstLoginCheckInterceptor;
 import demo.plantodo.interceptor.HomeRenderInterceptor;
 import demo.plantodo.interceptor.LoginCheckInterceptor;
 import demo.plantodo.service.*;
+import demo.plantodo.service.impl.ConcurrentServiceImpl;
+import demo.plantodo.service.impl.ConcurrentStore;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 @RequiredArgsConstructor

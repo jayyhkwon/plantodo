@@ -1,5 +1,6 @@
-package demo.plantodo.service;
+package demo.plantodo.service.impl;
 
+import demo.plantodo.service.CacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
