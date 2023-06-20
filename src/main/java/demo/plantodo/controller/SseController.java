@@ -4,12 +4,11 @@ import demo.plantodo.VO.UrgentMsgInfoVO;
 import demo.plantodo.converter.ObjToJsonConverter;
 import demo.plantodo.domain.PlanTerm;
 import demo.plantodo.logger.SseTrace;
-import demo.plantodo.service.AuthService;
-import demo.plantodo.service.MemberService;
-import demo.plantodo.service.PlanService;
+import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisOperations;
@@ -33,27 +32,17 @@ import java.util.concurrent.locks.ReentrantLock;
 @RestController
 @RequiredArgsConstructor
 public class SseController {
-    private SseTrace trace = new SseTrace();
+    private final SseTrace trace = new SseTrace();
 
     private final AuthService authService;
     private final MemberService memberService;
     private final PlanService planService;
 
-    private final RedisTemplate<String, String> redisTemplate;
-
     private static final Map<Long, SseEmitter> clients = new ConcurrentHashMap<>();
 
+    private final CacheService cacheService;
+
     private static volatile boolean able = true;
-
-    private synchronized LocalDateTime getLastSentTime(Long memberId) {
-        String s = redisTemplate.opsForValue().get(String.valueOf(memberId));
-        return (s == null ? LocalDateTime.MIN : LocalDateTime.parse(s));
-    }
-
-    private synchronized void setLastSentTime(Long memberId, LocalDateTime time) {
-        redisTemplate.opsForValue().set(String.valueOf(memberId), time.toString());
-    }
-
 
     @GetMapping(value = "/able")
     public Map<String, Boolean> getAble() {
@@ -70,8 +59,8 @@ public class SseController {
                 .name("dummy")
                 .data("EventStream Created. This is dummy data of [userId : " + memberId + "]");
 
-        if (Boolean.FALSE.equals(redisTemplate.hasKey(String.valueOf(memberId)))) {
-            setLastSentTime(memberId, LocalDateTime.MIN);
+        if (Boolean.FALSE.equals(cacheService.hasKey(String.valueOf(memberId)))) {
+            cacheService.set(String.valueOf(memberId), LocalDateTime.MIN.toString());
         }
 
         emitter.send(initEvent);
@@ -153,17 +142,17 @@ public class SseController {
                 SseEmitter client = clients.get(memberId);
 
                 // waitTime 계산, 기다리기, 메세지 전송
-                LocalDateTime lst = getLastSentTime(memberId);
+                LocalDateTime lst = LocalDateTime.parse(cacheService.get(String.valueOf(memberId), LocalDateTime.MIN.toString()));
                 if (lst.equals(LocalDateTime.MIN)) {
                     trace.simpleLog("First Message Transfer");
-                    setLastSentTime(memberId, LocalDateTime.now());
+                    cacheService.set(String.valueOf(memberId), LocalDateTime.now().toString());
                     client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
                 } else {
                     LocalDateTime before_wait = LocalDateTime.now();
                     Thread.sleep(calWaitTime(lst, before_wait, alarm_term));
                     LocalDateTime after_wait = LocalDateTime.now();
                     trace.intervalLog("Message Transfer", lst, after_wait, alarm_term);
-                    setLastSentTime(memberId, after_wait);
+                    cacheService.set(String.valueOf(memberId), LocalDateTime.now().toString());
                     client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
                 }
             }

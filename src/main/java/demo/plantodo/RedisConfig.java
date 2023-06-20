@@ -33,10 +33,4 @@ public class RedisConfig {
         template.setValueSerializer(new StringRedisSerializer());
         return template;
     }
-
-//    @Bean
-//    public RedisClient redisClient() {
-//        return RedisClient.create(RedisURI.create("localhost", 6379));
-//    }
-
 }
