@@ -26,6 +26,7 @@
 - 푸시 알림
 
 ## Architecture
+※ redis의 경우 ec2 instance 용량 문제로 현재 사용하지 않고 있음. ConcurrentHashMap으로 대체
 ![아키텍처](https://github.com/yeonleaf/plantodo/assets/91470133/0328a8f2-ade2-4a4d-a175-26a151e0390a)
 
 
