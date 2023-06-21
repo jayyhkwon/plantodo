@@ -1,4 +1,5 @@
 package demo.plantodo.controller;
+import ch.qos.logback.core.net.server.Client;
 import demo.plantodo.VO.ClientKeySet;
 import demo.plantodo.VO.UrgentMsgInfoVO;
 import demo.plantodo.converter.ObjToJsonConverter;
@@ -8,6 +9,7 @@ import demo.plantodo.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.ListOperations;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import javax.persistence.PersistenceException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -50,14 +53,15 @@ public class SseController {
     }
 
     @GetMapping(value = "/subscribe")
-    public SseEmitter subscribe(@CookieValue(name = "AUTH") String key) throws IOException {
+    public SseEmitter subscribe(@CookieValue(name = "AUTH") String key,
+                                HttpServletResponse response) throws IOException {
         Long memberId = authService.getMemberIdByKey(key);
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         clients.put(memberId, emitter);
         SseEmitter.SseEventBuilder initEvent = SseEmitter.event()
                 .id(String.valueOf(memberId))
                 .name("dummy")
-                .data("EventStream Created. This is dummy data of [userId : " + memberId + "]");
+                .data("EventStream Created");
 
         if (Boolean.FALSE.equals(cacheService.hasKey(String.valueOf(memberId)))) {
             cacheService.set(String.valueOf(memberId), LocalDateTime.MIN.toString());
@@ -74,13 +78,15 @@ public class SseController {
         });
         emitter.onError((ex) -> {
             if (ex instanceof TimeoutException) {
-                log.info("IOExcep tion -> SSE Connection Timeout");
+                log.info("IOException -> SSE Connection Timeout");
             } else if (ex instanceof PersistenceException) {
                 log.info("IOException -> something wrong in DB(jpa)");
             } else if (ex instanceof IOException) {
                 log.info("IOException -> You have to wait until connection may be re-established by client");
+                able = true;
             }
         });
+        response.addHeader("X-Accel-Buffering", "no");
         return emitter;
     }
 
@@ -120,7 +126,6 @@ public class SseController {
             this.alarm_term = alarm_term;
         }
 
-        @SneakyThrows
         @Override
         public void run() {
             able = false;
@@ -142,19 +147,42 @@ public class SseController {
                 SseEmitter client = clients.get(memberId);
 
                 // waitTime 계산, 기다리기, 메세지 전송
-                LocalDateTime lst = LocalDateTime.parse(cacheService.get(String.valueOf(memberId), LocalDateTime.MIN.toString()));
-                if (lst.equals(LocalDateTime.MIN)) {
-                    trace.simpleLog("First Message Transfer");
-                    cacheService.set(String.valueOf(memberId), LocalDateTime.now().toString());
-                    client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
-                } else {
-                    LocalDateTime before_wait = LocalDateTime.now();
-                    Thread.sleep(calWaitTime(lst, before_wait, alarm_term));
-                    LocalDateTime after_wait = LocalDateTime.now();
-                    trace.intervalLog("Message Transfer", lst, after_wait, alarm_term);
-                    cacheService.set(String.valueOf(memberId), LocalDateTime.now().toString());
-                    client.send(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId())));
+                try {
+                    LocalDateTime lst = LocalDateTime.parse(cacheService.get(String.valueOf(memberId), LocalDateTime.MIN.toString()));
+                    if (lst.equals(LocalDateTime.MIN)) {
+                        trace.simpleLog("First Message Transfer");
+                        cacheService.set(String.valueOf(memberId), LocalDateTime.now().toString());
+                        client.send(SseEmitter.event()
+                                .name("message")
+                                .data(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId()))));
+                    } else {
+                        LocalDateTime before_wait = LocalDateTime.now();
+                        long wt = calWaitTime(lst, before_wait, alarm_term);
+                        log.info("wt : {}", wt);
+                        if (wt > 8500) {
+                            Thread.sleep(8500);
+                            client.send(SseEmitter.event()
+                                    .name("dummy")
+                                    .data("waiting"));
+                        } else {
+                            Thread.sleep(wt);
+                            LocalDateTime after_wait = LocalDateTime.now();
+                            trace.intervalLog("Message Transfer", lst, after_wait, alarm_term);
+                            cacheService.set(String.valueOf(memberId), LocalDateTime.now().toString());
+                            client.send(SseEmitter.event()
+                                    .name("message")
+                                    .data(new ObjToJsonConverter().convert(new UrgentMsgInfoVO(plans.size(), plans.get(0).getId()))));
+                        }
+                    }
+                } catch (ClientAbortException cae) {
+                    log.info("I caught ClientAbortException!");
+                    break;
+                } catch (InterruptedException ire) {
+                    log.info("I caught InterruptedException!");
+                } catch (IOException ioe) {
+                    log.info("I caught IOException!");
                 }
+
             }
             able = true;
         }

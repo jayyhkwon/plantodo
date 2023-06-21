@@ -31,6 +31,7 @@ public class HomeController {
 
      @GetMapping
      public String createHome(HttpServletRequest request, @CookieValue(name = "AUTH") String authKey, HttpServletResponse response) {
+
           LocalDate today = LocalDate.now();
           if (!checkCookie(request)) {
                Cookie cookie1 = regularTodoDateInitiate(authKey, today);
@@ -38,6 +39,9 @@ public class HomeController {
                     response.addCookie(cookie1);
                }
           }
+
+          response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+          response.setHeader("Pragma", "no-cache");
           return "main-home";
      }
 

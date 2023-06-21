@@ -3,10 +3,10 @@ import * as commonService from "./common.js";
 /*Main Logic*/
 let dat = commonService.getCookieVal("deadline_alarm_term");
 if (dat !== null && dat !== "-1") {
-    eventSourceLogic();
+    eventSourceLogic(0);
 }
 
-function eventSourceLogic() {
+function eventSourceLogic(repeatCnt) {
     /*subscribe*/
     fetch(`/sse/able`).then(
         response => response.text()
@@ -36,13 +36,19 @@ function eventSourceLogic() {
                 }
 
                 es.onmessage = (e) => {
-                    let data = JSON.parse(e.data);
-                    let msg = "아직 완료되지 않은 일정이 " + data.count + "개 있습니다. 가장 마감이 임박한 일정으로 이동하시겠습니까?";
-                    let notification = new Notification('현재 메세지', {title: "마감 알림", body: msg});
-                    notification.onclick = function (e) {
-                        e.preventDefault();
-                        window.open("/plan/" + data.planId, '_blank');
+                    if (e.data !== "waiting") {
+                        let data = JSON.parse(e.data);
+                        let msg = "아직 완료되지 않은 일정이 " + data.count + "개 있습니다. 가장 마감이 임박한 일정으로 이동하시겠습니까?";
+                        let notification = new Notification('현재 메세지', {title: "마감 알림", body: msg});
+                        notification.onclick = function (e) {
+                            e.preventDefault();
+                            window.open("/plan/" + data.planId, '_blank');
+                        }
                     }
+                }
+            } else {
+                if (repeatCnt < 5) {
+                    setTimeout(() => eventSourceLogic(repeatCnt+1), 10000);
                 }
             }
         }

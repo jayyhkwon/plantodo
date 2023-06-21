@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,7 +29,6 @@ import java.util.List;
 @RequestMapping("/plan")
 public class PlanController {
 
-    private final CommonService commonService;
     private final PlanService planService;
     private final TodoDateService todoDateService;
     private final MemberService memberService;
@@ -94,10 +94,12 @@ public class PlanController {
 
     /*목록 조회*/
     @GetMapping("/plans")
-    public String plans(Model model, @CookieValue(name = "AUTH") String authKey) {
+    public String plans(Model model, @CookieValue(name = "AUTH") String authKey, HttpServletResponse response) {
         Long memberId = authService.getMemberIdByKey(authKey);
         List<PlanListVO> plans = planService.findAllPlan_withCompPercent(memberId);
         model.addAttribute("plans", plans);
+        response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
         return "plan/plan-list";
     }
 

@@ -145,7 +145,7 @@ function getTodoEditForm(planId, todoId) {
     })
 }
 
-/*home - todo 등록*/
+/*home - to-do 등록*/
 $('#tdrModal').on('show.bs.modal', function() {
     $.ajax({
         url: '/todo/register',
